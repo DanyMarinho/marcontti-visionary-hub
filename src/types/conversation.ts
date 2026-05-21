@@ -14,8 +14,8 @@ export interface ChatMessage {
   content: string;
   sender: 'lead' | 'ia';
   timestamp: Date;
-  type: 'text' | 'image' | 'catalog';
-  status?: 'sent' | 'delivered' | 'read';
+  type: 'text' | 'image' | 'audio' | 'catalog';
+  status: 'sent' | 'delivered' | 'read';
 }
 
 export type ConversationScenario = 'qualificacao_lead' | 'agendamento_visita' | 'envio_informacoes';

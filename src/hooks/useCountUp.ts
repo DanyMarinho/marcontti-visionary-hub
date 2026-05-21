@@ -8,8 +8,14 @@ interface CountUpOptions {
 export function useCountUp(end: number, start: number = 0, options: CountUpOptions = {}) {
   const { duration = 2000, decimals = 0 } = options;
   const [count, setCount] = useState(start);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setCount(end);
+      return;
+    }
+
     let startTime: number | null = null;
     let animationFrame: number;
 

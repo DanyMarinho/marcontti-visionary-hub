@@ -52,7 +52,21 @@ export const LeadTable = () => {
           <option value="media">Média</option>
           <option value="baixa">Baixa</option>
         </select>
+
+        <select 
+          className="bg-white/5 border border-white/10 rounded px-3 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+          value={filters.stage}
+          onChange={(e) => setFilter('stage', e.target.value)}
+        >
+          <option value="all">Todos os Status</option>
+          <option value="novo_lead">Novo Lead</option>
+          <option value="contato_realizado">Contato Realizado</option>
+          <option value="visita_agendada">Visita Agendada</option>
+          <option value="proposta_enviada">Proposta Enviada</option>
+          <option value="venda_fechada">Venda Fechada</option>
+        </select>
       </GlassCard>
+
 
       <div className="overflow-x-auto rounded-xl border border-white/10">
         <table className="w-full text-left text-sm">

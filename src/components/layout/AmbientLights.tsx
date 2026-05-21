@@ -41,5 +41,3 @@ export const AmbientLights: React.FC = () => {
 };
 
 export default AmbientLights;
-
-export default AmbientLights;

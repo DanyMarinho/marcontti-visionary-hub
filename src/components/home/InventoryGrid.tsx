@@ -9,7 +9,7 @@ import { DataPlaceholder } from '@/components/shared/DataPlaceholder';
 
 export const InventoryGrid = () => {
   const hasVehicles = mockVehicles.length > 0;
-
+  return (
     <section className="px-6 py-12">
       <ScrollReveal>
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">

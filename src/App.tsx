@@ -3,7 +3,10 @@ import { createBrowserRouter, RouterProvider, useLocation, useOutlet } from 'rea
 import { AnimatePresence, motion } from 'framer-motion';
 import { RootLayout } from '@/components/layout/RootLayout';
 import { SkeletonLoader } from '@/components/shared/SkeletonLoader';
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { pageTransition } from '@/lib/animations';
+
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 const Home = lazy(() => import('@/pages/Home'));
 const CRM = lazy(() => import('@/pages/CRM'));
@@ -30,7 +33,11 @@ const AnimatedRoute = ({ children }: { children: React.ReactNode }) => {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <RootLayout />,
+    element: (
+      <ErrorBoundary>
+        <RootLayout />
+      </ErrorBoundary>
+    ),
     children: [
       {
         index: true,
@@ -79,6 +86,14 @@ const router = createBrowserRouter([
             <AnimatedRoute>
               <Automations />
             </AnimatedRoute>
+          </Suspense>
+        ),
+      },
+      {
+        path: '*',
+        element: (
+          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
+            <NotFound />
           </Suspense>
         ),
       },

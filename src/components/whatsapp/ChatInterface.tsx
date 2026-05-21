@@ -1,22 +1,55 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '@/store';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { User, ShieldCheck } from 'lucide-react';
+import { User, ShieldCheck, Send, Paperclip, Mic, Smile } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const ChatInterface: React.FC = () => {
-  const { activeConversation, currentMessageIndex, isTyping } = useAppStore();
+  const { activeConversation, currentMessageIndex, isTyping, sendMessage } = useAppStore();
+  const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [activeConversation, currentMessageIndex, isTyping]);
+  }, [activeConversation, currentMessageIndex, isTyping, activeConversation?.messages.length]);
 
-  if (!activeConversation) return null;
+  const handleSendMessage = () => {
+    if (!inputValue.trim() || !activeConversation) return;
+    
+    sendMessage(inputValue, 'ia');
+    setInputValue('');
+    toast.success('Mensagem enviada');
+    
+    // Simulate auto-focus back to input
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  if (!activeConversation) return (
+    <div className="flex flex-col h-[500px] md:h-[600px] bg-[#0a0a0f] rounded-2xl border border-white/10 items-center justify-center p-8 text-center space-y-4">
+      <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center">
+        <Send className="w-10 h-10 text-white/10" />
+      </div>
+      <div>
+        <h3 className="text-white font-bold text-lg">Selecione uma conversa</h3>
+        <p className="text-secondary text-sm">Inicie um novo atendimento ou continue um existente</p>
+      </div>
+    </div>
+  );
 
   const visibleMessages = activeConversation.messages.slice(0, currentMessageIndex + 1);
 
@@ -46,9 +79,11 @@ export const ChatInterface: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-          <span className="text-[10px] text-secondary font-medium uppercase">IA Protegida</span>
+        <div className="flex items-center gap-4">
+           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-[10px] text-secondary font-medium uppercase tracking-wider">IA Ativa</span>
+          </div>
         </div>
       </div>
 
@@ -69,16 +104,43 @@ export const ChatInterface: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* Input Placeholder */}
+      {/* Input Section */}
       <div className="p-4 bg-white/5 border-t border-white/10 z-10">
-        <div className="flex gap-2">
-          <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-secondary text-sm flex items-center">
-            Aguardando resposta da IA...
+        <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-3 py-2 transition-all focus-within:ring-2 focus-within:ring-blue-500/50">
+          <div className="flex items-center gap-1">
+            <button className="p-2 text-secondary hover:text-white transition-colors">
+              <Smile className="w-5 h-5" />
+            </button>
+            <button className="p-2 text-secondary hover:text-white transition-colors">
+              <Paperclip className="w-5 h-5" />
+            </button>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white cursor-not-allowed">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+          
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Digite sua resposta..."
+            className="flex-1 bg-transparent border-none focus:outline-none text-white text-sm py-1 placeholder:text-secondary"
+          />
+          
+          <div className="flex items-center gap-1">
+            {inputValue.trim() ? (
+              <motion.button
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                onClick={handleSendMessage}
+                className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20"
+              >
+                <Send className="w-5 h-5" />
+              </motion.button>
+            ) : (
+              <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-secondary hover:text-white transition-colors">
+                <Mic className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>

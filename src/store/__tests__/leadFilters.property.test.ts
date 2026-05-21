@@ -18,8 +18,8 @@ const leadArb = fc.record({
   score: fc.integer({ min: 0, max: 100 }),
   createdAt: fc.date(),
   updatedAt: fc.date(),
-  tasks: fc.constant([]),
-  interactions: fc.constant([]),
+  tasks: fc.constant([] as any[]),
+  interactions: fc.constant([] as any[]),
 });
 
 describe('leadFilters Property Tests', () => {
@@ -35,8 +35,8 @@ describe('leadFilters Property Tests', () => {
           
           // Setup state
           store.setState((state) => {
-            state.leads = leads as Lead[];
-            state.filteredLeads = leads as Lead[];
+            state.leads = leads as unknown as Lead[];
+            state.filteredLeads = leads as unknown as Lead[];
             state.filters = { stage: 'all', origin: 'all', priority: 'all' };
           });
 
@@ -55,7 +55,7 @@ describe('leadFilters Property Tests', () => {
           });
 
           // 2. No lead that satisfies the filters should be omitted
-          const expectedCount = (leads as Lead[]).filter(l => {
+          const expectedCount = (leads as unknown as Lead[]).filter(l => {
             const stageMatch = filterStage === 'all' || l.stage === filterStage;
             const originMatch = filterOrigin === 'all' || l.origin === filterOrigin;
             const priorityMatch = filterPriority === 'all' || l.priority === filterPriority;
@@ -71,3 +71,4 @@ describe('leadFilters Property Tests', () => {
     );
   });
 });
+

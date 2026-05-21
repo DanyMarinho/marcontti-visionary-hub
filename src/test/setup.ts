@@ -17,7 +17,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver
-const IntersectionObserverMock = vi.fn(() => ({
+const IntersectionObserverMock = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
   observe: vi.fn(),
   takeRecords: vi.fn(),
@@ -25,3 +25,4 @@ const IntersectionObserverMock = vi.fn(() => ({
 }));
 
 vi.stubGlobal('IntersectionObserver', IntersectionObserverMock);
+

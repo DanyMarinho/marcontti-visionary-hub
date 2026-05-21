@@ -24,7 +24,7 @@ export const RootLayout: React.FC = () => {
       <Sidebar className="hidden md:flex" />
       <div className="flex-1 flex flex-col overflow-hidden relative z-10">
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-6 relative">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 relative">
           <AnimatePresence mode="wait">
             {outlet && React.cloneElement(outlet as React.ReactElement, { key: location.pathname })}
           </AnimatePresence>

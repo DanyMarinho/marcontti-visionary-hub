@@ -102,7 +102,7 @@ export const DemoControlPanel: React.FC = () => {
                         <SelectItem value="contato_realizado">Contato Realizado</SelectItem>
                         <SelectItem value="visita_agendada">Visita Agendada</SelectItem>
                         <SelectItem value="proposta_enviada">Proposta Enviada</SelectItem>
-                        <SelectItem value="venda_concluida">Venda Concluída</SelectItem>
+                        <SelectItem value="venda_fechada">Venda Fechada</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

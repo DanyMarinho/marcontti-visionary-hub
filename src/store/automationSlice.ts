@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { AutomationFlow } from '../types/flow';
 import { mockFlows } from '../data/mockFlows';
+import { AppStore } from './index';
 
 export interface AutomationSlice {
   flows: AutomationFlow[];
@@ -13,7 +14,7 @@ export interface AutomationSlice {
 }
 
 export const createAutomationSlice: StateCreator<
-  AutomationSlice,
+  AppStore,
   [['zustand/immer', never]],
   [],
   AutomationSlice

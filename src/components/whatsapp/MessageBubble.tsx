@@ -63,7 +63,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isLast })
           )}
         </div>
         
-        {isLast && isIA && (
+        {isLast && !isLead && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

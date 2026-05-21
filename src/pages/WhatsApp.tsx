@@ -70,15 +70,21 @@ const WhatsAppPage: React.FC = () => {
           <ChatInterface />
         </div>
         
-        <div className="lg:col-span-3 space-y-6 hidden lg:block">
-          <QualificationPanel />
-          <QuickActions />
-        </div>
-
-        {/* Mobile alternative layout for panels */}
-        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <QualificationPanel />
-          <QuickActions />
+        <div className="lg:col-span-3 space-y-6">
+          <div className="hidden lg:block space-y-6">
+            <QualificationPanel />
+            <QuickActions />
+          </div>
+          
+          <div className="lg:hidden">
+            <motion.div
+              initial={false}
+              className="space-y-6"
+            >
+              <QualificationPanel />
+              <QuickActions />
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.div>

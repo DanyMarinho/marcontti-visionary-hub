@@ -21,7 +21,7 @@ export const ChatInterface: React.FC = () => {
   const visibleMessages = activeConversation.messages.slice(0, currentMessageIndex + 1);
 
   return (
-    <div className="flex flex-col h-[600px] bg-[#0a0a0f] rounded-2xl border border-white/10 overflow-hidden shadow-2xl relative">
+    <div className="flex flex-col h-[500px] md:h-[600px] bg-[#0a0a0f] rounded-2xl border border-white/10 overflow-hidden shadow-2xl relative">
       {/* Background patterns */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,#3b82f6_0%,transparent_50%)]" />

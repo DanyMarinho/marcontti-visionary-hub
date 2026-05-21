@@ -7,3 +7,5 @@ export * from './GradientButton';
 export * from './CardTilt';
 export * from './SkeletonLoader';
 export * from './ToastNotification';
+export * from './DataPlaceholder';
+export * from './ErrorBoundary';

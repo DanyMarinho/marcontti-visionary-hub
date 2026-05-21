@@ -16,9 +16,9 @@ export const KanbanBoard = () => {
   const moveLead = useAppStore((s) => s.moveLead);
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 h-full min-h-[600px]">
+    <div className="flex gap-4 overflow-x-auto pb-4 h-full min-h-[600px] snap-x snap-mandatory scrollbar-none">
       {stages.map((stage) => (
-        <div key={stage.id} className="w-80 shrink-0 flex flex-col">
+        <div key={stage.id} className="w-[85vw] md:w-80 shrink-0 flex flex-col snap-center">
           <div className="flex justify-between items-center mb-4 px-2">
             <h3 className="font-bold text-white flex items-center gap-2">
               <span className={`w-3 h-3 rounded-full ${stage.color}`} />

@@ -24,21 +24,21 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
 
   return (
     <nav className={cn(
-      "w-72 border-r border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl p-6 flex flex-col h-full z-20", 
+      "w-20 lg:w-64 border-r border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl p-4 lg:p-6 flex flex-col h-full z-20 transition-all duration-300", 
       className
     )}>
-      <div className="flex items-center gap-3 mb-10 px-2">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+      <div className="flex items-center gap-3 mb-10 px-2 overflow-hidden">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
           <span className="text-white font-black text-xl italic">M</span>
         </div>
-        <div>
+        <div className="hidden lg:block whitespace-nowrap">
           <h1 className="text-white font-bold tracking-tight text-lg leading-none">Marcontti</h1>
           <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] mt-1 font-medium">Garage Premium</p>
         </div>
       </div>
 
       <div className="flex flex-col gap-2 flex-1">
-        <p className="text-white/20 text-[10px] uppercase tracking-widest mb-2 px-2 font-bold">Menu Principal</p>
+        <p className="text-white/20 text-[10px] uppercase tracking-widest mb-2 px-2 font-bold hidden lg:block">Menu Principal</p>
         {links.map((link) => {
           const isActive = location.pathname === link.path;
           return (
@@ -60,10 +60,10 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
                   )}>
                     <link.icon className="w-5 h-5" />
                   </div>
-                  <span className="font-medium tracking-tight">{link.name}</span>
+                  <span className="font-medium tracking-tight hidden lg:block">{link.name}</span>
                 </div>
                 {isActive && (
-                  <motion.div layoutId="active-pill">
+                  <motion.div layoutId="active-pill" className="hidden lg:block">
                     <ChevronRight className="w-4 h-4 text-blue-400" />
                   </motion.div>
                 )}
@@ -82,9 +82,9 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
       </div>
 
       <div className="mt-auto pt-6 border-t border-white/5">
-        <button className="flex items-center gap-4 p-4 w-full text-white/40 hover:text-white transition-colors rounded-2xl hover:bg-white/[0.02]">
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Sair da Conta</span>
+        <button className="flex items-center gap-4 p-4 lg:p-4 justify-center lg:justify-start w-full text-white/40 hover:text-white transition-colors rounded-2xl hover:bg-white/[0.02]">
+          <LogOut className="w-5 h-5 shrink-0" />
+          <span className="text-sm font-medium hidden lg:block">Sair da Conta</span>
         </button>
       </div>
     </nav>

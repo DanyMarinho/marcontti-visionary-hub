@@ -59,7 +59,7 @@ export const FlowDiagram: React.FC<FlowDiagramProps> = ({ flow, onNodeClick }) =
   }, [onNodeClick]);
 
   return (
-    <div className="w-full h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 relative">
+    <div className="w-full h-full min-h-[300px] md:min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-black/40 relative touch-none">
       <ReactFlow
         nodes={nodes}
         edges={edges}

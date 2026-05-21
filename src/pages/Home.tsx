@@ -14,11 +14,11 @@ const Home = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="space-y-24 pb-24 scroll-smooth"
+      className="space-y-responsive pb-24 scroll-smooth"
     >
       <HeroSection />
       
-      <div className="max-w-7xl mx-auto space-y-24">
+      <div className="max-w-7xl mx-auto space-y-responsive px-4 md:px-6">
         <MetricsSection />
         <InventoryGrid />
         <ServicesGrid />

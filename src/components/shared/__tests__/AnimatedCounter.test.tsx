@@ -23,8 +23,10 @@ describe('AnimatedCounter', () => {
     expect(element).toBeInTheDocument();
   });
 
-  test('displays prefix and suffix', () => {
-    render(<AnimatedCounter value={50} prefix="$" suffix="k" />);
-    expect(screen.getByText(/\$50k/)).toBeInTheDocument();
+  test('displays prefix and suffix', async () => {
+    render(<AnimatedCounter value={50} prefix="$" suffix="k" duration={10} />);
+    // Wait for the animation to finish
+    const element = await screen.findByText(/\$50k/);
+    expect(element).toBeInTheDocument();
   });
 });

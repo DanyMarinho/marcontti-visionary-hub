@@ -16,7 +16,7 @@ const CRM = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="p-6 space-y-8"
+      className="p-4 md:p-6 space-y-8 max-w-[100vw] overflow-x-hidden"
     >
       <div className="flex justify-between items-center">
         <div>

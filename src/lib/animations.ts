@@ -2,14 +2,20 @@ import { Variants } from 'framer-motion';
 
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: 'easeOut' }
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' }
+  }
 };
 
 export const fadeInScale: Variants = {
   initial: { opacity: 0, scale: 0.95 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5 }
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.5 }
+  }
 };
 
 export const staggerContainer: Variants = {
@@ -26,12 +32,22 @@ export const hoverGlow = {
 };
 
 export const typingDots: Variants = {
-  animate: { y: [0, -5, 0], transition: { duration: 1.4, repeat: Infinity } }
+  animate: { 
+    y: [0, -5, 0], 
+    transition: { duration: 1.4, repeat: Infinity } 
+  }
 };
 
 export const pageTransition = {
   initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
-  transition: { duration: 0.3 }
+  animate: { 
+    opacity: 1, 
+    x: 0,
+    transition: { duration: 0.3 }
+  },
+  exit: { 
+    opacity: 0, 
+    x: -20,
+    transition: { duration: 0.3 }
+  }
 };

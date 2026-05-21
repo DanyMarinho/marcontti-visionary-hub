@@ -4,8 +4,9 @@ import { createLeadSlice, LeadSlice } from './leadSlice';
 import { createMetricSlice, MetricSlice } from './metricSlice';
 import { createChatSlice, ChatSlice } from './chatSlice';
 import { createDemoSlice, DemoSlice } from './demoSlice';
+import { createAutomationSlice, AutomationSlice } from './automationSlice';
 
-export type AppStore = LeadSlice & MetricSlice & ChatSlice & DemoSlice;
+export type AppStore = LeadSlice & MetricSlice & ChatSlice & DemoSlice & AutomationSlice;
 
 export const useAppStore = create<AppStore>()(
   immer((...a) => ({
@@ -13,6 +14,7 @@ export const useAppStore = create<AppStore>()(
     ...createMetricSlice(...a),
     ...createChatSlice(...a),
     ...createDemoSlice(...a),
+    ...createAutomationSlice(...a),
   }))
 );
 

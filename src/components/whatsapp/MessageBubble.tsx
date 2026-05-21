@@ -3,7 +3,7 @@ import { ChatMessage } from '@/types/conversation';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Check, CheckCheck } from 'lucide-react';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -49,7 +49,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isLast })
         >
           {message.content}
           
-          {/* Bubble tail effect could be added here if needed, but modern UI often omits it */}
+          {isIA && (
+            <div className="flex justify-end mt-1">
+              {message.status === 'read' ? (
+                <CheckCheck className="w-3 h-3 text-blue-300" />
+              ) : message.status === 'delivered' ? (
+                <CheckCheck className="w-3 h-3 text-white/40" />
+              ) : (
+                <Check className="w-3 h-3 text-white/40" />
+              )}
+            </div>
+          )}
         </div>
         
         {isLast && isIA && (

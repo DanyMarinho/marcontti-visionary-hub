@@ -1,23 +1,36 @@
-import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { Bell, Search, User, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sidebar } from './Sidebar';
 
 export const Navbar: React.FC = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
-    <header className="h-20 border-b border-white/5 flex items-center justify-between px-4 md:px-8 bg-[#0a0a0f]/40 backdrop-blur-md z-20">
-      <div className="flex-1 max-w-md hidden sm:block">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-blue-400 transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Buscar leads, veículos..." 
-            className="w-full bg-white/5 border border-white/5 rounded-2xl py-2.5 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.07] transition-all"
-          />
+    <header className="h-20 border-b border-white/5 flex items-center justify-between px-4 md:px-8 bg-[#0a0a0f]/40 backdrop-blur-md z-30">
+      <div className="flex items-center gap-4">
+        {/* Hamburger Menu - Only Mobile */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="md:hidden w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="flex-1 max-w-md hidden sm:block">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-blue-400 transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Buscar leads, veículos..." 
+              className="w-full bg-white/5 border border-white/5 rounded-2xl py-2.5 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.07] transition-all"
+            />
+          </div>
         </div>
       </div>
       
       {/* Mobile search icon only */}
-      <div className="sm:hidden">
+      <div className="sm:hidden absolute left-1/2 -translate-x-1/2">
         <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40">
           <Search className="w-5 h-5" />
         </button>
@@ -45,6 +58,38 @@ export const Navbar: React.FC = () => {
           </div>
         </button>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed left-0 top-0 h-full w-[280px] z-50 md:hidden flex flex-col bg-[#0a0a0f]"
+            >
+              <div className="absolute right-4 top-5">
+                <button 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-white/5 text-white/40"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <Sidebar className="w-full h-full border-none !flex" />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

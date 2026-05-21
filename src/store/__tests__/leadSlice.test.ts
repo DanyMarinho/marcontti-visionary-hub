@@ -32,7 +32,6 @@ describe('leadSlice', () => {
       stage: 'novo_lead',
       priority: 'media',
       score: 50,
-      status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
       tasks: [],

@@ -45,7 +45,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
         duration: shouldAnimate ? duration : 0,
         delay,
         staggerChildren: stagger,
-        ease: [0.22, 1, 0.36, 1],
+        ease: "easeOut",
       }
     }
   };

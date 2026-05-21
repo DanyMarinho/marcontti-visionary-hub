@@ -3,6 +3,7 @@ import { GlassCard } from '@/components/shared/GlassCard';
 import { Calendar, FileImage, UserPlus, Clock, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const actions = [
   { id: 'visit', label: 'Agendar Visita', icon: Calendar, color: 'text-blue-400' },

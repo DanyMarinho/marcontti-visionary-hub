@@ -50,7 +50,7 @@ export const DemoControlPanel: React.FC = () => {
                     <GradientButton 
                       onClick={() => injectLeadGlobal()}
                       className="w-full text-xs py-2"
-                      variant="purple"
+                      size="sm"
                     >
                       <PlusCircle className="w-3.5 h-3.5 mr-2" />
                       Injetar Lead

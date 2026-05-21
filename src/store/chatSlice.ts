@@ -11,7 +11,9 @@ export interface ChatSlice {
   isTyping: boolean;
   currentMessageIndex: number;
   setActiveScenario: (scenario: ConversationScenario) => void;
+  setActiveConversation: (conversationId: string) => void;
   startNewConversation: (lead: Lead) => void;
+  sendMessage: (content: string, sender: 'ia' | 'lead') => void;
   advanceMessage: () => void;
   setTyping: (isTyping: boolean) => void;
   resetConversations: () => void;

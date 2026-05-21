@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppStore } from '@/store';
-import { useToastStore } from '../shared/ToastNotification';
+import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
+import { toast } from 'sonner';
 
 export const DemoKeyboardHandler: React.FC = () => {
-  const togglePanel = useAppStore((state) => state.togglePanel);
-  const injectLead = useAppStore((state) => state.injectLeadGlobal);
-  const addToast = useToastStore((state) => state.addToast);
+  const { injectLeadGlobal, resetAllData, togglePanel } = useAppStore();
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      // Toggle demo panel with 'D'
-      if (e.key.toLowerCase() === 'd') {
-        togglePanel();
-      }
-      // Inject lead with 'L'
-      if (e.key.toLowerCase() === 'l') {
-        injectLead();
-      }
-    };
+  useKeyboardShortcut('ctrl+shift+l', () => {
+    injectLeadGlobal();
+  });
 
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [togglePanel, injectLead, addToast]);
+  useKeyboardShortcut('ctrl+shift+n', () => {
+    toast.info('🔔 Novo lead chegando...', {
+      description: 'Simulando notificação manual de entrada.',
+    });
+  });
+
+  useKeyboardShortcut('ctrl+shift+r', () => {
+    resetAllData();
+    toast.success('Dados resetados com sucesso!');
+  });
+
+  useKeyboardShortcut('ctrl+shift+d', () => {
+    togglePanel();
+  });
 
   return null;
 };
-
-export default DemoKeyboardHandler;

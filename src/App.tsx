@@ -13,6 +13,7 @@ const CRM = lazy(() => import('@/pages/CRM'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const WhatsApp = lazy(() => import('@/pages/WhatsApp'));
 const Automations = lazy(() => import('@/pages/Automations'));
+const Inventory = lazy(() => import('@/pages/Inventory'));
 
 const AnimatedRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -85,6 +86,16 @@ const router = createBrowserRouter([
           <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
             <AnimatedRoute>
               <Automations />
+            </AnimatedRoute>
+          </Suspense>
+        ),
+      },
+      {
+        path: 'estoque',
+        element: (
+          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
+            <AnimatedRoute>
+              <Inventory />
             </AnimatedRoute>
           </Suspense>
         ),

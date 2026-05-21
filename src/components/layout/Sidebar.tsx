@@ -7,7 +7,8 @@ import {
   Bot, 
   Home as HomeIcon,
   ChevronRight,
-  LogOut
+  LogOut,
+  Bike
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -17,6 +18,7 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
   const links = [
     { name: 'Home', path: '/', icon: HomeIcon },
     { name: 'CRM', path: '/crm', icon: Users },
+    { name: 'Estoque', path: '/estoque', icon: Bike },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'WhatsApp', path: '/whatsapp', icon: MessageSquare },
     { name: 'Automações', path: '/automacoes', icon: Bot },

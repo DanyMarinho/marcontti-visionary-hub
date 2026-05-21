@@ -9,10 +9,14 @@ import { FloatingWhatsApp } from '../whatsapp/FloatingWhatsApp';
 import { ToastContainer } from '../shared/ToastNotification';
 import { DemoControlPanel } from '../demo/DemoControlPanel';
 import { DemoKeyboardHandler } from '../demo/DemoKeyboardHandler';
+import { useDemoMode } from '@/hooks/useDemoMode';
 
 export const RootLayout: React.FC = () => {
   const location = useLocation();
   const outlet = useOutlet();
+  
+  // Initialize Demo Mode auto-injection
+  useDemoMode();
 
   return (
     <div className="flex h-screen bg-[#0a0a0f] overflow-hidden relative">

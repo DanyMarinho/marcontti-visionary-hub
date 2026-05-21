@@ -68,7 +68,7 @@ export const createDemoSlice: StateCreator<
       state.metrics = mockMetrics;
       state.conversations = mockConversations;
       state.activeConversation = mockConversations[0] || null;
-      state.currentMessageIndex = 0;
+      state.currentMessageIndex = mockConversations[0]?.messages.length - 1 || 0;
     }),
 
   injectLead: () => {

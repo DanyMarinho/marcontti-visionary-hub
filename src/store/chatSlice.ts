@@ -29,16 +29,31 @@ export const createChatSlice: StateCreator<
   activeConversation: mockConversations[0] || null,
   activeScenario: 'qualificacao_lead',
   isTyping: false,
-  currentMessageIndex: 0,
+  currentMessageIndex: mockConversations[0]?.messages.length - 1 || 0,
 
   setActiveScenario: (scenario) =>
     set((state) => {
       state.activeScenario = scenario;
-      // In a real app, we might want to filter or change the active conversation based on scenario
+    }),
+
+  setActiveConversation: (conversationId) =>
+    set((state) => {
+      const conv = state.conversations.find(c => c.id === conversationId);
+      if (conv) {
+        state.activeConversation = conv;
+        state.currentMessageIndex = conv.messages.length - 1;
+      }
     }),
 
   startNewConversation: (lead) =>
     set((state) => {
+      const existingConv = state.conversations.find(c => c.leadId === lead.id);
+      if (existingConv) {
+        state.activeConversation = existingConv;
+        state.currentMessageIndex = existingConv.messages.length - 1;
+        return;
+      }
+
       const newConversation: Conversation = {
         id: `c-${Date.now()}`,
         leadId: lead.id,
@@ -63,6 +78,30 @@ export const createChatSlice: StateCreator<
       state.currentMessageIndex = 0;
     }),
 
+  sendMessage: (content, sender) =>
+    set((state) => {
+      if (!state.activeConversation) return;
+
+      const newMessage = {
+        id: `m-${Date.now()}`,
+        content,
+        sender,
+        timestamp: new Date(),
+        type: 'text',
+        status: 'sent'
+      };
+
+      // Update in active conversation
+      state.activeConversation.messages.push(newMessage as any);
+      state.currentMessageIndex = state.activeConversation.messages.length - 1;
+
+      // Also update in the conversations list
+      const convIndex = state.conversations.findIndex(c => c.id === state.activeConversation?.id);
+      if (convIndex !== -1) {
+        state.conversations[convIndex].messages.push(newMessage as any);
+      }
+    }),
+
   advanceMessage: () =>
     set((state) => {
       state.currentMessageIndex += 1;
@@ -77,6 +116,6 @@ export const createChatSlice: StateCreator<
     set((state) => {
       state.conversations = mockConversations;
       state.activeConversation = mockConversations[0] || null;
-      state.currentMessageIndex = 0;
+      state.currentMessageIndex = mockConversations[0]?.messages.length - 1 || 0;
     }),
 });

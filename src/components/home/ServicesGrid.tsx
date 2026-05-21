@@ -27,9 +27,8 @@ export const ServicesGrid = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service, index) => (
-          <ScrollReveal key={index} delay={index * 100} variantsName="fadeInScale">
-            <div className="relative group h-full">
-              <AnimatedBorder />
+          <ScrollReveal key={index} delay={index * 100}>
+            <AnimatedBorder className="h-full">
               <GlassCard className="p-8 flex flex-col h-full" hover glow="purple">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center mb-6 relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
                   <div className="absolute inset-0 bg-purple-500/10 animate-pulse" />
@@ -46,7 +45,7 @@ export const ServicesGrid = () => {
                   <span className="text-xl font-bold text-white">R$ {service.price.toLocaleString('pt-BR')}</span>
                 </div>
               </GlassCard>
-            </div>
+            </AnimatedBorder>
           </ScrollReveal>
         ))}
       </div>

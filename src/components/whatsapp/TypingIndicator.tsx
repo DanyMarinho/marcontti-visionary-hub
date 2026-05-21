@@ -7,9 +7,9 @@ export const TypingIndicator: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex justify-end w-full mb-4"
+      className="flex justify-start w-full mb-4"
     >
-      <div className="bg-gradient-to-br from-blue-600/50 to-indigo-700/50 backdrop-blur-sm border border-white/10 px-4 py-3 rounded-2xl rounded-tr-none flex items-center gap-1.5">
+      <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-1.5">
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}

@@ -1,10 +1,13 @@
 import { Metric, MonthlyData, RevenueDistribution, LeadsByOrigin } from '../types/metric';
 
 export const mockMetrics: Metric[] = [
-  { id: 'm1', label: 'Total Leads', value: 127, previousValue: 104, format: 'number', variation: 22, variationType: 'percentage', icon: 'users', trend: 'up' },
-  { id: 'm2', label: 'Qualificados', value: 48, previousValue: 40, format: 'number', variation: 18, variationType: 'percentage', icon: 'check-circle', trend: 'up' },
-  { id: 'm3', label: 'Conversão', value: 23.4, previousValue: 19.3, format: 'percentage', variation: 4.1, variationType: 'pp', icon: 'percent', trend: 'up' },
-  { id: 'm4', label: 'Vendas', value: 18, previousValue: 15, format: 'number', variation: 15, variationType: 'percentage', icon: 'shopping-bag', trend: 'up' },
+  { id: 'm1', label: 'Total Leads', value: 127, previousValue: 104, format: 'number', variation: 22, variationType: 'percentage', icon: 'Users', trend: 'up' },
+  { id: 'm2', label: 'Qualificados', value: 48, previousValue: 40, format: 'number', variation: 18, variationType: 'percentage', icon: 'UserCheck', trend: 'up' },
+  { id: 'm3', label: 'Conversão', value: 23.4, previousValue: 19.3, format: 'percentage', variation: 4.1, variationType: 'pp', icon: 'Target', trend: 'up' },
+  { id: 'm4', label: 'Vendas', value: 18, previousValue: 15, format: 'number', variation: 15, variationType: 'percentage', icon: 'ShoppingCart', trend: 'up' },
+  { id: 'm5', label: 'Ticket Médio', value: 65400, previousValue: 62100, format: 'currency', variation: 5.3, variationType: 'percentage', icon: 'TrendingUp', trend: 'up' },
+  { id: 'm6', label: 'Resposta WhatsApp', value: 12, previousValue: 15, format: 'number', variation: -20, variationType: 'percentage', icon: 'Sparkles', trend: 'up' }, // variation is negative but trend 'up' means improvement in speed
+  { id: 'm7', label: 'Total Estoque', value: 24, previousValue: 22, format: 'number', variation: 9, variationType: 'percentage', icon: 'Bike', trend: 'up' },
 ];
 
 export const monthlyData: MonthlyData[] = Array.from({ length: 12 }).map((_, i) => ({

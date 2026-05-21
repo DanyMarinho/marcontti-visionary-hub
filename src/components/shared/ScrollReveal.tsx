@@ -32,7 +32,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     right: { x: -30, y: 0 },
   };
 
-  const variants = {
+  const variants: any = {
     hidden: { 
       opacity: 0, 
       ...directions[direction] 

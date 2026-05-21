@@ -29,7 +29,7 @@ describe('leadSlice', () => {
       phone: '123',
       vehicleInterest: 'Test Car',
       source: 'Direct',
-      origin: 'whatsapp',
+      origin: 'WhatsApp',
       stage: 'novo_lead',
       priority: 'media',
       score: 50,

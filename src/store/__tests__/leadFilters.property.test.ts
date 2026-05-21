@@ -6,7 +6,7 @@ import { createLeadSlice } from '../leadSlice';
 import { Lead, PipelineStage, LeadOrigin, LeadPriority } from '../../types/lead';
 
 const stages: PipelineStage[] = ['novo_lead', 'contato_realizado', 'visita_agendada', 'proposta_enviada', 'venda_fechada'];
-const origins: LeadOrigin[] = ['WhatsApp', 'Instagram', 'Facebook', 'Google', 'Site', 'Showroom'];
+const origins: LeadOrigin[] = ['WhatsApp', 'Instagram', 'Google Ads', 'Meta Ads', 'Indicação', 'Site'];
 const priorities: LeadPriority[] = ['baixa', 'media', 'alta'];
 
 const leadArb = fc.record({

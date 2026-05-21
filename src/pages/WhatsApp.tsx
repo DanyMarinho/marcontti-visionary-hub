@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '@/store';
 import { ChatInterface } from '@/components/whatsapp/ChatInterface';
 import { QualificationPanel } from '@/components/whatsapp/QualificationPanel';
-import { ConversationTabs } from '@/components/whatsapp/ConversationTabs';
+import { ConversationSidebar } from '@/components/whatsapp/ConversationSidebar';
 import { QuickActions } from '@/components/whatsapp/QuickActions';
 import { pageTransition } from '@/lib/animations';
 
@@ -13,40 +13,32 @@ const WhatsAppPage: React.FC = () => {
     activeScenario, 
     currentMessageIndex, 
     advanceMessage, 
-    setTyping, 
-    resetConversations 
+    setTyping 
   } = useAppStore();
-
-  useEffect(() => {
-    // Reset conversation when the page loads
-    resetConversations();
-  }, []);
 
   useEffect(() => {
     if (!activeConversation) return;
 
-    // Only auto-play if there are more messages
+    // Only auto-play if there are more messages AND it's a mock conversation scenario
     if (currentMessageIndex < activeConversation.messages.length - 1) {
       const nextMessage = activeConversation.messages[currentMessageIndex + 1];
       
       const timer = setTimeout(() => {
-        // If next message is from IA, show typing indicator first
         if (nextMessage.sender === 'ia') {
           setTyping(true);
           
           setTimeout(() => {
             setTyping(false);
             advanceMessage();
-          }, 1500); // Typing duration
+          }, 1500);
         } else {
-          // If next is from lead, just wait and show
           advanceMessage();
         }
-      }, 2500); // Gap between messages
+      }, 2500);
 
       return () => clearTimeout(timer);
     }
-  }, [activeConversation, currentMessageIndex, activeScenario]);
+  }, [activeConversation?.id, currentMessageIndex, activeScenario]);
 
   return (
     <motion.div
@@ -54,36 +46,30 @@ const WhatsAppPage: React.FC = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="max-w-7xl mx-auto space-y-6"
+      className="max-w-7xl mx-auto"
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">WhatsApp IA Automotivo</h1>
-          <p className="text-secondary text-sm">Simulação de atendimento inteligente em tempo real</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white tracking-tight">WhatsApp IA Business</h1>
+        <p className="text-secondary text-sm mt-1">Gestão centralizada e automação de atendimentos</p>
       </div>
 
-      <ConversationTabs />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[700px]">
+        {/* Sidebar */}
+        <div className="lg:col-span-3 h-full overflow-hidden rounded-2xl border border-white/10">
+          <ConversationSidebar />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-        <div className="lg:col-span-7">
+        {/* Main Chat */}
+        <div className="lg:col-span-6 h-full">
           <ChatInterface />
         </div>
         
-        <div className="lg:col-span-3 space-y-6">
-          <div className="hidden lg:block space-y-6">
-            <QualificationPanel />
+        {/* Detail Panel */}
+        <div className="lg:col-span-3 space-y-6 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10">
+          <QualificationPanel />
+          <div className="space-y-3">
+            <h4 className="text-[10px] font-bold uppercase tracking-wider text-secondary px-1">Ações do CRM</h4>
             <QuickActions />
-          </div>
-          
-          <div className="lg:hidden">
-            <motion.div
-              initial={false}
-              className="space-y-6"
-            >
-              <QualificationPanel />
-              <QuickActions />
-            </motion.div>
           </div>
         </div>
       </div>

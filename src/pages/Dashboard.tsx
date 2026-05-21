@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Upload } from 'lucide-react';
 import { MetricCards } from '@/components/dashboard/MetricCards';
 import { LeadsLineChart } from '@/components/dashboard/LeadsLineChart';
 import { SalesBarChart } from '@/components/dashboard/SalesBarChart';
@@ -7,9 +8,12 @@ import { RevenueDonutChart } from '@/components/dashboard/RevenueDonutChart';
 import { OriginBarChart } from '@/components/dashboard/OriginBarChart';
 import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
 import { PeriodSelector } from '@/components/dashboard/PeriodSelector';
+import { AdImportModal } from '@/components/shared/AdImportModal';
 import { pageTransition } from '@/lib/animations';
 
 const Dashboard: React.FC = () => {
+  const [importOpen, setImportOpen] = useState(false);
+
   return (
     <motion.div
       variants={pageTransition}
@@ -23,8 +27,19 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard Empresarial</h1>
           <p className="text-secondary text-sm">Visão geral de performance e métricas de negócio</p>
         </div>
-        <PeriodSelector />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-all shadow-lg shadow-blue-500/20"
+          >
+            <Upload className="w-4 h-4" />
+            Importar Anúncios
+          </button>
+          <PeriodSelector />
+        </div>
       </div>
+
+      <AdImportModal isOpen={importOpen} onClose={() => setImportOpen(false)} />
 
       <MetricCards />
 

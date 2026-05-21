@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { AnimatedCounter } from '../AnimatedCounter';
 import { vi, expect, test, describe } from 'vitest';
 
@@ -7,26 +7,21 @@ vi.mock('@/hooks/useInView', () => ({
   useInView: () => true,
 }));
 
-// Mocking useCountUp to just return the value for simple testing if needed,
-// but we'll try to let the actual hook work if possible.
-// Actually, useCountUp might be complex to test with real timers.
-// Let's check what useCountUp does.
+// Mocking useCountUp to just return the value directly for tests
+vi.mock('@/hooks/useCountUp', () => ({
+  useCountUp: (value: number) => value.toString(),
+}));
 
 describe('AnimatedCounter', () => {
-  test('renders the value after animation', async () => {
-    render(<AnimatedCounter value={100} duration={100} />);
-    
-    // We wait for the animation to "complete"
-    // Since useCountUp uses requestAnimationFrame, we might need to wait or mock it.
-    // For this test, we'll just check if it renders *something* initially and then the final value.
-    const element = await screen.findByText(/100/);
-    expect(element).toBeInTheDocument();
+  test('renders the value', () => {
+    render(<AnimatedCounter value={100} />);
+    expect(screen.getByText('100')).toBeInTheDocument();
   });
 
-  test('displays prefix and suffix', async () => {
-    render(<AnimatedCounter value={50} prefix="$" suffix="k" duration={10} />);
-    // Wait for the animation to finish
-    const element = await screen.findByText(/\$50k/);
-    expect(element).toBeInTheDocument();
+  test('displays prefix and suffix', () => {
+    render(<AnimatedCounter value={50} prefix="$" suffix="k" />);
+    // Testing Library getByText might fail if separated in spans, but AnimatedCounter puts them in one span if not careful
+    // Actually, AnimatedCounter does: {prefix}{formattedValue}{suffix} inside one span.
+    expect(screen.getByText('$50k')).toBeInTheDocument();
   });
 });

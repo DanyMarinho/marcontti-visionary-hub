@@ -28,7 +28,6 @@ describe('leadSlice', () => {
       email: 'john@example.com',
       phone: '123',
       vehicleInterest: 'Test Car',
-      source: 'Direct',
       origin: 'WhatsApp',
       stage: 'novo_lead',
       priority: 'media',

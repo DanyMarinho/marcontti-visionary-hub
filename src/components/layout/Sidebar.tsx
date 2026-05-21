@@ -22,6 +22,7 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className }) => {
     { name: 'Automações', path: '/automacoes', icon: Bot },
   ];
 
+  return (
     <nav className={cn(
       "w-20 lg:w-64 border-r border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl p-4 lg:p-6 flex flex-col h-full z-20 transition-all duration-300", 
       className

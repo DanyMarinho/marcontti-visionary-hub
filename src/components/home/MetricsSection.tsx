@@ -1,11 +1,20 @@
 import React from 'react';
-import { Users, ShoppingCart, DollarSign, TrendingUp } from 'lucide-react';
+import { Users, ShoppingCart, DollarSign, TrendingUp, LucideIcon } from 'lucide-react';
 import { GlassCard } from '@/components/shared/GlassCard';
 import { AnimatedCounter } from '@/components/shared/AnimatedCounter';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { AnimatedBorder } from '@/components/shared/AnimatedBorder';
 
-const metrics = [
+interface Metric {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  suffix: string;
+  prefix?: string;
+  animatedBorder?: boolean;
+}
+
+const metrics: Metric[] = [
   { label: 'Leads/mês', value: 127, icon: Users, suffix: '', animatedBorder: true },
   { label: 'Vendas/mês', value: 18, icon: ShoppingCart, suffix: '', animatedBorder: true },
   { label: 'k Faturamento', value: 510, icon: DollarSign, prefix: 'R$', suffix: '' },

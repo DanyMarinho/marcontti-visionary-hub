@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./styles/globals.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -59,6 +60,32 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Marcontti Garage tokens exposed as Tailwind utilities */
+  --color-mg-bg: var(--mg-bg-primary);
+  --color-mg-card: var(--mg-bg-card);
+  --color-mg-text: var(--mg-text-primary);
+  --color-mg-text-secondary: var(--mg-text-secondary);
+  --color-mg-border: var(--mg-border-card);
+  --color-mg-blue: var(--mg-accent-blue);
+  --color-mg-purple: var(--mg-accent-purple);
+  --color-mg-cyan: var(--mg-accent-cyan);
+
+  --radius-mg-card: var(--mg-radius-card);
+  --radius-mg-input: var(--mg-radius-input);
+  --radius-mg-button: var(--mg-radius-button);
+
+  --blur-glass: var(--mg-blur-glass);
+
+  --shadow-mg-glow: var(--mg-shadow-glow);
+  --shadow-mg-glow-hover: var(--mg-shadow-glow-hover);
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --animate-shimmer: shimmer 1.5s linear infinite;
+  --animate-gradient-pulse: gradient-pulse 2s ease-in-out infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-typing-dot: typing-dot 1.4s ease-in-out infinite;
 }
 
 :root {

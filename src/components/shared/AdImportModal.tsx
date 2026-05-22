@@ -31,7 +31,7 @@ export const AdImportModal: React.FC<AdImportModalProps> = ({ isOpen, onClose })
   const [platformHint, setPlatformHint] = useState<AdPlatform>('auto');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { addLead, incrementMetric } = useAppStore();
+  const { addLead, incrementMetric, startNewConversation } = useAppStore();
 
   const handleFile = useCallback(async (file: File) => {
     if (!file.name.endsWith('.csv') && !file.name.endsWith('.txt')) {
@@ -66,7 +66,11 @@ export const AdImportModal: React.FC<AdImportModalProps> = ({ isOpen, onClose })
   const handleImport = () => {
     if (!result || result.leads.length === 0) return;
 
-    result.leads.forEach(lead => addLead(lead));
+    result.leads.forEach(lead => {
+      addLead(lead);
+      // Auto-start AI conversation for new leads
+      startNewConversation(lead);
+    });
     incrementMetric('m1', result.leads.length);
 
     onClose();

@@ -14,6 +14,7 @@ export interface ChatSlice {
   setActiveConversation: (conversationId: string) => void;
   startNewConversation: (lead: Lead) => void;
   sendMessage: (content: string, sender: 'ia' | 'lead') => void;
+  processIAResponse: (message: string) => void;
   advanceMessage: () => void;
   setTyping: (isTyping: boolean) => void;
   resetConversations: () => void;
@@ -100,7 +101,35 @@ export const createChatSlice: StateCreator<
       if (convIndex !== -1) {
         state.conversations[convIndex].messages.push(newMessage as any);
       }
+
+      // If lead sent the message, let the IA process it
+      if (sender === 'lead') {
+        setTimeout(() => {
+          get().processIAResponse(content);
+        }, 1000);
+      }
     }),
+
+  processIAResponse: (message) => {
+    const { activeConversation, sendMessage, updateLead, moveLead } = get();
+    if (!activeConversation) return;
+
+    const lowerMsg = message.toLowerCase();
+    const leadId = activeConversation.leadId;
+
+    // Logic to update status based on keywords
+    if (lowerMsg.includes('agendar') || lowerMsg.includes('visita') || lowerMsg.includes('quero ver')) {
+      moveLead(leadId, 'visita_agendada');
+      sendMessage('Perfeito! Vamos agendar sua visita para ver o veículo. Qual o melhor horário para você?', 'ia');
+    } else if (lowerMsg.includes('preço') || lowerMsg.includes('quanto custa') || lowerMsg.includes('valor')) {
+      updateLead(leadId, { score: Math.min((activeConversation.qualification === 'quente' ? 90 : 60), 100) });
+      sendMessage('O valor deste modelo é negociável dependendo da forma de pagamento. Gostaria de uma simulação de financiamento?', 'ia');
+    } else if (lowerMsg.includes('obrigado') || lowerMsg.includes('valeu')) {
+      sendMessage('De nada! Se precisar de mais alguma coisa, estou à disposição.', 'ia');
+    } else {
+      sendMessage('Entendi. Como posso te ajudar melhor com sua dúvida sobre este veículo?', 'ia');
+    }
+  },
 
   advanceMessage: () =>
     set((state) => {

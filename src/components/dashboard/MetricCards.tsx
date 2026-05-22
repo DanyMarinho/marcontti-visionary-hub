@@ -32,16 +32,29 @@ export const MetricCards: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.slice(0, 4).map((metric, index) => (
+        {metrics.filter(m => !m.id.startsWith('m_')).slice(0, 4).map((metric, index) => (
           <MetricCard key={metric.id} metric={metric} delay={index * 0.1} />
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {metrics.slice(4, 7).map((metric, index) => (
+      
+      {/* Novas métricas de estoque em tempo real */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {metrics.filter(m => m.id.startsWith('m_')).map((metric, index) => (
           <MetricCard 
             key={metric.id} 
             metric={metric} 
             delay={(index + 4) * 0.1} 
+            animatedBorder={metric.id === 'm_availability'}
+          />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {metrics.filter(m => !m.id.startsWith('m_')).slice(4, 7).map((metric, index) => (
+          <MetricCard 
+            key={metric.id} 
+            metric={metric} 
+            delay={(index + 7) * 0.1} 
             animatedBorder={metric.id === 'm5'} // ROI card has AnimatedBorder
           />
         ))}

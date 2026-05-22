@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAppStore } from '@/store';
 import { Upload } from 'lucide-react';
 import { MetricCards } from '@/components/dashboard/MetricCards';
 import { LeadsLineChart } from '@/components/dashboard/LeadsLineChart';
@@ -9,10 +10,17 @@ import { OriginBarChart } from '@/components/dashboard/OriginBarChart';
 import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
 import { PeriodSelector } from '@/components/dashboard/PeriodSelector';
 import { AdImportModal } from '@/components/shared/AdImportModal';
+import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
 import { pageTransition } from '@/lib/animations';
 
 const Dashboard: React.FC = () => {
   const [importOpen, setImportOpen] = useState(false);
+  const { leads, vehicles, recalculateFromLeads, recalculateFromVehicles } = useAppStore();
+
+  useEffect(() => {
+    recalculateFromLeads(leads);
+    recalculateFromVehicles(vehicles);
+  }, [leads, vehicles]);
 
   return (
     <motion.div
@@ -41,7 +49,14 @@ const Dashboard: React.FC = () => {
 
       <AdImportModal isOpen={importOpen} onClose={() => setImportOpen(false)} />
 
-      <MetricCards />
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div className="xl:col-span-3">
+          <MetricCards />
+        </div>
+        <div className="xl:col-span-1">
+          <AlertsPanel />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <LeadsLineChart />

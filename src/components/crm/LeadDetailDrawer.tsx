@@ -1,13 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/store';
-import { X, Phone, Mail, MapPin, Clock, FileText } from 'lucide-react';
+import { X, Phone, Mail, MapPin, Clock, FileText, MessageSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const LeadDetailDrawer = () => {
   const selectedLead = useAppStore((s) => s.selectedLead);
   const selectLead = useAppStore((s) => s.selectLead);
+  const startNewConversation = useAppStore((s) => s.startNewConversation);
+  const navigate = useNavigate();
 
   if (!selectedLead) return null;
+
+  const handleStartChat = () => {
+    startNewConversation(selectedLead);
+    selectLead(null);
+    navigate('/whatsapp');
+  };
 
   return (
     <>
@@ -29,7 +38,16 @@ export const LeadDetailDrawer = () => {
           <X size={24} />
         </button>
         
-        <h2 className="text-2xl font-bold text-white mb-6">{selectedLead.name}</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white">{selectedLead.name}</h2>
+          <button 
+            onClick={handleStartChat}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-bold hover:bg-green-500/30 transition-all"
+          >
+            <MessageSquare size={14} />
+            Conversar
+          </button>
+        </div>
         
         <div className="space-y-6">
           <div className="space-y-2">

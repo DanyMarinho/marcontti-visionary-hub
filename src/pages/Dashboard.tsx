@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAppStore } from '@/store';
 import { Upload } from 'lucide-react';
 import { MetricCards } from '@/components/dashboard/MetricCards';
 import { LeadsLineChart } from '@/components/dashboard/LeadsLineChart';
@@ -13,6 +14,12 @@ import { pageTransition } from '@/lib/animations';
 
 const Dashboard: React.FC = () => {
   const [importOpen, setImportOpen] = useState(false);
+  const { leads, vehicles, recalculateFromLeads, recalculateFromVehicles } = useAppStore();
+
+  useEffect(() => {
+    recalculateFromLeads(leads);
+    recalculateFromVehicles(vehicles);
+  }, [leads, vehicles]);
 
   return (
     <motion.div

@@ -31,7 +31,7 @@ const emptyLead = {
 };
 
 export const LeadFormModal: React.FC<LeadFormModalProps> = ({ isOpen, onClose, lead }) => {
-  const { addLead, updateLead } = useAppStore();
+  const { addLead, updateLead, startNewConversation } = useAppStore();
   const [form, setForm] = useState(emptyLead);
   const [saving, setSaving] = useState(false);
   const isEdit = Boolean(lead);
@@ -56,14 +56,17 @@ export const LeadFormModal: React.FC<LeadFormModalProps> = ({ isOpen, onClose, l
     if (isEdit && lead) {
       updateLead(lead.id, { ...form, updatedAt: new Date() });
     } else {
-      addLead({
+      const newLead = {
         id: crypto.randomUUID(),
         ...form,
         createdAt: new Date(),
         updatedAt: new Date(),
         tasks: [],
         interactions: [],
-      });
+      };
+      addLead(newLead);
+      // Auto-start AI conversation for new leads
+      startNewConversation(newLead);
     }
     setSaving(false);
     onClose();

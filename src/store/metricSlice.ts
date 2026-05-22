@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { Metric, MonthlyData, RevenueDistribution, LeadsByOrigin } from '../types/metric';
 import { mockMetrics, monthlyData, revenueDistribution, leadsByOrigin } from '../data/mockMetrics';
 import { Lead } from '../types/lead';
+import { Vehicle } from '../types/vehicle';
 import { AppStore } from './index';
 
 export interface MetricSlice {
@@ -13,6 +14,7 @@ export interface MetricSlice {
   incrementMetric: (id: string, amount: number) => void;
   setPeriod: (period: '7d' | '30d' | '90d' | '12m') => void;
   recalculateFromLeads: (leads: Lead[]) => void;
+  recalculateFromVehicles: (vehicles: Vehicle[]) => void;
 }
 
 export const createMetricSlice: StateCreator<
@@ -89,5 +91,70 @@ export const createMetricSlice: StateCreator<
         count,
         percentage: (count / totalLeads) * 100
       })).sort((a, b) => b.count - a.count);
+    }),
+
+  recalculateFromVehicles: (vehicles) =>
+    set((state) => {
+      const totalVehicles = vehicles.length;
+      const availableVehicles = vehicles.filter(v => v.status === 'available').length;
+      const soldVehicles = vehicles.filter(v => v.status === 'sold').length;
+      const totalInventoryValue = vehicles.reduce((sum, v) => sum + (v.price || 0), 0);
+      
+      const availabilityRate = totalVehicles > 0 ? (availableVehicles / totalVehicles) * 100 : 0;
+
+      // Ensure stock metrics exist or update them
+      let stockMetric = state.metrics.find(m => m.id === 'm_stock');
+      if (!stockMetric) {
+        stockMetric = {
+          id: 'm_stock',
+          label: 'Veículos em Estoque',
+          value: totalVehicles,
+          previousValue: totalVehicles,
+          variation: 0,
+          trend: 'up',
+          icon: 'Bike',
+          format: 'number'
+        };
+        state.metrics.push(stockMetric);
+      } else {
+        stockMetric.previousValue = stockMetric.value;
+        stockMetric.value = totalVehicles;
+      }
+
+      let availabilityMetric = state.metrics.find(m => m.id === 'm_availability');
+      if (!availabilityMetric) {
+        availabilityMetric = {
+          id: 'm_availability',
+          label: 'Disponibilidade',
+          value: availabilityRate,
+          previousValue: availabilityRate,
+          variation: 0,
+          trend: 'up',
+          icon: 'Target',
+          format: 'percentage'
+        };
+        state.metrics.push(availabilityMetric);
+      } else {
+        availabilityMetric.previousValue = availabilityMetric.value;
+        availabilityMetric.value = availabilityRate;
+      }
+
+      let inventoryValueMetric = state.metrics.find(m => m.id === 'm_inventory_value');
+      if (!inventoryValueMetric) {
+        inventoryValueMetric = {
+          id: 'm_inventory_value',
+          label: 'Valor Total Estoque',
+          value: totalInventoryValue,
+          previousValue: totalInventoryValue,
+          variation: 0,
+          trend: 'up',
+          icon: 'ShoppingCart',
+          format: 'currency'
+        };
+        state.metrics.push(inventoryValueMetric);
+      } else {
+        inventoryValueMetric.previousValue = inventoryValueMetric.value;
+        inventoryValueMetric.value = totalInventoryValue;
+      }
     }),
 });

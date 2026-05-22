@@ -111,6 +111,7 @@ export const createMetricSlice: StateCreator<
           value: totalVehicles,
           previousValue: totalVehicles,
           variation: 0,
+          variationType: 'percentage',
           trend: 'up',
           icon: 'Bike',
           format: 'number'
@@ -129,6 +130,7 @@ export const createMetricSlice: StateCreator<
           value: availabilityRate,
           previousValue: availabilityRate,
           variation: 0,
+          variationType: 'percentage',
           trend: 'up',
           icon: 'Target',
           format: 'percentage'
@@ -147,6 +149,7 @@ export const createMetricSlice: StateCreator<
           value: totalInventoryValue,
           previousValue: totalInventoryValue,
           variation: 0,
+          variationType: 'percentage',
           trend: 'up',
           icon: 'ShoppingCart',
           format: 'currency'

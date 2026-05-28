@@ -31,6 +31,7 @@ interface ClienteFormProps {
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const { createCliente, updateCliente } = useClientes();
   const [duplicateAlert, setDuplicateAlert] = React.useState(false);
+  const [duplicateClient, setDuplicateClient] = React.useState<any>(null);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formData, setFormData] = React.useState({
     full_name: '',
@@ -83,6 +84,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       const result: any = await createCliente.mutateAsync({ ...formData, confirmDuplicate });
       if (result?.isDuplicate) {
         setDuplicateAlert(true);
+        setDuplicateClient(result.existingClient);
       } else {
         onOpenChange(false);
       }
@@ -107,7 +109,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Telefone Duplicado</AlertTitle>
                   <AlertDescription className="space-y-3">
-                    <p>Este telefone já está cadastrado para outro cliente. Deseja continuar mesmo assim?</p>
+                    <p>O telefone <strong>{formData.phone}</strong> já está cadastrado para o cliente <strong>{duplicateClient?.full_name}</strong>. Deseja continuar mesmo assim?</p>
                     <div className="flex gap-2">
                       <Button 
                         type="button" 

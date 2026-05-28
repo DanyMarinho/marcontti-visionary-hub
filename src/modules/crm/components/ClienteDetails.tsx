@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ConversationView } from '@/modules/whatsapp/ConversationView';
 import { usePipeline } from '@/modules/pipeline/hooks/usePipeline';
 import { KanbanCard } from '@/modules/pipeline/components/KanbanCard';
+import { TagManager } from './TagManager';
 import { Label } from "@/components/ui/label";
 
 interface ClienteDetailsProps {
@@ -38,9 +39,9 @@ export function ClienteDetails({ open, onOpenChange, cliente }: ClienteDetailsPr
               <DialogTitle className="text-xl">{cliente.full_name}</DialogTitle>
               <div className="flex gap-2 mt-1">
                 <Badge variant="outline" className="text-[10px] uppercase">{cliente.status}</Badge>
-                {cliente.tags?.map((tag: string) => (
-                  <Badge key={tag} variant="secondary" className="text-[10px] bg-orange-100 text-orange-600 border-none">
-                    {tag}
+                {cliente.tags?.map((tag: any) => (
+                  <Badge key={tag.id} variant="secondary" className="text-[10px] bg-orange-100 text-orange-600 border-none">
+                    {tag.name}
                   </Badge>
                 ))}
               </div>
@@ -120,19 +121,7 @@ export function ClienteDetails({ open, onOpenChange, cliente }: ClienteDetailsPr
             </TabsContent>
 
             <TabsContent value="tags" className="m-0 p-6 h-full overflow-y-auto">
-               <div className="space-y-4">
-                 <Label>Tags do Cliente</Label>
-                 <div className="flex flex-wrap gap-2">
-                   {cliente.tags?.map((tag: string) => (
-                     <Badge key={tag} className="bg-orange-500/10 text-orange-500 border-orange-500/20 hover:bg-orange-500/20">
-                       {tag}
-                     </Badge>
-                   ))}
-                   {(!cliente.tags || cliente.tags.length === 0) && (
-                     <p className="text-sm text-muted-foreground">Nenhuma tag atribuída.</p>
-                   )}
-                 </div>
-               </div>
+               <TagManager clientId={cliente.id} currentTags={cliente.tags || []} />
             </TabsContent>
           </div>
         </Tabs>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useClientes } from './hooks/useClientes';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ClienteForm } from './ClienteForm';
 import { ClienteDetails } from './components/ClienteDetails';
 import { ExportButton } from '@/components/shared/ExportButton';
@@ -40,9 +47,17 @@ export default function ClienteList() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [filters, setFilters] = useState<any>({ status: 'all' });
 
   const debouncedSearch = useDebounce(search, 300);
-  const { clientes, totalCount, isLoading, deleteCliente } = useClientes(page, 10, debouncedSearch);
+  const { clientes, totalCount, isLoading, deleteCliente } = useClientes(
+    page, 
+    10, 
+    debouncedSearch, 
+    filters.status === 'all' ? {} : { status: filters.status }
+  );
+
+  const filteredClientes = useMemo(() => clientes, [clientes]);
 
   const columns = [
     {
@@ -102,7 +117,14 @@ export default function ClienteList() {
               <DropdownMenuItem onClick={() => { setSelectedCliente(cliente); setIsFormOpen(true); }}>
                 Editar Cliente
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={() => deleteCliente.mutate(cliente.id)}>
+              <DropdownMenuItem 
+                className="text-red-500 focus:text-red-500" 
+                onClick={() => {
+                  if (confirm(`Deseja realmente excluir o cliente ${cliente.full_name}?`)) {
+                    deleteCliente.mutate(cliente.id);
+                  }
+                }}
+              >
                 Excluir (Soft-delete)
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -130,16 +152,31 @@ export default function ClienteList() {
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Buscar por nome, telefone, e-mail..." 
-            className="pl-9"
+          <input 
+            placeholder="Buscar por nome, telefone, e-mail ou tag..." 
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            autoFocus
           />
         </div>
-        <Button variant="outline" className="gap-2">
-          <Filter className="h-4 w-4" /> Filtros Avançados
-        </Button>
+        <div className="flex gap-2">
+          <Select value={filters.status} onValueChange={(val: string) => { setFilters({ ...filters, status: val }); setPage(1); }}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Status</SelectItem>
+              <SelectItem value="active">Ativo</SelectItem>
+              <SelectItem value="lead">Lead</SelectItem>
+              <SelectItem value="lead_unidentified">Lead Não Ident.</SelectItem>
+              <SelectItem value="inactive">Inativo</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" className="gap-2">
+            <Filter className="h-4 w-4" /> Filtros
+          </Button>
+        </div>
       </div>
 
       <DataTable 

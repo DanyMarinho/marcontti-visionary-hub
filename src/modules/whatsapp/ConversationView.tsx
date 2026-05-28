@@ -69,6 +69,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
       }
       return conv;
     },
+
     enabled: !!activeTenantId && !!clientId,
   });
 

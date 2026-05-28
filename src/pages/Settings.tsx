@@ -15,8 +15,22 @@ import {
   Settings as SettingsIcon,
   Terminal,
   Save,
-  Loader2
+  Loader2,
+  Globe,
+  Upload,
+  Clock,
+  AlertTriangle,
+  Mail,
+  Search,
+  Filter
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
 

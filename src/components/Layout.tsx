@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { tenantService } from '../services/tenantService';
 import { cn } from '@/lib/utils';
+
 import { 
   LayoutDashboard, 
   Users, 
@@ -28,8 +30,24 @@ import {
 import { User, Role } from '../types';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, tenants, selectedTenantId, setSelectedTenant, setRole } = useAuthStore();
+  const { user, tenants, selectedTenantId, setSelectedTenant, setRole, setTenants } = useAuthStore();
   const [collapsed, setCollapsed] = React.useState(false);
+
+  React.useEffect(() => {
+    const loadTenants = async () => {
+      try {
+        const data = await tenantService.getAll();
+        setTenants(data);
+      } catch (error) {
+        console.error('Error loading tenants:', error);
+      }
+    };
+
+    if (tenants.length === 0) {
+      loadTenants();
+    }
+  }, [tenants.length, setTenants]);
+
   const navigate = useNavigate();
   const location = useLocation();
 

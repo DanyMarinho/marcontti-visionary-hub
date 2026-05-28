@@ -85,8 +85,9 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('tenant_id', activeTenantId)
+        .eq('tenant_id', activeTenantId!)
         .eq('is_active', true);
+
       if (error) throw error;
       return data;
     },

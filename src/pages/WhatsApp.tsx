@@ -58,7 +58,7 @@ export default function WhatsApp() {
                 <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg dark:bg-green-900/10 border border-green-200 dark:border-green-900/20">
                   <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
                     <CheckCircle2 size={18} />
-                    <span className="font-medium">Instância: marcontti_01</span>
+                    <span className="font-medium">Instância: infinda_01</span>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => setConnected(false)} className="text-red-500 hover:text-red-700">
                     <XCircle size={18} />

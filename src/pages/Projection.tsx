@@ -17,7 +17,7 @@ export default function Projection() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-[#1e3a5f] text-white border-none">
+        <Card className="bg-[#0a0a0a] text-white border-none">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-white/80">Receita Atual vs Meta</CardTitle>
           </CardHeader>
@@ -73,7 +73,7 @@ export default function Projection() {
               <YAxis />
               <Tooltip />
               <Area type="monotone" dataKey="projetado" stroke="#f97316" fillOpacity={1} fill="url(#colorProjetado)" strokeWidth={3} />
-              <Line type="monotone" dataKey="atual" stroke="#1e3a5f" strokeWidth={3} />
+              <Line type="monotone" dataKey="atual" stroke="#f97316" strokeWidth={3} />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>

@@ -1,4 +1,4 @@
-export const config = {
-  evolutionUrl: import.meta.env.VITE_EVOLUTION_URL || 'https://api.evolution.com',
-  evolutionKey: import.meta.env.VITE_EVOLUTION_KEY || '',
+export const API_CONFIG = {
+  EVOLUTION_URL: import.meta.env.VITE_EVOLUTION_URL || '',
+  EVOLUTION_KEY: import.meta.env.VITE_EVOLUTION_KEY || '',
 };

@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Store, Shield, MessageSquare, Bell, Palette } from 'lucide-react';
+import { Store, Shield, MessageSquare, Bell, Palette, Settings as SettingsIcon } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export default function Settings() {
@@ -14,7 +14,7 @@ export default function Settings() {
   if (isGlobal) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-        <Settings className="w-12 h-12 text-muted-foreground" />
+        <SettingsIcon className="w-12 h-12 text-muted-foreground" />
         <h2 className="text-xl font-semibold text-center">Selecione uma empresa específica para gerenciar suas configurações</h2>
         <p className="text-muted-foreground text-center max-w-md">As configurações de WhatsApp, IA e Dados da Empresa são individuais para cada cliente da plataforma.</p>
       </div>

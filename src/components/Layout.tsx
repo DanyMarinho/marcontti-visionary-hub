@@ -11,15 +11,23 @@ import {
   Store, 
   UserCircle, 
   Settings,
-  LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { User } from '../types';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuthStore();
+  const { user, login } = useAuthStore();
   const [collapsed, setCollapsed] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,17 +45,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(user?.role || ''));
 
+  const handleRoleChange = (role: string) => {
+    login(role as User['role']);
+  };
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar */}
       <aside 
         className={cn(
-          "bg-[#1e3a5f] text-white transition-all duration-300 flex flex-col",
+          "bg-[#0a0a0a] text-white transition-all duration-300 flex flex-col",
           collapsed ? "w-20" : "w-64"
         )}
       >
-        <div className="p-4 flex items-center justify-between">
-          {!collapsed && <h1 className="text-xl font-bold truncate">Marcontti Hub</h1>}
+        <div className="p-4 flex items-center justify-between border-b border-white/10">
+          {!collapsed && (
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold text-orange-500">MEC Hub</h1>
+              <span className="text-[10px] text-white/50 uppercase tracking-widest">Infinda Digital</span>
+            </div>
+          )}
           <Button 
             variant="ghost" 
             size="icon" 
@@ -58,7 +75,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 px-2">
+        {!collapsed && (
+          <div className="p-4 border-b border-white/10">
+            <label className="text-[10px] font-semibold text-white/40 uppercase mb-2 block">Perfil de Acesso</label>
+            <Select value={user?.role} onValueChange={handleRoleChange}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-white h-9">
+                <SelectValue placeholder="Selecionar perfil" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Administrador</SelectItem>
+                <SelectItem value="shop">Loja / Unidade</SelectItem>
+                <SelectItem value="vendor">Vendedor</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        <ScrollArea className="flex-1 px-2 py-4">
           <nav className="space-y-1">
             {filteredMenu.map((item) => {
               const isActive = location.pathname === item.path;
@@ -68,8 +101,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={item.path}
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start text-white/80 hover:text-white hover:bg-white/10",
-                    isActive && "bg-white/20 text-white font-medium",
+                    "w-full justify-start text-white/60 hover:text-white hover:bg-white/5",
+                    isActive && "bg-orange-500/10 text-orange-500 font-medium hover:bg-orange-500/20 hover:text-orange-500",
                     collapsed && "justify-center px-0"
                   )}
                   onClick={() => navigate(item.path)}
@@ -82,29 +115,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </nav>
         </ScrollArea>
 
-        <div className="p-4 border-t border-white/10">
-          <Button 
-            variant="ghost" 
-            className={cn(
-              "w-full justify-start text-white/80 hover:text-white hover:bg-white/10",
-              collapsed && "justify-center px-0"
-            )}
-            onClick={logout}
-          >
-            <LogOut className={cn("h-5 w-5", !collapsed && "mr-3")} />
-            {!collapsed && <span>Sair</span>}
-          </Button>
-        </div>
+        {collapsed && (
+          <div className="p-4 border-t border-white/10 flex justify-center">
+             <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white/60"
+              title="Trocar Perfil"
+              onClick={() => {
+                const roles: User['role'][] = ['admin', 'shop', 'vendor'];
+                const currentIndex = roles.indexOf(user?.role as User['role']);
+                const nextRole = roles[(currentIndex + 1) % roles.length];
+                handleRoleChange(nextRole);
+              }}
+            >
+              <ShieldCheck size={20} />
+            </Button>
+          </div>
+        )}
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-muted/30">
-        <header className="h-16 bg-card border-b flex items-center justify-between px-6 sticky top-0 z-10">
-          <h2 className="text-lg font-semibold">
-            {menuItems.find(i => i.path === location.pathname)?.label || 'Marcontti Hub'}
+      <main className="flex-1 overflow-auto bg-[#f8f9fa]">
+        <header className="h-16 bg-white border-b flex items-center justify-between px-6 sticky top-0 z-10">
+          <h2 className="text-lg font-semibold text-[#0a0a0a]">
+            {menuItems.find(i => i.path === location.pathname)?.label || 'MEC Hub'}
           </h2>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.name} ({user?.role})</span>
+            <div className="flex flex-col items-end">
+              <span className="text-sm font-medium text-[#0a0a0a]">{user?.name}</span>
+              <span className="text-[10px] text-muted-foreground uppercase bg-muted px-1.5 rounded">{user?.role}</span>
+            </div>
           </div>
         </header>
         <div className="p-6">

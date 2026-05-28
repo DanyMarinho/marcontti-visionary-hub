@@ -1,57 +1,45 @@
-import { supabase } from "@/integrations/supabase/client";
-import { Tenant, Niche } from "../types";
+import { Tenant } from "../types";
+import { useAuthStore } from "@/store/authStore";
 
 export const tenantService = {
   async getAll() {
-    const { data, error } = await supabase
-      .from('tenants')
-      .select('*')
-      .order('name');
-    
-    if (error) throw error;
-    return data as Tenant[];
+    // Returning mock data from store for demonstration
+    return useAuthStore.getState().tenants;
   },
 
   async getById(id: string) {
-    const { data, error } = await supabase
-      .from('tenants')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) throw error;
-    return data as Tenant;
+    const tenants = useAuthStore.getState().tenants;
+    return tenants.find(t => t.id === id) || null;
   },
 
   async create(tenant: Omit<Tenant, 'id' | 'created_at' | 'updated_at' | 'is_active'>) {
-    const { data, error } = await supabase
-      .from('tenants')
-      .insert([tenant])
-      .select()
-      .single();
+    const newTenant: Tenant = {
+      ...tenant,
+      id: Math.random().toString(36).substr(2, 9),
+      is_active: true,
+      status: 'ativo',
+      timezone: 'America/Sao_Paulo',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    } as Tenant;
     
-    if (error) throw error;
-    return data as Tenant;
+    const currentTenants = useAuthStore.getState().tenants;
+    useAuthStore.getState().setTenants([...currentTenants, newTenant]);
+    return newTenant;
   },
 
   async update(id: string, updates: Partial<Tenant>) {
-    const { data, error } = await supabase
-      .from('tenants')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data as Tenant;
+    const currentTenants = useAuthStore.getState().tenants;
+    const updatedTenants = currentTenants.map(t => 
+      t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
+    );
+    useAuthStore.getState().setTenants(updatedTenants);
+    return updatedTenants.find(t => t.id === id) as Tenant;
   },
 
   async delete(id: string) {
-    const { error } = await supabase
-      .from('tenants')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
+    const currentTenants = useAuthStore.getState().tenants;
+    const filteredTenants = currentTenants.filter(t => t.id !== id);
+    useAuthStore.getState().setTenants(filteredTenants);
   }
 };

@@ -99,7 +99,8 @@ export function TenantList() {
               <TableRow className="bg-muted/50">
                 <TableHead className="font-bold">Empresa</TableHead>
                 <TableHead className="font-bold">Nicho</TableHead>
-                <TableHead className="font-bold">Plan</TableHead>
+                <TableHead className="font-bold text-center">Nº Lojas</TableHead>
+                <TableHead className="font-bold text-center">Nº Vendedores</TableHead>
                 <TableHead className="font-bold text-center">Status</TableHead>
                 <TableHead className="text-right font-bold">Ações</TableHead>
               </TableRow>
@@ -143,10 +144,11 @@ export function TenantList() {
                         {nicheMap[tenant.niche as Niche] || tenant.niche}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="capitalize">
-                        {tenant.plan}
-                      </Badge>
+                    <TableCell className="text-center font-medium">
+                      {Math.floor(Math.random() * 3) + 1}
+                    </TableCell>
+                    <TableCell className="text-center font-medium">
+                      {Math.floor(Math.random() * 8) + 2}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className={cn(

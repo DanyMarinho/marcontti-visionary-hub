@@ -14,7 +14,7 @@ interface ConversionLineChartProps {
   height?: number;
 }
 
-export function ConversionLineChart({ data, height = 300 }: ConversionLineChartProps) {
+export const ConversionLineChart = React.memo(function ConversionLineChart({ data, height = 300 }: ConversionLineChartProps) {
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -46,7 +46,8 @@ export function ConversionLineChart({ data, height = 300 }: ConversionLineChartP
               borderRadius: '8px', 
               border: 'none', 
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              backgroundColor: '#fff'
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)'
             }}
             formatter={(value: number) => [`${value}%`, 'Conversão']}
           />

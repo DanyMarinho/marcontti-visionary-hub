@@ -131,6 +131,16 @@ export function LojaDashboard() {
             className="border-red-500/20 bg-red-500/5"
           />
         </div>
+        <div onClick={() => navigate('/whatsapp')} className="cursor-pointer">
+          <KpiCard
+            title="Conversas Pendentes"
+            value={whatsappStats?.waiting || 0}
+            description={`${whatsappStats?.attending || 0} em atendimento`}
+            icon={MessageSquare}
+            isLoading={isLoading}
+            className="border-blue-500/20 bg-blue-500/5"
+          />
+        </div>
         <KpiCard
           title="Cards Ativos"
           value={kpis?.cardsAtivos || 0}

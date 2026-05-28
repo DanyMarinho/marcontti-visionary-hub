@@ -10,7 +10,8 @@ import {
   GitMerge, 
   ArrowUpRight,
   AlertCircle,
-  Clock 
+  Clock,
+  MessageSquare
 } from 'lucide-react';
 import { SalesBarChart } from './components/SalesBarChart';
 import { PipelineFunnelChart } from './components/PipelineFunnelChart';
@@ -42,6 +43,28 @@ export function LojaDashboard() {
       }).length;
       
       return { total: critical + attention, critical, attention };
+    },
+    enabled: !!activeTenantId
+  });
+
+  const { data: whatsappStats } = useQuery({
+    queryKey: ['whatsapp-stats', activeTenantId],
+    queryFn: async () => {
+      if (!activeTenantId) return { waiting: 0, attending: 0, resolved: 0 };
+      const { data, error } = await supabase
+        .from('whatsapp_conversations')
+        .select('status')
+        .eq('tenant_id', activeTenantId);
+      
+      if (error) throw error;
+      
+      const stats = { waiting: 0, attending: 0, resolved: 0 };
+      (data || []).forEach(conv => {
+        if (conv.status === 'waiting') stats.waiting++;
+        else if (conv.status === 'attending') stats.attending++;
+        else if (conv.status === 'resolved') stats.resolved++;
+      });
+      return stats;
     },
     enabled: !!activeTenantId
   });
@@ -106,6 +129,16 @@ export function LojaDashboard() {
             icon={AlertCircle}
             isLoading={isLoading}
             className="border-red-500/20 bg-red-500/5"
+          />
+        </div>
+        <div onClick={() => navigate('/whatsapp')} className="cursor-pointer">
+          <KpiCard
+            title="Conversas Pendentes"
+            value={whatsappStats?.waiting || 0}
+            description={`${whatsappStats?.attending || 0} em atendimento`}
+            icon={MessageSquare}
+            isLoading={isLoading}
+            className="border-blue-500/20 bg-blue-500/5"
           />
         </div>
         <KpiCard

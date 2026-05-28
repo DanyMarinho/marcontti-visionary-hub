@@ -361,7 +361,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
                   {msg.processed_by_ai && (
                     <div className="flex items-center gap-1 mb-1">
                        <Badge variant="secondary" className="h-4 px-1.5 text-[8px] bg-orange-100/10 text-orange-500 border-orange-500/20 font-black uppercase">
-                        <Bot size={8} className="mr-0.5" /> {conversation?.ai_enabled ? 'Agente IA' : 'Atendimento Humano'}
+                        <Bot size={8} className="mr-0.5" /> {msg.direction === 'sent' ? 'Agente IA' : 'Atendimento Humano'}
                       </Badge>
                     </div>
                   )}

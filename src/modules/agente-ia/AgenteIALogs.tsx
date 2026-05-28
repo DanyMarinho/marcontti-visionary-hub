@@ -110,7 +110,10 @@ export function AgenteIALogs() {
           <p className="text-muted-foreground text-sm">Histórico de ações tomadas pelo Agente IA.</p>
         </div>
         <div className="flex gap-2">
-          <ExportButton data={data?.data || []} filename="logs_agente_ia" />
+          <ExportButton 
+            data={data?.data || []} 
+            filename="logs_agente_ia" 
+          />
         </div>
       </div>
 

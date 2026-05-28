@@ -22,6 +22,7 @@ import {
 import { ClienteForm } from './ClienteForm';
 import { ExportButton } from '@/components/shared/ExportButton';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 const statusMap: any = {
   active: { label: 'Ativo', color: 'bg-green-500/10 text-green-500 border-green-500/20' },

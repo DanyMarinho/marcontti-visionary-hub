@@ -1,14 +1,23 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Medal, Target, UserCircle } from 'lucide-react';
+import { Trophy, Medal, Target, UserCircle, Clock, MessageSquare, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
 
 const vendors = [
-  { id: '1', name: 'Carlos Oliveira', shop: 'Centro', sales: 12, amount: 'R$ 780.000', meta: '90%', rank: 1, avatar: 'CO' },
-  { id: '2', name: 'Ana Costa', shop: 'Centro', sales: 10, amount: 'R$ 650.000', meta: '110%', rank: 2, avatar: 'AC' },
-  { id: '3', name: 'Beatriz Santos', shop: 'Sul', sales: 9, amount: 'R$ 580.000', meta: '85%', rank: 3, avatar: 'BS' },
-  { id: '4', name: 'João Silva', shop: 'Sul', sales: 7, amount: 'R$ 450.000', meta: '70%', rank: 4, avatar: 'JS' },
+  { id: '1', name: 'Carlos Oliveira', shop: 'Centro', sales: 12, amount: 'R$ 780.000', meta: '90%', rank: 1, avatar: 'CO', avgResponse: 12, reactivations: 45, reactivationRate: '92%' },
+  { id: '2', name: 'Ana Costa', shop: 'Centro', sales: 10, amount: 'R$ 650.000', meta: '110%', rank: 2, avatar: 'AC', avgResponse: 25, reactivations: 38, reactivationRate: '88%' },
+  { id: '3', name: 'Beatriz Santos', shop: 'Sul', sales: 9, amount: 'R$ 580.000', meta: '85%', rank: 3, avatar: 'BS', avgResponse: 65, reactivations: 22, reactivationRate: '75%' },
+  { id: '4', name: 'João Silva', shop: 'Sul', sales: 7, amount: 'R$ 450.000', meta: '70%', rank: 4, avatar: 'JS', avgResponse: 42, reactivations: 15, reactivationRate: '60%' },
 ];
 
 export default function Vendors() {

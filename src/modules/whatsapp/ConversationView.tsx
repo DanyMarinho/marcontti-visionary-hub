@@ -21,7 +21,8 @@ import {
   CheckCheck,
   ChevronLeft,
   Share2,
-  CheckCircle2
+  CheckCircle2,
+  History
 } from 'lucide-react';
 import {
   Dialog,
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -82,12 +84,17 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   const { data: sellers = [] } = useQuery({
     queryKey: ['sellers', activeTenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('users')
         .select('*')
         .eq('tenant_id', activeTenantId!)
         .eq('is_active', true);
+      
+      if (user?.store_id) {
+        query = query.eq('store_id', user.store_id);
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -104,8 +111,9 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   });
 
   const updateConvMutation = useMutation({
-    mutationFn: async ({ updates, logMessage }: { updates: any, logMessage?: string }) => {
+    mutationFn: async ({ updates, logMessage, targetUserId }: { updates: any, logMessage?: string, targetUserId?: string }) => {
       const data = await whatsappService.updateConversation(conversation!.id, updates);
+      
       if (logMessage) {
         await supabase.from('reactivation_logs').insert([{
           tenant_id: activeTenantId!,
@@ -115,6 +123,19 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
           notes: logMessage
         }]);
       }
+
+      if (targetUserId) {
+        await supabase.from('notifications').insert([{
+          tenant_id: activeTenantId!,
+          user_id: targetUserId,
+          title: 'Conversa Transferida',
+          message: `${user?.full_name} transferiu a conversa de ${client?.full_name} para você.`,
+          type: 'transfer',
+          related_id: conversation?.id,
+          is_read: false
+        }]);
+      }
+      
       return data;
     },
     onSuccess: () => {
@@ -260,7 +281,8 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
                       const seller = sellers.find(s => s.id === transferUserId);
                       updateConvMutation.mutate({ 
                         updates: { assigned_to: transferUserId },
-                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`
+                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`,
+                        targetUserId: transferUserId
                       });
                       toast.success(`Conversa transferida para ${seller?.full_name}`);
                       setIsTransferModalOpen(false);
@@ -300,7 +322,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
           {logs.length > 0 && (
             <div className="space-y-2 mb-6">
               <div className="flex items-center gap-2 text-[#888888] px-2">
-                <HistoryIcon size={12} />
+                <History size={12} />
                 <span className="text-[10px] font-black uppercase tracking-widest">Histórico da Conversa</span>
               </div>
               {logs.map((log: any) => (

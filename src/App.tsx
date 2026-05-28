@@ -6,7 +6,9 @@ import CRM from './pages/CRM';
 import WhatsApp from './pages/WhatsApp';
 import Projection from './pages/Projection';
 import Vendors from './pages/Vendors';
+import Settings from './pages/Settings';
 import Layout from './components/Layout';
+
 
 
 
@@ -30,7 +32,7 @@ function App() {
                   <Route path="/projection" element={<Projection />} />
                   <Route path="/vendors" element={<Vendors />} />
                   <Route path="/shops" element={<div>Lojas</div>} />
-                  <Route path="/settings" element={<div>Configurações</div>} />
+                  <Route path="/settings" element={<Settings />} />
 
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>

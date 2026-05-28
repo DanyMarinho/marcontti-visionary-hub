@@ -25,7 +25,6 @@ export const mockCustomers: Client[] = [
     id: '3', 
     tenant_id: '2', 
     full_name: 'Pedro Oliveira', 
-    name: 'Pedro Oliveira', 
     phone: '11977777777', 
     email: 'pedro@email.com', 
     status: 'lead_unidentified', 

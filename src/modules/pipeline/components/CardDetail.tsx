@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useAuthStore } from '@/store/authStore';
 
 interface CardDetailProps {
   open: boolean;
@@ -20,6 +21,9 @@ interface CardDetailProps {
 }
 
 export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
+  const { user } = useAuthStore();
+  const canTransfer = user?.role === 'admin' || user?.role === 'loja';
+
   if (!card) return null;
 
   return (
@@ -37,9 +41,11 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
               </p>
             </div>
             <div className="flex gap-2">
-               <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f]">
-                 <UserPlus size={14} className="mr-1" /> Transferir
-               </Button>
+               {canTransfer && (
+                 <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f]">
+                   <UserPlus size={14} className="mr-1" /> Transferir
+                 </Button>
+               )}
                <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f] text-red-500 hover:text-red-600">
                  <Archive size={14} className="mr-1" /> Perda
                </Button>

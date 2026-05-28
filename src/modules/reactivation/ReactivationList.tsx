@@ -33,7 +33,7 @@ export function ReactivationList() {
       const { data, error } = await supabase
         .from('pipeline_cards')
         .select('*, client:clients(*), seller:users(*)')
-        .eq('tenant_id', activeTenantId)
+        .eq('tenant_id', activeTenantId!)
         .eq('is_archived', false)
         .neq('stage_key', 'pos_venda')
         .neq('stage_key', 'fechamento');

@@ -12,7 +12,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
 import { 
   Select, 
   SelectContent, 
@@ -64,7 +66,7 @@ export function ReactivationModal({ cardId, isOpen, onClose }: ReactivationModal
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('tenant_id', activeTenantId)
+        .eq('tenant_id', activeTenantId!)
         .eq('is_active', true);
       if (error) throw error;
       return data;

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, DollarSign, User } from 'lucide-react';
+import { User, Phone, MessageSquare, Clock, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
 
 interface KanbanCardProps {
   card: any;
@@ -15,59 +14,73 @@ interface KanbanCardProps {
 export function KanbanCard({ card, onClick }: KanbanCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: card.id,
-    data: card
+    data: card,
   });
 
   const style = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : 1
   } : undefined;
 
-  const isOverdue = card.expected_close_date && 
-    new Date(card.expected_close_date) < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
-      {...listeners}
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "mb-3 cursor-grab active:cursor-grabbing hover:border-orange-500/50 transition-all duration-200 group touch-none",
+        isDragging && "opacity-50 border-orange-500 ring-2 ring-orange-500/20"
+      )}
       onClick={() => onClick(card)}
-      className="cursor-grab active:cursor-grabbing mb-3"
+      {...attributes}
+      {...listeners}
+      aria-label={`Card de ${card.client?.full_name || 'Cliente'}, valor R$ ${card.estimated_value}`}
     >
-      <Card className={cn(
-        "bg-white dark:bg-[#1a1a1a] border-l-4 shadow-sm hover:shadow-md transition-all",
-        isOverdue ? "border-l-red-500" : "border-l-orange-500"
-      )}>
-        <CardContent className="p-3 space-y-2">
-          <h4 className="text-sm font-bold leading-tight line-clamp-2">{card.title}</h4>
-          
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold">
-              {card.client?.full_name?.substring(0, 2).toUpperCase()}
-            </div>
-            <span className="text-xs text-muted-foreground truncate">{card.client?.full_name}</span>
-          </div>
+      <CardContent className="p-3 space-y-3">
+        <div className="flex justify-between items-start">
+          <Badge variant="outline" className="text-[9px] uppercase font-bold py-0 h-4 bg-orange-500/5 text-orange-600 border-orange-500/20">
+            {card.id.substring(0, 8)}
+          </Badge>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Mais opções"
+          >
+            <MoreVertical size={14} />
+          </Button>
+        </div>
 
-          <div className="flex items-center justify-between mt-3 pt-2 border-t border-muted/50">
-            <div className="flex items-center text-orange-600 font-bold text-xs">
-              <DollarSign size={10} />
-              {Number(card.estimated_value).toLocaleString('pt-BR')}
-            </div>
-            
-            {card.expected_close_date && (
-              <div className={cn(
-                "flex items-center gap-1 text-[10px]",
-                isOverdue ? "text-red-500 font-bold" : "text-muted-foreground"
-              )}>
-                <Calendar size={10} />
-                {format(new Date(card.expected_close_date), 'dd/MM', { locale: ptBR })}
-              </div>
-            )}
+        <div className="space-y-1">
+          <h4 className="font-bold text-sm leading-tight line-clamp-2">{card.client?.full_name || 'Sem nome'}</h4>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Phone size={10} />
+            <span className="text-[10px] font-medium tracking-tighter uppercase">{card.client?.phone || '-'}</span>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+
+        <div className="pt-2 border-t border-dashed flex items-center justify-between">
+          <div className="flex items-center gap-1 text-orange-600 font-bold">
+            <span className="text-[10px]">R$</span>
+            <span className="text-xs">{Number(card.estimated_value).toLocaleString('pt-BR')}</span>
+          </div>
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <Clock size={10} />
+            <span className="text-[9px] font-medium">3d</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-1 pt-1">
+          <div className="flex -space-x-2">
+            <div className="w-5 h-5 rounded-full bg-orange-100 border-2 border-background flex items-center justify-center text-[8px] font-bold text-orange-600">
+              {card.vendedor?.full_name?.substring(0, 1) || 'V'}
+            </div>
+          </div>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-green-500" aria-label="Enviar mensagem WhatsApp">
+              <MessageSquare size={12} />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

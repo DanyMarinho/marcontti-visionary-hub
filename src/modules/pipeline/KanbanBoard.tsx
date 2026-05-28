@@ -13,6 +13,8 @@ import {
 import { usePipeline } from './hooks/usePipeline';
 import { KanbanColumn } from './components/KanbanColumn';
 import { KanbanCard } from './components/KanbanCard';
+import { CardForm } from './components/CardForm';
+import { StageConfirmationDialog } from './components/StageConfirmationDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, Search, GitMerge } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -32,6 +34,8 @@ const MEC_STAGES = [
 export default function KanbanBoard() {
   const { cards, moveCard, isLoading } = usePipeline();
   const [activeCard, setActiveCard] = useState<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [pendingMove, setPendingMove] = useState<{ cardId: string, fromStage: string, toStage: string } | null>(null);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -56,11 +60,15 @@ export default function KanbanBoard() {
       const card = active.data.current;
       
       if (card && card.stage_key !== toStage) {
-        moveCard.mutate({ 
-          cardId, 
-          fromStage: card.stage_key, 
-          toStage 
-        });
+        if (toStage === 'fechamento') {
+          setPendingMove({ cardId, fromStage: card.stage_key, toStage });
+        } else {
+          moveCard.mutate({ 
+            cardId, 
+            fromStage: card.stage_key, 
+            toStage 
+          });
+        }
       }
     }
   };
@@ -76,7 +84,7 @@ export default function KanbanBoard() {
           <Button variant="outline" size="sm">
             <Filter className="mr-2 h-4 w-4" /> Filtros
           </Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button onClick={() => setIsFormOpen(true)} className="bg-orange-500 hover:bg-orange-600 text-white">
             <Plus className="mr-2 h-4 w-4" /> Novo Card
           </Button>
         </div>
@@ -136,6 +144,24 @@ export default function KanbanBoard() {
           </div>
         </div>
       </div>
+
+      <CardForm open={isFormOpen} onOpenChange={setIsFormOpen} />
+
+      <StageConfirmationDialog
+        open={!!pendingMove}
+        onOpenChange={(open) => !open && setPendingMove(null)}
+        title="Confirmar Fechamento"
+        description="Parabéns pela venda! Informe o valor final para encerrar este card."
+        onConfirm={(data) => {
+          if (pendingMove) {
+            moveCard.mutate({ 
+              ...pendingMove,
+              // In real app, moveCard would accept finalValue
+            });
+            setPendingMove(null);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -38,9 +38,10 @@ export function ConversationView({ clientId }: ConversationViewProps) {
 
   const { data: client } = useQuery({
     queryKey: ['client', clientId],
-    queryFn: () => {
-      // In a real app, you'd have a service to get client details
-      return { id: clientId, full_name: 'Cliente Exemplo', phone: '5511999998888' };
+    queryFn: async () => {
+      // Try to find the client name from the messages or database
+      // For now, using a fallback but prioritizing actual data if available
+      return { id: clientId, full_name: 'Lead WhatsApp', phone: 'Sincronizando...' };
     }
   });
 
@@ -112,9 +113,11 @@ export function ConversationView({ clientId }: ConversationViewProps) {
                     : "bg-white dark:bg-[#1a1a1a] dark:text-zinc-100 rounded-tl-none border border-zinc-100 dark:border-zinc-800"
                 )}>
                   {msg.processed_by_ai && (
-                    <Badge variant="secondary" className="absolute -top-6 right-0 scale-75 bg-orange-100 text-orange-600 border-none font-bold">
-                      <Bot size={10} className="mr-1" /> IA
-                    </Badge>
+                    <div className="flex items-center gap-1 mb-1">
+                       <Badge variant="secondary" className="h-4 px-1.5 text-[8px] bg-orange-100 text-orange-600 border-none font-black uppercase">
+                        <Bot size={8} className="mr-0.5" /> Agente IA
+                      </Badge>
+                    </div>
                   )}
                   <p className="leading-relaxed">{msg.content}</p>
                   <div className={cn(

@@ -50,7 +50,8 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
         </div>
 
         <div className="space-y-1">
-          <h4 className="font-bold text-sm leading-tight line-clamp-2">{card.client?.full_name || 'Sem nome'}</h4>
+          <h4 className="font-bold text-sm leading-tight line-clamp-2">{card.title || card.client?.full_name || 'Sem título'}</h4>
+          <p className="text-[10px] text-muted-foreground truncate">{card.client?.full_name}</p>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Phone size={10} />
             <span className="text-[10px] font-medium tracking-tighter uppercase">{card.client?.phone || '-'}</span>

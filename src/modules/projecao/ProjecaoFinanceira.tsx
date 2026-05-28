@@ -2,8 +2,10 @@ import React from 'react';
 import { useProjecao } from './hooks/useProjecao';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { MetaComparativeChart } from './components/MetaComparativeChart';
+import { GoalForm } from './components/GoalForm';
 import { 
   TrendingDown, 
   TrendingUp, 
@@ -12,12 +14,14 @@ import {
   CheckCircle2,
   Zap,
   Quote,
-  Loader2
+  Loader2,
+  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ProjecaoFinanceira() {
   const { data, isLoading } = useProjecao();
+  const [isGoalFormOpen, setIsGoalFormOpen] = React.useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -52,19 +56,29 @@ export default function ProjecaoFinanceira() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Projeção Financeira</h1>
-          <p className="text-muted-foreground text-sm">Crescimento sem previsibilidade é sorte. Com o MEC, é sistema.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Projeção Financeira</h1>
+          <p className="text-muted-foreground text-sm font-medium">Crescimento sem previsibilidade é sorte. Com o MEC, é sistema.</p>
         </div>
         
-        <div className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold uppercase tracking-wider",
-          projectionStatus === 'on-track' && "bg-green-500/10 text-green-500 border-green-500/20",
-          projectionStatus === 'danger' && "bg-red-500/10 text-red-500 border-red-500/20",
-          projectionStatus === 'warning' && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-        )}>
-          {projectionStatus === 'on-track' && <><CheckCircle2 size={16} /> Meta em rota de atingimento</>}
-          {projectionStatus === 'danger' && <><AlertCircle size={16} /> Atenção: projeção abaixo da meta</>}
-          {projectionStatus === 'warning' && <><Zap size={16} /> Projeção próxima à meta</>}
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={() => setIsGoalFormOpen(true)}
+            variant="outline" 
+            className="border-orange-500/50 text-orange-500 hover:bg-orange-500/10 gap-2 h-10 px-4 font-bold"
+          >
+            <Target size={18} /> Gerenciar Metas
+          </Button>
+
+          <div className={cn(
+            "flex items-center gap-2 px-4 h-10 rounded-full border text-xs font-bold uppercase tracking-wider",
+            projectionStatus === 'on-track' && "bg-green-500/10 text-green-500 border-green-500/20",
+            projectionStatus === 'danger' && "bg-red-500/10 text-red-500 border-red-500/20",
+            projectionStatus === 'warning' && "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+          )}>
+            {projectionStatus === 'on-track' && <><CheckCircle2 size={16} /> Meta em rota de atingimento</>}
+            {projectionStatus === 'danger' && <><AlertCircle size={16} /> Atenção: projeção abaixo da meta</>}
+            {projectionStatus === 'warning' && <><Zap size={16} /> Projeção próxima à meta</>}
+          </div>
         </div>
       </div>
 
@@ -158,6 +172,11 @@ export default function ProjecaoFinanceira() {
           </Card>
         </div>
       </div>
+
+      <GoalForm 
+        open={isGoalFormOpen}
+        onOpenChange={setIsGoalFormOpen}
+      />
     </div>
   );
 }

@@ -31,7 +31,8 @@ export function FilterBar({ onFilter, isLoading }: FilterBarProps) {
     onFilter({
       startDate: format(startDate, 'yyyy-MM-dd'),
       endDate: format(endDate, 'yyyy-MM-dd'),
-      storeId: store === 'all' ? undefined : store
+      storeId: store === 'all' ? undefined : store,
+      period: period // Added for dashboard usage
     });
   };
 

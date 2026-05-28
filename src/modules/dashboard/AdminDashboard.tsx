@@ -74,7 +74,7 @@ export default function AdminDashboard() {
       
       <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <KpiCard key={i} isLoading title="" icon={Building2} value="" />)
         ) : (

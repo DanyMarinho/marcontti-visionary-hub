@@ -13,14 +13,16 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const isMonthly = period === 'month';
+      const isToday = period === 'today';
+      const isWeek = period === 'week';
       
       // Admin global data
       if (user?.role === 'admin' && isGlobal) {
         return {
           kpis: [
-            { title: 'Empresas Ativas', value: 12, trend: { value: 8, isPositive: true }, icon: 'Building2' },
-            { title: 'Vendas do Mês', value: 'R$ 145.800', trend: { value: 12.5, isPositive: true }, icon: 'DollarSign' },
-            { title: 'Cards no Pipeline', value: 342, trend: { value: 4, isPositive: true }, icon: 'GitMerge' },
+            { title: 'Empresas Ativas', value: isToday ? 8 : 12, trend: { value: 8, isPositive: true }, icon: 'Building2' },
+            { title: 'Vendas do Período', value: isToday ? 'R$ 4.200' : isWeek ? 'R$ 28.500' : 'R$ 145.800', trend: { value: 12.5, isPositive: true }, icon: 'DollarSign' },
+            { title: 'Cards no Pipeline', value: isToday ? 42 : 342, trend: { value: 4, isPositive: true }, icon: 'GitMerge' },
             { title: 'Conversão Global', value: '24.2%', trend: { value: 2.1, isPositive: true }, icon: 'TrendingUp' }
           ],
           salesHistory: [
@@ -51,10 +53,10 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
       if (user?.role === 'loja' || (user?.role === 'admin' && !isGlobal)) {
         return {
           kpis: [
-            { title: 'Vendas (Unidade)', value: 'R$ 45.000', trend: { value: 15, isPositive: true }, icon: 'DollarSign' },
-            { title: 'Meta do Mês', value: 'R$ 60.000', description: '75% atingido', icon: 'Target' },
-            { title: 'Clientes Ativos', value: 128, trend: { value: 5, isPositive: true }, icon: 'Users' },
-            { title: 'Ticket Médio', value: 'R$ 351', trend: { value: 3, isPositive: false }, icon: 'TrendingUp' }
+            { title: 'Vendas (Unidade)', value: isToday ? 'R$ 850' : 'R$ 45.000', trend: { value: 15, isPositive: true }, icon: 'DollarSign' },
+            { title: 'Meta do Período', value: isToday ? 'R$ 2.000' : 'R$ 60.000', description: isToday ? '42% atingido' : '75% atingido', icon: 'Target' },
+            { title: 'Atingimento', value: isToday ? '42.5%' : '75.0%', trend: { value: 5, isPositive: true }, icon: 'TrendingUp' },
+            { title: 'Clientes Ativos', value: 128, trend: { value: 5, isPositive: true }, icon: 'Users' }
           ],
           funnelData: [
             { stage: 'Prospecção', count: 120 },

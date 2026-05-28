@@ -33,7 +33,8 @@ export function PipelineFunnelChart({ data, height = 300 }: PipelineFunnelChartP
               borderRadius: '8px', 
               border: 'none', 
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              backgroundColor: '#fff'
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)'
             }}
           />
           <Funnel

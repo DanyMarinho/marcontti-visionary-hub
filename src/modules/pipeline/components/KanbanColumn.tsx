@@ -29,7 +29,7 @@ export function KanbanColumn({ stage, cards, color, onCardClick }: KanbanColumnP
         style={{ borderColor: color }}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider">{stage.label}</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.1em] text-[#888888]">{stage.label}</h3>
           <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">{cards.length}</Badge>
         </div>
         <div className="text-[10px] font-medium text-muted-foreground">

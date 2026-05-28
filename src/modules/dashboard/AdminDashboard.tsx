@@ -13,6 +13,7 @@ import {
   Quote,
   LayoutDashboard
 } from 'lucide-react';
+import { WhatsAppStatusAlert } from '@/modules/whatsapp/components/WhatsAppStatusAlert';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartSkeleton } from '@/components/shared/ChartSkeleton';
@@ -71,6 +72,8 @@ export default function AdminDashboard() {
           </p>
         </Card>
       </div>
+      
+      <WhatsAppStatusAlert />
       
       <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 

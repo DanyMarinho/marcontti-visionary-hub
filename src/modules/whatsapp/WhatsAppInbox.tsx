@@ -27,15 +27,20 @@ export function WhatsAppInbox() {
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
 
-  const filteredConversations = conversations.filter(conv => 
-    conv.client?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    conv.client?.phone?.includes(search)
-  );
+  const filteredConversations = conversations
+    .filter(conv => 
+      conv.client?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      conv.client?.phone?.includes(search)
+    )
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
-    <div className="flex h-[calc(100vh-140px)] border border-[#1f1f1f] rounded-lg overflow-hidden bg-[#0a0a0a]">
+    <div className="flex h-[calc(100vh-140px)] border border-[#1f1f1f] rounded-lg overflow-hidden bg-[#0a0a0a] relative">
       {/* Sidebar - Conversations List */}
-      <div className="w-full md:w-80 flex flex-col border-r border-[#1f1f1f]">
+      <div className={cn(
+        "w-full md:w-80 flex flex-col border-r border-[#1f1f1f] transition-all",
+        activeChat && "hidden md:flex"
+      )}>
         <div className="p-4 border-b border-[#1f1f1f] space-y-4">
           <h2 className="text-xl font-bold text-white">Conversas</h2>
           <div className="relative">
@@ -115,9 +120,12 @@ export function WhatsAppInbox() {
       </div>
 
       {/* Conversation Area */}
-      <div className="flex-1 hidden md:flex flex-col bg-[#0a0a0a]">
+      <div className={cn(
+        "flex-1 flex flex-col bg-[#0a0a0a]",
+        !activeChat && "hidden md:flex"
+      )}>
         {activeChat ? (
-          <ConversationView clientId={activeChat} />
+          <ConversationView clientId={activeChat} onBack={() => setActiveChat(null)} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-4">
             <div className="w-20 h-20 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center">

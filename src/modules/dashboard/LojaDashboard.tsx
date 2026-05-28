@@ -10,7 +10,8 @@ import {
   GitMerge, 
   ArrowUpRight,
   AlertCircle,
-  Clock 
+  Clock,
+  MessageSquare
 } from 'lucide-react';
 import { SalesBarChart } from './components/SalesBarChart';
 import { PipelineFunnelChart } from './components/PipelineFunnelChart';

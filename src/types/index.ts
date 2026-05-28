@@ -109,6 +109,48 @@ export interface WhatsAppInstance {
   updated_at: string;
 }
 
+
+export interface WhatsAppConversation {
+  id: string;
+  tenant_id: string;
+  client_id: string;
+  status: 'waiting' | 'attending' | 'resolved';
+  assigned_to?: string;
+  ai_enabled: boolean;
+  last_activity_at: string;
+  last_message_direction: 'sent' | 'received';
+  created_at: string;
+  updated_at: string;
+  client?: Client;
+  assigned_user?: User;
+}
+
+export interface Notification {
+  id: string;
+  tenant_id: string;
+  user_id?: string;
+  title: string;
+  message: string;
+  type: 'idle_card' | 'no_response' | 'transfer' | 'info';
+  related_id?: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface ReactivationLog {
+  id: string;
+  tenant_id: string;
+  client_id: string;
+  user_id?: string;
+  type: 'whatsapp' | 'follow_up' | 'transfer' | 'auto';
+  stage_at_time?: string;
+  result?: string;
+  notes?: string;
+  created_at: string;
+  client?: Client;
+  user?: User;
+}
+
 export interface WhatsAppMessage {
   id: string;
   tenant_id: string;

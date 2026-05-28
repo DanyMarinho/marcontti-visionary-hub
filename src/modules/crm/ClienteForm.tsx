@@ -82,14 +82,16 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <DialogHeader>
-            <DialogTitle>{cliente ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
-            <DialogDescription>
-              {cliente ? 'Atualize os dados cadastrais do cliente.' : 'Cadastre um novo lead ou cliente na sua base.'}
-            </DialogDescription>
-          </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] w-full h-[100dvh] sm:h-auto flex flex-col p-0">
+        <form onSubmit={(e) => handleSubmit(e)} className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto p-6">
+            <DialogHeader>
+              <DialogTitle>{cliente ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
+              <DialogDescription>
+                {cliente ? 'Atualize os dados cadastrais do cliente.' : 'Cadastre um novo lead ou cliente na sua base.'}
+              </DialogDescription>
+            </DialogHeader>
+            {/* Move content inside here */}
 
           <div className="grid gap-4 py-4">
             {duplicateAlert && (
@@ -193,7 +195,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="p-6 border-t bg-muted/20">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button 
               type="submit" 

@@ -96,7 +96,7 @@ export default function Tenants() {
                   <TableCell>
                     <Badge variant="secondary">{nicheMap[tenant.niche]}</Badge>
                   </TableCell>
-                  <TableCell className="text-sm">{tenant.ownerName}</TableCell>
+                  <TableCell className="text-sm">{tenant.owner_name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">{planMap[tenant.plan]}</Badge>
                   </TableCell>

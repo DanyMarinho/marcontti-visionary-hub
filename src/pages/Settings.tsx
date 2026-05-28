@@ -64,7 +64,7 @@ export default function Settings() {
                 </div>
                 <div className="space-y-2">
                   <Label>Responsável</Label>
-                  <Input defaultValue={currentTenant?.ownerName} />
+                  <Input defaultValue={currentTenant?.owner_name} />
                 </div>
                 <div className="space-y-2">
                   <Label>Email Comercial</Label>

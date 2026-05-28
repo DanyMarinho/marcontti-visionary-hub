@@ -12,6 +12,7 @@ import {
   RefreshCcw,
   Clock
 } from 'lucide-react';
+import { WhatsAppStatusAlert } from '@/modules/whatsapp/components/WhatsAppStatusAlert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartSkeleton } from '@/components/shared/ChartSkeleton';
 import { 
@@ -60,6 +61,8 @@ export function LojaDashboard() {
            </Badge>
         </div>
       </div>
+      
+      <WhatsAppStatusAlert />
       
       <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 

@@ -31,6 +31,20 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
   const [lossReason, setLossReason] = useState('');
   const canTransfer = user?.role === 'admin' || user?.role === 'loja';
 
+  const { data: reactivationLogs = [] } = useQuery({
+    queryKey: ['reactivation-logs', card?.client_id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reactivation_logs')
+        .select('*, user:users(full_name)')
+        .eq('client_id', card.client_id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!card?.client_id && open
+  });
+
   if (!card) return null;
 
   const handleArchiveLoss = () => {

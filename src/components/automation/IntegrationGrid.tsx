@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Instagram, Facebook, FileSpreadsheet, Code, ShieldCheck, Target, Search, Workflow } from 'lucide-react';
+import { MessageCircle, Instagram, Facebook, FileSpreadsheet, Code, ShieldCheck, Target, Search, Workflow, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/shared/GlassCard';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +18,7 @@ const integrations: Integration[] = [
   { id: '4', name: 'Google Sheets', status: 'disconnected', icon: FileSpreadsheet, description: 'Sincronização de planilhas' },
   { id: '5', name: 'Webhook', status: 'connected', icon: Code, description: 'Recebimento de dados externos' },
   { id: '8', name: 'n8n', status: 'ready', icon: Workflow, description: 'Automação de fluxos complexos' },
+  { id: '9', name: 'Evolution API', status: 'ready', icon: Zap, description: 'WhatsApp API multi-instância' },
   { id: '6', name: 'Meta Ads', status: 'ready', icon: Target, description: 'Gestor de anúncios' },
   { id: '7', name: 'Google Ads', status: 'ready', icon: Search, description: 'Google Search & Display' },
 ];

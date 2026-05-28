@@ -10,10 +10,12 @@ interface AuthState {
   setCurrentTenant: (tenant: Tenant | null) => void;
   setSelectedTenant: (tenantId: string) => void;
   setRole: (role: Role) => void;
+  setTenants: (tenants: Tenant[]) => void;
   login: () => void; // Keep for legacy
 }
 
-const mockTenants: Tenant[] = [
+const mockTenants: Tenant[] = []; // Start empty
+
   { 
     id: '1', 
     name: 'Marcontti', 

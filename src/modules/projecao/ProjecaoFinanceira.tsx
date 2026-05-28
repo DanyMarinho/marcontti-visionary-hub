@@ -1,4 +1,5 @@
 import React from 'react';
+import { format } from 'date-fns';
 import { useProjecao } from './hooks/useProjecao';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,13 +16,17 @@ import {
   Zap,
   Quote,
   Loader2,
-  Plus
+  Plus,
+  Table as TableIcon,
+  Trash2,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ProjecaoFinanceira() {
-  const { data, isLoading } = useProjecao();
+  const { data, isLoading, goals, deleteGoal } = useProjecao();
   const [isGoalFormOpen, setIsGoalFormOpen] = React.useState(false);
+  const [selectedGoal, setSelectedGoal] = React.useState<any>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -175,9 +180,89 @@ export default function ProjecaoFinanceira() {
         </div>
       </div>
 
+      <Card className="bg-[#0a0a0a] border-zinc-800">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <TableIcon size={16} className="text-orange-500" /> Metas Cadastradas
+            </CardTitle>
+            <CardDescription>Gestão de objetivos comerciais por período.</CardDescription>
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f]"
+            onClick={() => {
+              setSelectedGoal(null);
+              setIsGoalFormOpen(true);
+            }}
+          >
+            <Plus size={14} className="mr-1" /> Nova Meta
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border border-[#1f1f1f] overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-zinc-900/50 border-b border-[#1f1f1f]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-[10px] font-black uppercase text-[#888888] tracking-widest">Escopo</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-black uppercase text-[#888888] tracking-widest">Valor</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-black uppercase text-[#888888] tracking-widest">Período</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-black uppercase text-[#888888] tracking-widest">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#1f1f1f]">
+                {goals.map((goal: any) => (
+                  <tr key={goal.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3">
+                      <Badge variant="outline" className="bg-orange-500/5 text-orange-500 border-orange-500/20 text-[10px] uppercase">
+                        {goal.scope === 'tenant' ? 'Unidade' : goal.scope === 'store' ? 'Loja' : 'Vendedor'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 font-bold text-white">
+                      {formatCurrency(goal.target_value)}
+                    </td>
+                    <td className="px-4 py-3 text-[#888888] text-xs">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon size={12} />
+                        {format(new Date(goal.period_start), 'dd/MM/yy')} até {format(new Date(goal.period_end), 'dd/MM/yy')}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                          onClick={() => {
+                            if (confirm('Deseja excluir esta meta?')) {
+                              deleteGoal.mutate(goal.id);
+                            }
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {goals.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-[#888888] italic text-xs">
+                      Nenhuma meta cadastrada para este tenant.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
       <GoalForm 
         open={isGoalFormOpen}
         onOpenChange={setIsGoalFormOpen}
+        goal={selectedGoal}
       />
     </div>
   );

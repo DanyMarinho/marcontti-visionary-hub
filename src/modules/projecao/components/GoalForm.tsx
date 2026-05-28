@@ -64,8 +64,7 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
         .upsert([{
           ...formData,
           target_value: Number(formData.target_value),
-          tenant_id: activeTenantId,
-          updated_at: new Date().toISOString()
+          tenant_id: activeTenantId
         }]);
 
       if (error) throw error;

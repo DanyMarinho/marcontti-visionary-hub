@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { MetaComparativeChart } from './components/MetaComparativeChart';
+import { GoalForm } from './components/GoalForm';
 import { 
   TrendingDown, 
   TrendingUp, 
@@ -12,12 +13,14 @@ import {
   CheckCircle2,
   Zap,
   Quote,
-  Loader2
+  Loader2,
+  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ProjecaoFinanceira() {
   const { data, isLoading } = useProjecao();
+  const [isGoalFormOpen, setIsGoalFormOpen] = React.useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -158,6 +161,11 @@ export default function ProjecaoFinanceira() {
           </Card>
         </div>
       </div>
+
+      <GoalForm 
+        open={isGoalFormOpen}
+        onOpenChange={setIsGoalFormOpen}
+      />
     </div>
   );
 }

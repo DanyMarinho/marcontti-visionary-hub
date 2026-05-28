@@ -300,20 +300,62 @@ export default function Settings() {
           <TabsContent value="integrations">
             <Card className="bg-[#0a0a0a] border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-white">Conexões Externas</CardTitle>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Globe size={20} className="text-orange-500" /> Integrações Estratégicas
+                </CardTitle>
+                <CardDescription>Configure as chaves de API para automação e WhatsApp.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
-                   <div className="flex items-center gap-4">
+              <CardContent className="space-y-6">
+                <div className="space-y-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900/30">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+                    <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded bg-[#25D366]/10 flex items-center justify-center text-[#25D366]">
                         <MessageSquare size={20} />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-white">WhatsApp / Evolution API</h4>
-                        <p className="text-[10px] text-zinc-500 uppercase font-medium">Instância: {currentTenant?.name.toLowerCase().replace(/\s/g, '_')}_01</p>
+                        <h4 className="text-sm font-bold text-white">WhatsApp (Evolution API)</h4>
+                        <p className="text-[10px] text-zinc-500 uppercase font-medium">Instância Ativa</p>
                       </div>
-                   </div>
-                   <Badge className="bg-green-500/10 text-green-500 border-green-500/20">Conectado</Badge>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-8 border-[#25D366]/30 text-[#25D366] text-[10px] uppercase font-bold">Testar Conexão</Button>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-500 text-xs">URL da API</Label>
+                      <Input defaultValue="https://evolution.mecom.com" className="bg-zinc-900 border-zinc-800 h-9 text-xs" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-zinc-500 text-xs">Global API Key</Label>
+                      <Input type="password" value="MEC_SECRET_KEY_123" className="bg-zinc-900 border-zinc-800 h-9 text-xs" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900/30">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded bg-orange-500/10 flex items-center justify-center text-orange-500">
+                        <Zap size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Automação (n8n Webhook)</h4>
+                        <p className="text-[10px] text-zinc-500 uppercase font-medium">Motor de Processamento</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-8 border-orange-500/30 text-orange-500 text-[10px] uppercase font-bold">Testar Webhook</Button>
+                  </div>
+                  
+                  <div className="space-y-2 pt-2">
+                    <Label className="text-zinc-500 text-xs">Webhook URL</Label>
+                    <Input defaultValue="https://n8n.mecom.com/webhook/c3a2-4b1..." className="bg-zinc-900 border-zinc-800 h-9 text-xs" />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2 min-w-[120px]">
+                    <Save size={16} /> Salvar Integrações
+                  </Button>
                 </div>
               </CardContent>
             </Card>

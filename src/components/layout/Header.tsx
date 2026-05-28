@@ -6,13 +6,18 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/ThemeProvider';
 import { useWhatsAppInstance } from '@/modules/whatsapp/hooks/useWhatsAppInstance';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   LogOut, 
   Sun, 
   Moon, 
   User as UserIcon,
   ChevronDown,
-  Menu
+  Menu,
+  Bell,
+  MessageSquare,
+  AlertCircle
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -22,6 +27,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
+
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -32,6 +46,32 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { activeTenant, isGlobal } = useTenant();
   const { theme, setTheme } = useTheme();
   const { instance } = useWhatsAppInstance();
+  const navigate = useNavigate();
+
+  const { data: notifications = [], refetch } = useQuery({
+    queryKey: ['notifications', activeTenant?.id, user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('tenant_id', activeTenant?.id)
+        .eq('is_read', false)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeTenant?.id
+  });
+
+  const markAllAsRead = async () => {
+    await supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('tenant_id', activeTenant?.id)
+      .eq('is_read', false);
+    refetch();
+  };
+
 
   const getStatusColor = () => {
     if (!instance) return 'bg-zinc-800';
@@ -82,6 +122,53 @@ export function Header({ onMenuClick }: HeaderProps) {
           </div>
         )}
         
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="text-[#888888] hover:text-white h-9 w-9 relative">
+              <Bell size={18} />
+              {notifications.length > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#0d0d0d]">
+                  {notifications.length}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 bg-[#0d0d0d] border-[#1f1f1f] p-0 shadow-2xl" align="end">
+            <div className="p-4 border-b border-[#1f1f1f] flex items-center justify-between">
+              <h3 className="font-bold text-sm text-white">Notificações</h3>
+              <Button variant="ghost" className="text-[10px] h-6 px-2 text-orange-500" onClick={markAllAsRead}>
+                Marcar todas como lidas
+              </Button>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-[#888888] text-xs">Sem novas notificações</div>
+              ) : (
+                notifications.map((n: any) => (
+                  <div key={n.id} className="p-4 border-b border-[#1f1f1f]/50 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => {
+                    if (n.type === 'no_response') navigate('/whatsapp');
+                    else if (n.type === 'idle_card') navigate('/reactivation');
+                  }}>
+                    <div className="flex gap-3">
+                      <div className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                        n.type === 'no_response' ? "bg-red-500/10 text-red-500" : "bg-orange-500/10 text-orange-500"
+                      )}>
+                        {n.type === 'no_response' ? <MessageSquare size={14} /> : <AlertCircle size={14} />}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-white leading-tight">{n.title}</p>
+                        <p className="text-[11px] text-[#888888] leading-tight">{n.message}</p>
+                        <p className="text-[9px] text-[#555555]">{formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: ptBR })}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <Button 
           variant="ghost" 
           size="icon" 
@@ -89,8 +176,9 @@ export function Header({ onMenuClick }: HeaderProps) {
           className="text-[#888888] hover:text-white h-9 w-9"
           aria-label="Alternar tema"
         >
-          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          {theme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
         </Button>
+
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -281,7 +281,8 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
                       const seller = sellers.find(s => s.id === transferUserId);
                       updateConvMutation.mutate({ 
                         updates: { assigned_to: transferUserId },
-                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`
+                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`,
+                        targetUserId: transferUserId
                       });
                       toast.success(`Conversa transferida para ${seller?.full_name}`);
                       setIsTransferModalOpen(false);

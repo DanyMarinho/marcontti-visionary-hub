@@ -203,6 +203,7 @@ export function AgenteIAConfig() {
                         value={dayConfig.start} 
                         onChange={(e) => handleTimeChange(day.key, 'start', e.target.value)}
                         className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs text-white" 
+                        disabled={!dayConfig.enabled}
                       />
                       <span className="text-zinc-500">-</span>
                       <Input 
@@ -210,8 +211,12 @@ export function AgenteIAConfig() {
                         value={dayConfig.end} 
                         onChange={(e) => handleTimeChange(day.key, 'end', e.target.value)}
                         className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs text-white" 
+                        disabled={!dayConfig.enabled}
                       />
                     </div>
+                  )}
+                  {!dayConfig.enabled && (
+                    <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider">Inativo</span>
                   )}
                 </div>
               );

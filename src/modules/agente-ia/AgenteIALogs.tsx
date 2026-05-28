@@ -110,7 +110,17 @@ export function AgenteIALogs() {
           <p className="text-muted-foreground text-sm">Histórico de ações tomadas pelo Agente IA.</p>
         </div>
         <div className="flex gap-2">
-          <ExportButton data={data?.data || []} filename="logs_agente_ia" />
+          <ExportButton 
+            data={data?.data || []} 
+            filename="logs_agente_ia" 
+            columns={[
+              { header: 'Data/Hora', cell: (log: any) => format(new Date(log.created_at), 'dd/MM/yyyy HH:mm:ss') },
+              { header: 'Lead', cell: (log: any) => log.client?.full_name || 'Desconhecido' },
+              { header: 'Mensagem', accessorKey: 'received_message' },
+              { header: 'Ação', accessorKey: 'action_taken' },
+              { header: 'Status', accessorKey: 'status' }
+            ]}
+          />
         </div>
       </div>
 

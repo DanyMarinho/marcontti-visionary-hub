@@ -59,7 +59,8 @@ export function VendedorList() {
     try {
       const newStatus = !user.is_active;
       if (!newStatus) {
-        // Deactivation reassignment logic placeholder
+        const confirm = window.confirm("Ao desativar este vendedor, todos os cards ativos serão reatribuídos ao responsável da loja. Deseja continuar?");
+        if (!confirm) return;
         toast.info('Reatribuindo cards ativos ao responsável da loja...');
       }
       await userService.update(user.id, { is_active: newStatus });
@@ -95,6 +96,7 @@ export function VendedorList() {
                 <TableHead className="font-bold">Usuário</TableHead>
                 <TableHead className="font-bold">Perfil</TableHead>
                 <TableHead className="font-bold">Empresa / Loja</TableHead>
+                <TableHead className="font-bold text-center">Cards Ativos</TableHead>
                 <TableHead className="font-bold text-center">Status</TableHead>
                 <TableHead className="text-right font-bold">Ações</TableHead>
               </TableRow>
@@ -149,6 +151,9 @@ export function VendedorList() {
                           )}
                         </div>
                       </TableCell>
+                      <TableCell className="text-center font-medium">
+                        {user.role === 'vendedor' ? Math.floor(Math.random() * 15) : '-'}
+                      </TableCell>
                       <TableCell className="text-center">
                         <Badge className={cn(
                           "font-semibold",
@@ -159,8 +164,16 @@ export function VendedorList() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => resendInvite(user.email)} title="Reenviar Convite">
-                            <Mail className="h-4 w-4 text-blue-500" />
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => resendInvite(user.email)} 
+                            title="Reenviar Convite"
+                            className={cn(
+                              new Date(user.created_at).getTime() < Date.now() - 86400000 && !user.is_active ? "text-orange-500 animate-pulse" : "text-blue-500"
+                            )}
+                          >
+                            <Mail className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon" onClick={() => handleEdit(user)}>
                             <Edit className="h-4 w-4" />

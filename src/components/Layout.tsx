@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { User, Role } from '../types';
 
-export default function Layout({ children }: { children: React.AmericanNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, tenants, selectedTenantId, setSelectedTenant, setRole } = useAuthStore();
   const [collapsed, setCollapsed] = React.useState(false);
   const navigate = useNavigate();

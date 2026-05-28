@@ -1,22 +1,35 @@
 export type Role = 'admin' | 'shop' | 'vendor';
 
+export interface Tenant {
+  id: string;
+  name: string;
+  niche: 'comercio' | 'mecanica' | 'clinica' | 'imobiliaria' | 'restaurante' | 'educacao' | 'servicos' | 'outro';
+  logo?: string;
+  color: string;
+  ownerName: string;
+  plan: 'basico' | 'pro' | 'premium';
+  status: 'ativo' | 'inativo';
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   role: Role;
-  shopId?: string;
+  tenantId: string;
   avatar?: string;
 }
 
 export interface Shop {
   id: string;
+  tenantId: string;
   name: string;
   location: string;
 }
 
 export interface Customer {
   id: string;
+  tenantId: string;
   name: string;
   phone: string;
   email: string;
@@ -30,6 +43,7 @@ export interface Customer {
 
 export interface Sale {
   id: string;
+  tenantId: string;
   customerId: string;
   vendorId: string;
   shopId: string;

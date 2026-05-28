@@ -8,6 +8,7 @@ import Projection from './pages/Projection';
 import Vendors from './pages/Vendors';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
+import Tenants from './pages/Tenants';
 
 
 
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/metrics" element={<Dashboard />} />
                 <Route path="/projection" element={<Projection />} />
                 <Route path="/vendors" element={<Vendors />} />
+                <Route path="/tenants" element={<Tenants />} />
                 <Route path="/shops" element={<div>Lojas</div>} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/" />} />

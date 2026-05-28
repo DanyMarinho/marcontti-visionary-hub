@@ -13,7 +13,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Building2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -27,7 +28,7 @@ import {
 import { User } from '../types';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, login } = useAuthStore();
+  const { user, login, tenants, selectedTenantId, setSelectedTenant } = useAuthStore();
   const [collapsed, setCollapsed] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: 'Dashboard', icon: LayoutDashboard, path: '/', roles: ['admin', 'shop', 'vendor'] },
     { label: 'CRM', icon: Users, path: '/crm', roles: ['admin', 'shop', 'vendor'], labelAlt: { vendor: 'Meus Clientes' } },
     { label: 'WhatsApp', icon: MessageSquare, path: '/whatsapp', roles: ['admin', 'shop', 'vendor'] },
+    { label: 'Empresas', icon: Building2, path: '/tenants', roles: ['admin'] },
     { label: 'Vendedores', icon: UserCircle, path: '/vendors', roles: ['admin', 'shop'] },
     { label: 'Lojas', icon: Store, path: '/shops', roles: ['admin'] },
     { label: 'Métricas', icon: BarChart3, path: '/metrics', roles: ['admin', 'shop'], labelAlt: { vendor: 'Minhas Metas' } },
@@ -135,16 +137,41 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 overflow-auto bg-[#f8f9fa]">
         <header className="h-16 bg-white border-b flex items-center justify-between px-6 sticky top-0 z-10">
-          <h2 className="text-lg font-semibold text-[#0a0a0a]">
-            {menuItems.find(i => i.path === location.pathname)?.label || 'MEC Hub'}
-          </h2>
+          <div className="flex items-center gap-6">
+            <h2 className="text-lg font-semibold text-[#0a0a0a]">
+              {menuItems.find(i => i.path === location.pathname)?.label || 'MEC Hub'}
+            </h2>
+            
+            {user?.role === 'admin' && (
+              <div className="flex items-center gap-2 border-l pl-6 h-8">
+                <span className="text-xs font-medium text-muted-foreground uppercase">Empresa:</span>
+                <Select value={selectedTenantId} onValueChange={setSelectedTenant}>
+                  <SelectTrigger className="w-[180px] h-9 border-none bg-transparent hover:bg-muted font-semibold">
+                    <SelectValue placeholder="Todas as Empresas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as Empresas</SelectItem>
+                    {tenants.map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} />
+                          {t.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end">
               <span className="text-sm font-medium text-[#0a0a0a]">{user?.name}</span>
-              <span className="text-[10px] text-muted-foreground uppercase bg-muted px-1.5 rounded">{user?.role}</span>
+              <span className="text-[10px] text-muted-foreground uppercase bg-muted px-1.5 rounded">
+                {user?.role} {user?.tenantId !== 'system' && `• ${tenants.find(t => t.id === user?.tenantId)?.name}`}
+              </span>
             </div>
           </div>
         </header>

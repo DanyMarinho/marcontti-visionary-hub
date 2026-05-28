@@ -20,7 +20,7 @@ export function KanbanColumn({ stage, cards, color, onCardClick }: KanbanColumnP
   const totalValue = cards.reduce((acc, card) => acc + Number(card.estimated_value), 0);
 
   return (
-    <div className="flex flex-col w-72 flex-shrink-0 bg-muted/20 rounded-lg border border-transparent transition-colors duration-200">
+    <div className="flex flex-col w-[280px] md:w-72 flex-shrink-0 bg-muted/20 rounded-lg border border-transparent transition-colors duration-200">
       <div 
         className={cn(
           "p-3 border-b-2 flex flex-col gap-1",

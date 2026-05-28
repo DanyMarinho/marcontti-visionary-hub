@@ -37,7 +37,8 @@ export default function KanbanBoard() {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
+    useSensor(KeyboardSensor)
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -80,35 +81,60 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <ScrollArea className="flex-1 w-full pb-4">
-        <div className="flex gap-4 min-h-full pb-4">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            {MEC_STAGES.map((stage) => (
-              <KanbanColumn
-                key={stage.key}
-                stage={stage}
-                color={stage.color}
-                cards={cards.filter(c => c.stage_key === stage.key)}
-                onCardClick={(card) => console.log('Click card', card)}
-              />
-            ))}
-            
-            <DragOverlay>
-              {activeCard ? (
-                <div className="w-72">
-                  <KanbanCard card={activeCard} onClick={() => {}} />
+      <div className="flex-1 w-full overflow-hidden">
+        <div className="kanban-scroll-area h-full">
+          <div className="flex gap-3 md:gap-4 min-h-full min-w-max pb-4">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              {isLoading ? (
+                MEC_STAGES.map((stage) => (
+                  <div key={stage.key} className="flex flex-col w-[280px] md:w-72 flex-shrink-0 space-y-3">
+                    <div className="h-10 w-full bg-muted animate-pulse rounded-lg" />
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-32 w-full bg-muted animate-pulse rounded-lg" />
+                    ))}
+                  </div>
+                ))
+              ) : cards.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center bg-card rounded-xl border border-dashed min-h-[400px]">
+                  <EmptyState 
+                    icon={GitMerge}
+                    title="Nenhuma oportunidade no pipeline"
+                    description="Crie o primeiro card para começar a gerenciar suas vendas através do Método MEC."
+                    action={
+                      <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                        <Plus className="mr-2 h-4 w-4" /> Criar Primeiro Card
+                      </Button>
+                    }
+                  />
                 </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+              ) : (
+                MEC_STAGES.map((stage) => (
+                  <KanbanColumn
+                    key={stage.key}
+                    stage={stage}
+                    color={stage.color}
+                    cards={cards.filter(c => c.stage_key === stage.key)}
+                    onCardClick={(card) => console.log('Click card', card)}
+                  />
+                ))
+              )}
+              
+              <DragOverlay>
+                {activeCard ? (
+                  <div className="w-64 md:w-72">
+                    <KanbanCard card={activeCard} onClick={() => {}} />
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </div>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
     </div>
   );
 }

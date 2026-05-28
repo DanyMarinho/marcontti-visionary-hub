@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   Mail,
   Search,
-  Filter
+  Filter,
+  Zap
 } from 'lucide-react';
 import {
   Select,

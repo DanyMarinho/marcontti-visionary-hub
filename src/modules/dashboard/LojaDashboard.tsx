@@ -2,6 +2,7 @@ import React from 'react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { SalesBarChart } from './components/SalesBarChart';
 import { PipelineFunnelChart } from './components/PipelineFunnelChart';
+import { FilterBar } from '@/modules/metricas/components/FilterBar';
 import { useDashboardKpis } from './hooks/useDashboardKpis';
 import { 
   Users, 
@@ -25,7 +26,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 export function LojaDashboard() {
-  const { data, isLoading, error, refetch } = useDashboardKpis();
+  const [filters, setFilters] = React.useState({ period: 'month' });
+  const { data, isLoading, error, refetch } = useDashboardKpis(filters.period as any);
 
   const iconMap: any = {
     Users,
@@ -58,6 +60,8 @@ export function LojaDashboard() {
            </Badge>
         </div>
       </div>
+      
+      <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {isLoading ? (

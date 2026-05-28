@@ -2,6 +2,7 @@ import React from 'react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { SalesBarChart } from './components/SalesBarChart';
 import { ConversionLineChart } from './components/ConversionLineChart';
+import { FilterBar } from '@/modules/metricas/components/FilterBar';
 import { useDashboardKpis } from './hooks/useDashboardKpis';
 import { 
   Building2, 
@@ -34,7 +35,8 @@ const QUOTES = [
 ];
 
 export default function AdminDashboard() {
-  const { data, isLoading, error, refetch } = useDashboardKpis();
+  const [filters, setFilters] = React.useState({ period: 'month' });
+  const { data, isLoading, error, refetch } = useDashboardKpis(filters.period as any);
   const [quote] = React.useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
   const iconMap: any = {
@@ -69,6 +71,8 @@ export default function AdminDashboard() {
           </p>
         </Card>
       </div>
+      
+      <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {isLoading ? (

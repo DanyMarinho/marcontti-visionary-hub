@@ -13,6 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Plus, Building2, ExternalLink, MoreVertical, Loader2, Edit, Power, PowerOff } from 'lucide-react';
 import { tenantService } from '@/services/tenantService';
 import { Tenant, Niche } from '@/types';
+import { useNavigate } from 'react-router-dom';
+import { useTenant } from '@/hooks/useTenant';
+import { useAuthStore } from '@/store/authStore';
+
 import { cn } from '@/lib/utils';
 import { TenantForm } from './TenantForm';
 import { toast } from 'sonner';
@@ -29,6 +33,10 @@ export function TenantList() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | undefined>();
+  const navigate = useNavigate();
+  const { setActiveTenant } = useTenant();
+  const { setSelectedTenant: setStoreSelectedTenant } = useAuthStore();
+
 
   const nicheMap: Record<Niche, string> = {
     mecanica: 'Mecânica',
@@ -79,7 +87,15 @@ export function TenantList() {
     }
   };
 
+  const handleViewDashboard = (tenant: Tenant) => {
+    setActiveTenant(tenant.id);
+    setStoreSelectedTenant(tenant.id);
+    navigate('/');
+    toast.success(`Visualizando dashboard de ${tenant.name}`);
+  };
+
   return (
+
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
@@ -179,9 +195,13 @@ export function TenantList() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem 
+                              className="cursor-pointer"
+                              onClick={() => handleViewDashboard(tenant)}
+                            >
                               <ExternalLink className="mr-2 h-4 w-4" /> Ver Dashboard
                             </DropdownMenuItem>
+
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

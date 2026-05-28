@@ -1,32 +1,29 @@
-import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { tenantService } from '../services/tenantService';
-import { Tenant } from '../types';
+import { useAuthStore } from '../store/authStore';
 
 export function useTenant() {
   const queryClient = useQueryClient();
-  const [activeTenantId, setActiveTenantId] = useState<string | null>(() => {
-    return localStorage.getItem('activeTenantId');
-  });
+  const { selectedTenantId, setSelectedTenant } = useAuthStore();
 
   const { data: activeTenant, isLoading } = useQuery({
-    queryKey: ['tenant', activeTenantId],
-    queryFn: () => (activeTenantId && activeTenantId !== 'all' ? tenantService.getById(activeTenantId) : null),
-    enabled: !!activeTenantId && activeTenantId !== 'all',
+    queryKey: ['tenant', selectedTenantId],
+    queryFn: () => (selectedTenantId && selectedTenantId !== 'all' ? tenantService.getById(selectedTenantId) : null),
+    enabled: !!selectedTenantId && selectedTenantId !== 'all',
   });
 
   const setActiveTenant = (id: string) => {
+    setSelectedTenant(id);
     localStorage.setItem('activeTenantId', id);
-    setActiveTenantId(id);
     // Invalidate all queries to refresh data for the new tenant
     queryClient.invalidateQueries();
   };
 
   return {
-    activeTenantId,
+    activeTenantId: selectedTenantId,
     activeTenant,
     setActiveTenant,
     isLoading,
-    isGlobal: activeTenantId === 'all'
+    isGlobal: selectedTenantId === 'all' || !selectedTenantId
   };
 }

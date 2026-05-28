@@ -22,6 +22,7 @@ interface StageConfirmationDialogProps {
 
 export function StageConfirmationDialog({ open, onOpenChange, onConfirm, title, description }: StageConfirmationDialogProps) {
   const [value, setValue] = useState('');
+  const [closingDate, setClosingDate] = useState(new Date().toISOString().split('T')[0]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -43,13 +44,22 @@ export function StageConfirmationDialog({ open, onOpenChange, onConfirm, title, 
               autoFocus
             />
           </div>
+          <div className="grid gap-2">
+            <Label htmlFor="closing_date">Data de Fechamento</Label>
+            <Input 
+              id="closing_date" 
+              type="date"
+              value={closingDate}
+              onChange={(e) => setClosingDate(e.target.value)}
+            />
+          </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button 
             className="bg-green-600 hover:bg-green-700 text-white"
-            onClick={() => onConfirm({ value: Number(value) })}
+            onClick={() => onConfirm({ value: Number(value), date: closingDate })}
           >
             Confirmar Fechamento
           </Button>

@@ -21,7 +21,7 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
-  const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date();
+  const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
   return (
     <Card

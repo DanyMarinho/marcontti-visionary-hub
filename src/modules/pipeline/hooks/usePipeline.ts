@@ -36,6 +36,7 @@ export function usePipeline(filters = {}) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pipeline-cards', activeTenantId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-kpis'] });
+      queryClient.invalidateQueries({ queryKey: ['projecao-financeira'] });
     }
   });
 

@@ -18,6 +18,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Loader2, Search } from 'lucide-react';
+import { toast } from 'sonner';
 import { usePipeline } from '../hooks/usePipeline';
 import { useClientes } from '@/modules/crm/hooks/useClientes';
 import { useTenant } from '@/hooks/useTenant';
@@ -73,7 +74,11 @@ export function CardForm({ open, onOpenChange, card }: CardFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.client_id || !formData.title) return;
+    if (!formData.client_id) {
+      toast.error("Selecione ou cadastre um cliente para continuar");
+      return;
+    }
+    if (!formData.title) return;
     
     createCard.mutate(formData);
     onOpenChange(false);

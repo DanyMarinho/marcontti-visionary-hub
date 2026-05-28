@@ -51,10 +51,11 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { data: notifications = [], refetch } = useQuery({
     queryKey: ['notifications', activeTenant?.id, user?.id],
     queryFn: async () => {
+      if (!activeTenant?.id) return [];
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('tenant_id', activeTenant?.id)
+        .eq('tenant_id', activeTenant.id)
         .eq('is_read', false)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -64,13 +65,15 @@ export function Header({ onMenuClick }: HeaderProps) {
   });
 
   const markAllAsRead = async () => {
+    if (!activeTenant?.id) return;
     await supabase
       .from('notifications')
       .update({ is_read: true })
-      .eq('tenant_id', activeTenant?.id)
+      .eq('tenant_id', activeTenant.id)
       .eq('is_read', false);
     refetch();
   };
+
 
 
   const getStatusColor = () => {

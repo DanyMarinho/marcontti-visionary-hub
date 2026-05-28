@@ -63,9 +63,16 @@ export function WhatsAppInbox() {
               ))}
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-              <MessageSquare className="h-10 w-12 opacity-20 mb-2" />
-              <p className="text-sm">Nenhuma conversa encontrada</p>
+            <div className="flex-1 flex items-center justify-center p-8 text-center text-muted-foreground">
+              <div className="space-y-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
+                  <MessageSquare className="h-8 w-8 opacity-20" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Nenhuma conversa ativa</h3>
+                  <p className="text-xs">Conecte o WhatsApp para começar a receber mensagens.</p>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="divide-y divide-zinc-100 dark:divide-zinc-900">

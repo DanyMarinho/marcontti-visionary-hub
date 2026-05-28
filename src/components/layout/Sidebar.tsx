@@ -6,19 +6,18 @@ import {
   LayoutDashboard, 
   Users, 
   MessageSquare, 
-  BarChart3, 
   TrendingUp, 
   Store, 
   UserCircle, 
   Settings,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
   Building2,
   GitMerge,
   Bot,
   PieChart,
-  Users2
+  Users2,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -32,9 +31,16 @@ interface MenuItem {
   labelAlt?: Partial<Record<Role, string>>;
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  collapsed?: boolean;
+  open?: boolean;
+  onToggle?: () => void;
+  isMobile?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: SidebarProps) {
   const { user, setRole } = useAuthStore();
-  const [collapsed, setCollapsed] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,32 +61,44 @@ export function Sidebar() {
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(user?.role || 'vendedor'));
 
-  const handleRoleChange = (role: Role) => {
-    setRole(role);
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    if (isMobile) onClose?.();
   };
 
+  const sidebarClasses = cn(
+    "bg-[#0a0a0a] text-white transition-all duration-300 flex flex-col z-50 h-screen fixed lg:sticky top-0 shadow-2xl lg:shadow-none",
+    collapsed ? "w-20" : "w-64",
+    isMobile ? (open ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
+  );
+
   return (
-    <aside 
-      className={cn(
-        "bg-[#0a0a0a] text-white transition-all duration-300 flex flex-col z-40 h-screen sticky top-0",
-        collapsed ? "w-20" : "w-64"
-      )}
-    >
+    <aside className={sidebarClasses}>
       <div className="p-4 flex items-center justify-between border-b border-white/10 h-16">
-        {!collapsed && (
+        {(!collapsed || isMobile) && (
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-orange-500">MEC Hub</h1>
-            <span className="text-[10px] text-white/50 uppercase tracking-widest">Infinda Digital</span>
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <span className="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center">M</span>
+              <span className="text-orange-500">MEC Hub</span>
+            </h1>
           </div>
         )}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:bg-white/10"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </Button>
+        
+        {isMobile ? (
+          <Button variant="ghost" size="icon" className="text-white lg:hidden" onClick={onClose}>
+            <X size={20} />
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:bg-white/10 hidden lg:flex"
+            onClick={onToggle}
+            aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+          >
+            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="flex-1 px-3 py-4">
@@ -93,15 +111,16 @@ export function Sidebar() {
                 key={item.path}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start text-white/60 hover:text-white hover:bg-white/5 px-3 h-11",
+                  "w-full justify-start text-white/60 hover:text-white hover:bg-white/5 px-3 h-11 transition-all",
                   isActive && "bg-orange-500 text-white font-medium hover:bg-orange-600 hover:text-white",
-                  collapsed && "justify-center px-0"
+                  collapsed && !isMobile && "justify-center px-0"
                 )}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleNavigate(item.path)}
+                aria-label={label}
               >
-                <item.icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} />
-                {!collapsed && <span className="truncate">{label}</span>}
-                {!collapsed && isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white" />}
+                <item.icon className={cn("h-5 w-5 flex-shrink-0", (!collapsed || isMobile) && "mr-3")} />
+                {(!collapsed || isMobile) && <span className="truncate">{label}</span>}
+                {(!collapsed || isMobile) && isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
               </Button>
             );
           })}
@@ -109,8 +128,8 @@ export function Sidebar() {
       </ScrollArea>
 
       <div className="p-4 border-t border-white/10">
-        <div className={cn("flex flex-col gap-2", collapsed ? "items-center" : "")}>
-          {!collapsed && (
+        <div className={cn("flex flex-col gap-2", collapsed && !isMobile ? "items-center" : "")}>
+          {(!collapsed || isMobile) && (
             <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Troca Rápida de Perfil</span>
           )}
           <div className="flex flex-wrap gap-1">
@@ -118,16 +137,17 @@ export function Sidebar() {
               <Button
                 key={r}
                 variant="ghost"
-                size={collapsed ? "icon" : "sm"}
+                size={(collapsed && !isMobile) ? "icon" : "sm"}
                 className={cn(
                   "h-8 text-[10px] uppercase font-bold",
                   user?.role === r ? "bg-white/20 text-white" : "text-white/40 hover:text-white hover:bg-white/10",
-                  !collapsed && "px-2"
+                  (!collapsed || isMobile) && "px-2"
                 )}
-                onClick={() => handleRoleChange(r)}
+                onClick={() => setRole(r)}
                 title={r.toUpperCase()}
+                aria-label={`Trocar para perfil ${r}`}
               >
-                {collapsed ? r.substring(0, 1).toUpperCase() : r}
+                {(collapsed && !isMobile) ? r.substring(0, 1).toUpperCase() : r}
               </Button>
             ))}
           </div>

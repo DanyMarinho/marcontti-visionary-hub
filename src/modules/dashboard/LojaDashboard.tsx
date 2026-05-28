@@ -12,6 +12,7 @@ import {
   Clock
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ChartSkeleton } from '@/components/shared/ChartSkeleton';
 import { 
   Table, 
   TableBody, 
@@ -58,7 +59,7 @@ export function LojaDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <KpiCard key={i} isLoading title="" icon={Users} value="" />)
         ) : (
@@ -83,9 +84,7 @@ export function LojaDashboard() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="h-[300px] flex items-center justify-center">
-                <RefreshCcw className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <SalesBarChart data={data?.salesHistory || []} />
             )}
@@ -99,9 +98,7 @@ export function LojaDashboard() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="h-[300px] flex items-center justify-center">
-                <RefreshCcw className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <PipelineFunnelChart data={data?.funnelData || []} />
             )}

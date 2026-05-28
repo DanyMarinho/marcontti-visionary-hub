@@ -9,9 +9,12 @@ import {
   GitMerge, 
   TrendingUp, 
   RefreshCcw,
-  Quote
+  Quote,
+  LayoutDashboard
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ChartSkeleton } from '@/components/shared/ChartSkeleton';
 import { 
   Table, 
   TableBody, 
@@ -67,7 +70,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <KpiCard key={i} isLoading title="" icon={Building2} value="" />)
         ) : (
@@ -78,6 +81,9 @@ export default function AdminDashboard() {
               value={kpi.value}
               trend={kpi.trend}
               icon={iconMap[kpi.icon]}
+              className={cn(
+                i >= 2 ? "col-span-1" : "col-span-1"
+              )}
             />
           ))
         )}
@@ -91,9 +97,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="h-[300px] flex items-center justify-center">
-                <RefreshCcw className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <SalesBarChart data={data?.salesHistory || []} />
             )}
@@ -107,9 +111,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="h-[300px] flex items-center justify-center">
-                <RefreshCcw className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <ConversionLineChart data={data?.conversionHistory || []} />
             )}

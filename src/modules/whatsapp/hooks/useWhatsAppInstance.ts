@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { whatsappService } from '@/services/whatsappService';
 import { useTenant } from '@/hooks/useTenant';
@@ -17,6 +18,14 @@ export function useWhatsAppInstance() {
       return query.state.data?.status === 'connecting' ? 5000 : false;
     }
   });
+
+  useEffect(() => {
+    if (instance?.status === 'disconnected') {
+      toast.warning('WhatsApp desconectado. Verifique as configurações para reconectar.', {
+        id: 'whatsapp-disconnect-warning', // Prevent multiple toasts
+      });
+    }
+  }, [instance?.status]);
 
   const upsertMutation = useMutation({
     mutationFn: (data: any) => whatsappService.upsertInstance({

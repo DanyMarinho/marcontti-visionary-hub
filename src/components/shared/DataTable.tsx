@@ -61,7 +61,7 @@ export function DataTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto scrollbar-thin">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent bg-muted/50">

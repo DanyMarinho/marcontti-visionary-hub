@@ -16,6 +16,7 @@ import {
   FileText
 } from 'lucide-react';
 import { ExportButton } from '@/components/shared/ExportButton';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -135,6 +136,13 @@ export function AgenteIALogs() {
         totalCount={data?.count || 0}
         page={page}
         onPageChange={setPage}
+        emptyState={
+          <EmptyState 
+            icon={FileText}
+            title="Nenhum log registrado ainda"
+            description="As ações do Agente IA aparecerão aqui assim que as conversas começarem a ser processadas."
+          />
+        }
       />
     </div>
   );

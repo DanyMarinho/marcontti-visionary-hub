@@ -117,8 +117,10 @@ export interface WhatsAppConversation {
   status: 'waiting' | 'attending' | 'resolved';
   assigned_to?: string;
   ai_enabled: boolean;
+  content: string;
   last_activity_at: string;
   last_message_direction: 'sent' | 'received';
+
   created_at: string;
   updated_at: string;
   client?: Client;

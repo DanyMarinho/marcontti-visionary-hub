@@ -78,8 +78,8 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
         {(!collapsed || isMobile) && (
           <div className="flex flex-col">
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <span className="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center">M</span>
-              <span className="text-orange-500">MEC Hub</span>
+              <span className="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">M</span>
+              <span className="text-white">MEC <span className="text-orange-500">Hub</span></span>
             </h1>
           </div>
         )}

@@ -63,9 +63,12 @@ export default function AppShell({ children }: AppShellProps) {
       <Toaster 
         position="bottom-right" 
         richColors 
-        theme="light" // Will be overridden by theme provider if supported by sonner
+        closeButton
         toastOptions={{
           className: "font-sans",
+          style: {
+            // Success: green, Error: red, Warning: yellow/orange
+          }
         }}
       />
     </div>

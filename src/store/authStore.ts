@@ -17,7 +17,6 @@ interface AuthState {
 const mockUser: User = {
   id: '1',
   full_name: 'Admin MEC',
-  name: 'Admin MEC',
   email: 'admin@mec.com',
   role: 'admin',
   tenant_id: '1',

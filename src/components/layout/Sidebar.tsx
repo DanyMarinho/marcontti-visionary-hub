@@ -67,20 +67,20 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
   };
 
   const sidebarClasses = cn(
-    "bg-[#0a0a0a] text-white transition-all duration-300 flex flex-col z-50 h-screen fixed lg:sticky top-0 shadow-2xl lg:shadow-none",
+    "bg-[#0d0d0d] text-white transition-all duration-300 flex flex-col z-50 h-screen fixed lg:sticky top-0 shadow-2xl lg:shadow-none border-r border-[#1f1f1f]",
     collapsed ? "w-20" : "w-64",
     isMobile ? (open ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
   );
 
   return (
     <aside className={sidebarClasses}>
-      <div className="p-4 flex items-center justify-between border-b border-white/10 h-16">
+      <div className="p-4 flex items-center justify-between border-b border-[#1f1f1f] h-20">
         {(!collapsed || isMobile) && (
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              <span className="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center font-bold">M</span>
-              <span className="text-white">MEC <span className="text-orange-500">Hub</span></span>
+            <h1 className="text-xl font-bold tracking-tight text-white leading-none">
+              MEC <span className="text-orange-500">Hub</span>
             </h1>
+            <span className="text-[10px] text-[#888888] font-medium uppercase tracking-[0.1em] mt-1">by Infinda</span>
           </div>
         )}
         
@@ -111,8 +111,8 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                 key={item.path}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start text-white/60 hover:text-white hover:bg-white/5 px-3 h-11 transition-all",
-                  isActive && "bg-orange-500 text-white font-medium hover:bg-orange-600 hover:text-white",
+                  "w-full justify-start text-[#888888] hover:text-white hover:bg-[#1a1a1a] px-3 h-11 transition-all rounded-[6px] relative",
+                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500",
                   collapsed && !isMobile && "justify-center px-0"
                 )}
                 onClick={() => handleNavigate(item.path)}

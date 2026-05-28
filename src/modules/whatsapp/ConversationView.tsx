@@ -21,7 +21,8 @@ import {
   CheckCheck,
   ChevronLeft,
   Share2,
-  CheckCircle2
+  CheckCircle2,
+  History
 } from 'lucide-react';
 import {
   Dialog,
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 

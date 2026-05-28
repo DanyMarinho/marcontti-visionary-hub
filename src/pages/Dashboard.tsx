@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { TrendingUp, Users, DollarSign, Target, Building2, LayoutDashboard } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useTenant } from '@/hooks/useTenant';
 import { mockCustomers, mockSales } from '../lib/mockData';
 import { 
   Table, 
@@ -20,20 +21,17 @@ import { Button } from '@/components/ui/button';
 const COLORS = ['#0a0a0a', '#f97316', '#71717a', '#a1a1aa'];
 
 export default function Dashboard() {
-  const { user, selectedTenantId, setSelectedTenant, tenants } = useAuthStore();
-
-
-  const isGlobal = selectedTenantId === 'all';
-  const currentTenant = tenants.find(t => t.id === selectedTenantId);
+  const { tenants } = useAuthStore();
+  const { activeTenantId, activeTenant, isGlobal, setActiveTenant } = useTenant();
 
   // Filter data based on selection
   const filteredCustomers = isGlobal 
     ? mockCustomers 
-    : mockCustomers.filter(c => c.tenant_id === selectedTenantId);
+    : mockCustomers.filter(c => c.tenant_id === activeTenantId);
   
   const filteredSales = isGlobal 
     ? mockSales 
-    : mockSales.filter(s => s.tenant_id === selectedTenantId);
+    : mockSales.filter(s => s.tenant_id === activeTenantId);
 
   // Statistics
   const totalSalesAmount = filteredSales.reduce((acc, s) => acc + s.amount, 0);
@@ -50,6 +48,7 @@ export default function Dashboard() {
   ];
 
   const tenantComparison = tenants.map(t => ({
+    id: t.id,
     name: t.name,
     sales: mockSales.filter(s => s.tenant_id === t.id).reduce((acc, s) => acc + s.amount, 0),
     customers: mockCustomers.filter(c => c.tenant_id === t.id).length
@@ -67,7 +66,7 @@ export default function Dashboard() {
       <div className="flex items-center gap-2 text-muted-foreground">
         <LayoutDashboard className="h-4 w-4" />
         <span className="text-sm font-medium">
-          {isGlobal ? 'Visão Consolidada de Todas as Empresas' : `Dashboard: ${currentTenant?.name} (${currentTenant?.niche})`}
+          {isGlobal ? 'Visão Consolidada de Todas as Empresas' : `Dashboard: ${activeTenant?.name} (${activeTenant?.niche})`}
         </span>
       </div>
 
@@ -148,7 +147,7 @@ export default function Dashboard() {
                 <Line 
                   type="monotone" 
                   dataKey="sales" 
-                  stroke={isGlobal ? "#0a0a0a" : currentTenant?.color || "#f97316"} 
+                  stroke={isGlobal ? "#0a0a0a" : activeTenant?.color || "#f97316"} 
                   strokeWidth={3} 
                   dot={{ r: 4, fill: "#fff", strokeWidth: 2 }}
                 />
@@ -205,7 +204,7 @@ export default function Dashboard() {
               </TableHeader>
               <TableBody>
                 {tenantComparison.map((item) => (
-                  <TableRow key={item.name}>
+                  <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>R$ {item.sales.toLocaleString('pt-BR')}</TableCell>
                     <TableCell>{item.customers}</TableCell>
@@ -215,7 +214,7 @@ export default function Dashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => setSelectedTenant(tenants.find(t => t.name === item.name)?.id || 'all')}>
+                      <Button variant="ghost" size="sm" onClick={() => setActiveTenant(item.id)}>
                         Ver Detalhes
                       </Button>
                     </TableCell>

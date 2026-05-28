@@ -108,7 +108,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
       const data = await whatsappService.updateConversation(conversation!.id, updates);
       if (logMessage) {
         await supabase.from('reactivation_logs').insert([{
-          tenant_id: activeTenantId,
+          tenant_id: activeTenantId!,
           client_id: clientId,
           user_id: user?.id,
           type: 'transfer',
@@ -300,7 +300,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
           {logs.length > 0 && (
             <div className="space-y-2 mb-6">
               <div className="flex items-center gap-2 text-[#888888] px-2">
-                <History size={12} />
+                <HistoryIcon size={12} />
                 <span className="text-[10px] font-black uppercase tracking-widest">Histórico da Conversa</span>
               </div>
               {logs.map((log: any) => (

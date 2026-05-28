@@ -127,10 +127,10 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
         </nav>
       </ScrollArea>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-[#1f1f1f]">
         <div className={cn("flex flex-col gap-2", collapsed && !isMobile ? "items-center" : "")}>
           {(!collapsed || isMobile) && (
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Troca Rápida de Perfil</span>
+            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.1em]">Troca Rápida de Perfil</span>
           )}
           <div className="flex flex-wrap gap-1">
             {(['admin', 'loja', 'vendedor'] as Role[]).map((r) => (
@@ -140,7 +140,7 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                 size={(collapsed && !isMobile) ? "icon" : "sm"}
                 className={cn(
                   "h-8 text-[10px] uppercase font-bold",
-                  user?.role === r ? "bg-white/20 text-white" : "text-white/40 hover:text-white hover:bg-white/10",
+                  user?.role === r ? "bg-orange-500/20 text-orange-500 border border-orange-500/30" : "text-[#888888] hover:text-white hover:bg-white/5",
                   (!collapsed || isMobile) && "px-2"
                 )}
                 onClick={() => setRole(r)}

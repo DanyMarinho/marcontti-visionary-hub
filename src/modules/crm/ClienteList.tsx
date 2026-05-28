@@ -48,12 +48,12 @@ export default function ClienteList() {
     {
       header: 'Cliente',
       cell: (cliente: any) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-xs">
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { setSelectedCliente(cliente); setIsDetailsOpen(true); }}>
+          <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-xs group-hover:bg-orange-500 group-hover:text-white transition-colors">
             {cliente.full_name.substring(0, 2).toUpperCase()}
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sm">{cliente.full_name}</span>
+            <span className="font-semibold text-sm group-hover:text-orange-500 transition-colors">{cliente.full_name}</span>
             <span className="text-[10px] text-muted-foreground uppercase">{cliente.phone}</span>
           </div>
         </div>

@@ -139,5 +139,5 @@ export function ClienteDetails({ open, onOpenChange, cliente }: ClienteDetailsPr
       </DialogContent>
     </Dialog>
   );
-// Helper components
+}
 

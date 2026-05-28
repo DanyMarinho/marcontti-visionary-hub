@@ -45,7 +45,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         <div className="flex items-center gap-2">
           <div className="flex flex-col lg:hidden">
-            <h1 className="text-lg font-bold tracking-tight text-white leading-none">
+            <h1 className="text-lg font-bold tracking-tight text-white leading-none font-sans">
               MEC <span className="text-orange-500">Hub</span>
             </h1>
             <span className="text-[9px] text-[#888888] font-medium uppercase tracking-[0.1em]">by Infinda</span>

@@ -77,7 +77,7 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
       <div className="p-4 flex items-center justify-between border-b border-[#1f1f1f] h-20">
         {(!collapsed || isMobile) && (
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold tracking-tight text-white leading-none">
+            <h1 className="text-xl font-bold tracking-tight text-white leading-none font-sans">
               MEC <span className="text-orange-500">Hub</span>
             </h1>
             <span className="text-[10px] text-[#888888] font-medium uppercase tracking-[0.1em] mt-1">by Infinda</span>

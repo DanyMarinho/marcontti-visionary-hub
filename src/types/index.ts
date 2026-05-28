@@ -15,6 +15,12 @@ export interface Tenant {
   owner_name?: string;
   plan: 'basico' | 'pro' | 'premium';
   status: 'ativo' | 'inativo';
+  no_response_threshold_minutes: number;
+  reactivation_auto_enabled: boolean;
+  reactivation_idle_days: number;
+  reactivation_max_attempts: number;
+  reactivation_interval_days: number;
+  reactivation_messages: Record<string, string>;
   created_at: string;
   updated_at: string;
 }

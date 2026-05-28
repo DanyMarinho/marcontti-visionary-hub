@@ -13,8 +13,16 @@ import {
   Terminal, 
   CheckCircle2, 
   XCircle,
-  FileText
+  FileText,
+  Calendar as CalendarIcon
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ExportButton } from '@/components/shared/ExportButton';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { cn } from '@/lib/utils';
@@ -25,9 +33,11 @@ export function AgenteIALogs() {
   const { activeTenantId } = useTenant();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [actionFilter, setActionFilter] = useState<string>('all');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['agent-ia-logs', activeTenantId, page, search],
+    queryKey: ['agent-ia-logs', activeTenantId, page, search, statusFilter, actionFilter],
     queryFn: async () => {
       let query = supabase
         .from('agent_ia_logs')
@@ -37,6 +47,14 @@ export function AgenteIALogs() {
 
       if (search) {
         query = query.or(`received_message.ilike.%${search}%,action_taken.ilike.%${search}%`);
+      }
+
+      if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter);
+      }
+
+      if (actionFilter !== 'all') {
+        query = query.ilike('action_taken', `%${actionFilter}%`);
       }
 
       const pageSize = 10;
@@ -117,19 +135,45 @@ export function AgenteIALogs() {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Buscar nos logs..." 
-            className="pl-9 bg-zinc-900 border-zinc-800"
+            placeholder="Buscar por mensagem ou ação..." 
+            className="pl-9 bg-zinc-900 border-zinc-800 text-white"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="gap-2 border-zinc-800">
-          <Filter className="h-4 w-4" /> Filtros
-        </Button>
+        
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px] bg-zinc-900 border-zinc-800 text-white">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Status</SelectItem>
+              <SelectItem value="success">Sucesso</SelectItem>
+              <SelectItem value="error">Falha</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={actionFilter} onValueChange={setActionFilter}>
+            <SelectTrigger className="w-[160px] bg-zinc-900 border-zinc-800 text-white">
+              <SelectValue placeholder="Tipo de Ação" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Ações</SelectItem>
+              <SelectItem value="Análise">Análise</SelectItem>
+              <SelectItem value="Resposta">Resposta</SelectItem>
+              <SelectItem value="Agendamento">Agendamento</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button variant="outline" className="gap-2 border-zinc-800 text-white md:hidden">
+            <Filter className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <DataTable 

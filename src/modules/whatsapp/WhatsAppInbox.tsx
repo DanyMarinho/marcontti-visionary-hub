@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { whatsappService } from '@/services/whatsappService';
 import { useTenant } from '@/hooks/useTenant';
 import { useRealtime } from '@/hooks/useRealtime';
+import { WhatsAppConversation } from '@/types';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,7 +26,7 @@ export function WhatsAppInbox() {
   // Realtime updates
   useRealtime(activeTenantId);
 
-  const { data: conversations = [], isLoading } = useQuery({
+  const { data: conversations = [] as WhatsAppConversation[], isLoading } = useQuery({
     queryKey: ['whatsapp-conversations', activeTenantId, statusFilter],
     queryFn: () => whatsappService.getConversations(activeTenantId!, statusFilter),
     enabled: !!activeTenantId && activeTenantId !== 'all',

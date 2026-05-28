@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { WhatsAppInstance, WhatsAppMessage } from "../types";
+import { WhatsAppInstance, WhatsAppMessage, WhatsAppConversation } from "../types";
+
 
 export const whatsappService = {
   async getInstance(tenantId: string) {

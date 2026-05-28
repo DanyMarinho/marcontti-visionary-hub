@@ -104,12 +104,39 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   });
 
   const updateConvMutation = useMutation({
-    mutationFn: (updates: any) => whatsappService.updateConversation(conversation!.id, updates),
+    mutationFn: async ({ updates, logMessage }: { updates: any, logMessage?: string }) => {
+      const data = await whatsappService.updateConversation(conversation!.id, updates);
+      if (logMessage) {
+        await supabase.from('reactivation_logs').insert([{
+          tenant_id: activeTenantId,
+          client_id: clientId,
+          user_id: user?.id,
+          type: 'transfer',
+          notes: logMessage
+        }]);
+      }
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['whatsapp-conversation', activeTenantId, clientId] });
       queryClient.invalidateQueries({ queryKey: ['whatsapp-conversations'] });
     }
   });
+
+  const { data: logs = [] } = useQuery({
+    queryKey: ['reactivation-logs', clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reactivation_logs')
+        .select('*, user:users(full_name)')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!clientId
+  });
+
 
 
   const sendMessageMutation = useMutation({
@@ -186,12 +213,16 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
               id="ia-mode" 
               checked={conversation?.ai_enabled} 
               onCheckedChange={(checked) => {
-                updateConvMutation.mutate({ ai_enabled: checked });
+                updateConvMutation.mutate({ 
+                  updates: { ai_enabled: checked },
+                  logMessage: checked ? undefined : `IA desativada por ${user?.full_name}`
+                });
                 if (!checked) {
                    toast.info(`IA desativada por ${user?.full_name}`);
                 }
               }}
             />
+
           </div>
 
           {(user?.role === 'admin' || user?.role === 'loja') && (
@@ -227,11 +258,15 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
                     disabled={!transferUserId}
                     onClick={() => {
                       const seller = sellers.find(s => s.id === transferUserId);
-                      updateConvMutation.mutate({ assigned_to: transferUserId });
+                      updateConvMutation.mutate({ 
+                        updates: { assigned_to: transferUserId },
+                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`
+                      });
                       toast.success(`Conversa transferida para ${seller?.full_name}`);
                       setIsTransferModalOpen(false);
                     }}
                   >
+
                     Confirmar Transferência
                   </Button>
                 </div>
@@ -244,7 +279,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
               variant="ghost" 
               size="sm" 
               className="h-8 text-xs gap-1 text-green-500 hover:text-green-400 hover:bg-green-500/10"
-              onClick={() => updateConvMutation.mutate({ status: 'resolved' })}
+              onClick={() => updateConvMutation.mutate({ updates: { status: 'resolved' } })}
             >
               <CheckCircle2 size={14} /> Resolver
             </Button>
@@ -260,8 +295,29 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+        <div className="space-y-4 pb-4">
+          {/* History / Timeline Logs */}
+          {logs.length > 0 && (
+            <div className="space-y-2 mb-6">
+              <div className="flex items-center gap-2 text-[#888888] px-2">
+                <History size={12} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Histórico da Conversa</span>
+              </div>
+              {logs.map((log: any) => (
+                <div key={log.id} className="mx-auto bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-2 text-center max-w-sm">
+                  <p className="text-[10px] text-zinc-400 font-medium italic">
+                    {log.notes}
+                  </p>
+                  <p className="text-[8px] text-zinc-600 mt-0.5">
+                    {format(new Date(log.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
           {isLoading ? (
+
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-orange-500" />
             </div>

@@ -11,54 +11,8 @@ interface AuthState {
   setSelectedTenant: (tenantId: string) => void;
   setRole: (role: Role) => void;
   setTenants: (tenants: Tenant[]) => void;
-  login: () => void; // Keep for legacy
+  login: () => void;
 }
-
-const mockTenants: Tenant[] = []; // Start empty
-
-  { 
-    id: '1', 
-    name: 'Marcontti', 
-    niche: 'mecanica', 
-    color: '#f97316', 
-    owner_name: 'Marcos Silva', 
-    plan: 'premium', 
-    status: 'ativo',
-    contact_email: 'marcos@marcontti.com',
-    timezone: 'America/Sao_Paulo',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  { 
-    id: '2', 
-    name: 'Clínica Vida', 
-    niche: 'clinica', 
-    color: '#ec4899', 
-    owner_name: 'Dra. Ana Paula', 
-    plan: 'pro', 
-    status: 'ativo',
-    contact_email: 'ana@clinicavida.com',
-    timezone: 'America/Sao_Paulo',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  { 
-    id: '3', 
-    name: 'EduPro', 
-    niche: 'educacao', 
-    color: '#0ea5e9', 
-    owner_name: 'Roberto Santos', 
-    plan: 'basico', 
-    status: 'ativo',
-    contact_email: 'roberto@edupro.com',
-    timezone: 'America/Sao_Paulo',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-];
 
 const mockUser: User = {
   id: '1',
@@ -74,15 +28,18 @@ const mockUser: User = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: mockUser,
-  currentTenant: mockTenants[0],
-  tenants: mockTenants,
-  selectedTenantId: '1',
+  currentTenant: null,
+  tenants: [],
+  selectedTenantId: 'all',
   setUser: (user) => set({ user }),
   setCurrentTenant: (tenant) => set({ 
     currentTenant: tenant,
-    selectedTenantId: tenant ? tenant.id : null
+    selectedTenantId: tenant ? tenant.id : 'all'
   }),
   setSelectedTenant: (tenantId) => set((state) => {
+    if (tenantId === 'all') {
+      return { selectedTenantId: 'all', currentTenant: null };
+    }
     const tenant = state.tenants.find(t => t.id === tenantId) || null;
     return {
       selectedTenantId: tenantId,
@@ -92,5 +49,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   setRole: (role) => set((state) => ({ 
     user: state.user ? { ...state.user, role } : null 
   })),
+  setTenants: (tenants) => set((state) => {
+    // If currentTenant is null and we have tenants, maybe set the first one?
+    // But usually for admin we want 'all' by default
+    return { tenants };
+  }),
   login: () => {},
 }));

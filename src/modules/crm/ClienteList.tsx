@@ -161,7 +161,7 @@ export default function ClienteList() {
           />
         </div>
         <div className="flex gap-2">
-          <Select value={filters.status} onValueChange={(val: string) => setFilters({ ...filters, status: val })}>
+          <Select value={filters.status} onValueChange={(val: string) => { setFilters({ ...filters, status: val }); setPage(1); }}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>

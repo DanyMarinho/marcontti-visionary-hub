@@ -36,21 +36,22 @@ export interface User {
   tenant_id: string;
   store_id?: string;
   full_name: string;
-  name?: string; // Legacy support
   email: string;
   phone?: string;
   role: Role;
   is_active: boolean;
-  avatar?: string; // Support for UI
+  avatar?: string;
   created_at: string;
   updated_at: string;
 }
+
+// Aliases for compatibility
+export type Customer = Client;
 
 export interface Client {
   id: string;
   tenant_id: string;
   full_name: string;
-  name?: string; // Legacy support
   phone: string;
   email?: string;
   address?: string;
@@ -60,21 +61,6 @@ export interface Client {
   deleted_at?: string;
   created_at: string;
   updated_at: string;
-  tags?: string[]; // Support for UI
-}
-
-// Aliases for legacy support
-export type Customer = Client;
-
-export interface Sale {
-  id: string;
-  tenant_id: string;
-  client_id: string;
-  seller_id: string;
-  store_id: string;
-  amount: number;
-  date: string;
-  product: string;
 }
 
 export interface PipelineStage {
@@ -147,9 +133,4 @@ export interface Goal {
   period_start: string;
   period_end: string;
   created_at: string;
-}
-
-export interface MetricData {
-  label: string;
-  value: number;
 }

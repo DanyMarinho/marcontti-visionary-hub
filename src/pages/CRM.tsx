@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Plus, MessageSquare, Filter } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useTenant } from '@/hooks/useTenant';
 import { mockCustomers } from '../lib/mockData';
 
 const statusMap = {
@@ -21,11 +22,12 @@ const statusMap = {
 };
 
 export default function CRM() {
-  const { selectedTenantId, tenants } = useAuthStore();
+  const { tenants } = useAuthStore();
+  const { activeTenantId, activeTenant, isGlobal } = useTenant();
   
-  const filteredCustomers = selectedTenantId === 'all' 
+  const filteredCustomers = isGlobal 
     ? mockCustomers 
-    : mockCustomers.filter(c => c.tenant_id === selectedTenantId);
+    : mockCustomers.filter(c => c.tenant_id === activeTenantId);
 
   return (
     <div className="space-y-6">
@@ -49,7 +51,7 @@ export default function CRM() {
           <div>
             <CardTitle>Base de Clientes</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Exibindo {filteredCustomers.length} contatos {selectedTenantId !== 'all' ? `da empresa ${tenants.find(t => t.id === selectedTenantId)?.name}` : 'de todas as empresas'}
+              Exibindo {filteredCustomers.length} contatos {!isGlobal ? `da empresa ${activeTenant?.name}` : 'de todas as empresas'}
             </p>
           </div>
         </CardHeader>
@@ -59,7 +61,7 @@ export default function CRM() {
               <TableRow>
                 <TableHead>Nome</TableHead>
                 <TableHead>Contato</TableHead>
-                {selectedTenantId === 'all' && <TableHead>Empresa</TableHead>}
+                {isGlobal && <TableHead>Empresa</TableHead>}
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -72,7 +74,7 @@ export default function CRM() {
                     <div className="text-sm">{customer.email}</div>
                     <div className="text-xs text-muted-foreground">{customer.phone}</div>
                   </TableCell>
-                  {selectedTenantId === 'all' && (
+                  {isGlobal && (
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
                         {tenants.find(t => t.id === customer.tenant_id)?.name}

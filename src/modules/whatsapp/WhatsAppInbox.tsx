@@ -38,7 +38,7 @@ export function WhatsAppInbox() {
       conv.client?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       conv.client?.phone?.includes(search)
     )
-    .sort((a, b) => new Date(b.last_activity_at || b.timestamp).getTime() - new Date(a.last_activity_at || a.timestamp).getTime());
+    .sort((a, b) => new Date(b.last_activity_at).getTime() - new Date(a.last_activity_at).getTime());
 
 
   return (

@@ -150,15 +150,19 @@ export function Header({ onMenuClick }: HeaderProps) {
               ) : (
                 notifications.map((n: any) => (
                   <div key={n.id} className="p-4 border-b border-[#1f1f1f]/50 hover:bg-white/5 cursor-pointer transition-colors" onClick={() => {
-                    if (n.type === 'no_response') navigate('/whatsapp');
+                    if (n.type === 'no_response' || n.type === 'transfer') navigate('/whatsapp');
                     else if (n.type === 'idle_card') navigate('/reactivation');
                   }}>
                     <div className="flex gap-3">
                       <div className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                        n.type === 'no_response' ? "bg-red-500/10 text-red-500" : "bg-orange-500/10 text-orange-500"
+                        n.type === 'no_response' ? "bg-red-500/10 text-red-500" : 
+                        n.type === 'transfer' ? "bg-blue-500/10 text-blue-500" :
+                        "bg-orange-500/10 text-orange-500"
                       )}>
-                        {n.type === 'no_response' ? <MessageSquare size={14} /> : <AlertCircle size={14} />}
+                        {n.type === 'no_response' ? <MessageSquare size={14} /> : 
+                         n.type === 'transfer' ? <Share2 size={14} /> :
+                         <AlertCircle size={14} />}
                       </div>
                       <div className="space-y-1">
                         <p className="text-xs font-bold text-white leading-tight">{n.title}</p>

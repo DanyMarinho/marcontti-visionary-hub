@@ -20,8 +20,9 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
-export function VendedorDashboard() {
+export default function VendedorDashboard() {
   const { data, isLoading, error, refetch } = useDashboardKpis();
 
   const iconMap: any = {

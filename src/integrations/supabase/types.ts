@@ -538,6 +538,7 @@ export type Database = {
       tenants: {
         Row: {
           cnpj: string | null
+          color: string | null
           contact_email: string
           created_at: string
           id: string
@@ -545,11 +546,15 @@ export type Database = {
           logo_url: string | null
           name: string
           niche: string
+          owner_name: string | null
+          plan: string | null
+          status: string | null
           timezone: string
           updated_at: string
         }
         Insert: {
           cnpj?: string | null
+          color?: string | null
           contact_email: string
           created_at?: string
           id?: string
@@ -557,11 +562,15 @@ export type Database = {
           logo_url?: string | null
           name: string
           niche: string
+          owner_name?: string | null
+          plan?: string | null
+          status?: string | null
           timezone?: string
           updated_at?: string
         }
         Update: {
           cnpj?: string | null
+          color?: string | null
           contact_email?: string
           created_at?: string
           id?: string
@@ -569,6 +578,9 @@ export type Database = {
           logo_url?: string | null
           name?: string
           niche?: string
+          owner_name?: string | null
+          plan?: string | null
+          status?: string | null
           timezone?: string
           updated_at?: string
         }

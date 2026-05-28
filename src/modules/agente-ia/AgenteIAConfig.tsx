@@ -19,6 +19,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const DAYS = [
   { key: 'monday', label: 'Segunda-feira' },
@@ -124,13 +125,13 @@ export function AgenteIAConfig() {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Configurações do Agente IA</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Configurações do Agente IA</h1>
           <p className="text-muted-foreground text-sm">Controle como o robô interage com seus leads no WhatsApp.</p>
         </div>
         <div className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 p-2 px-4 rounded-full">
           <Bot size={20} className={localConfig.is_active ? "text-orange-500" : "text-zinc-500"} />
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider">
+            <span className="text-xs font-bold uppercase tracking-wider text-white">
               {localConfig.is_active ? 'Ativado' : 'Desativado'}
             </span>
             <Switch checked={localConfig.is_active} onCheckedChange={handleToggleActive} />
@@ -141,20 +142,20 @@ export function AgenteIAConfig() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="bg-[#0a0a0a] border-zinc-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex items-center gap-2 text-sm text-white">
               <Globe size={16} className="text-orange-500" /> Integração n8n / Webhook
             </CardTitle>
             <CardDescription>URL do webhook para onde as mensagens serão enviadas.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="webhook_url">URL do Webhook</Label>
+              <Label htmlFor="webhook_url" className="text-zinc-400">URL do Webhook</Label>
               <Input 
                 id="webhook_url" 
                 value={localConfig.webhook_url || ''} 
                 onChange={(e) => setLocalConfig({...localConfig, webhook_url: e.target.value})}
                 placeholder="https://n8n.seu-dominio.com/webhook/..." 
-                className="bg-zinc-900 border-zinc-800"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
             </div>
             <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg flex gap-3">
@@ -168,7 +169,7 @@ export function AgenteIAConfig() {
 
         <Card className="bg-[#0a0a0a] border-zinc-800 row-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex items-center gap-2 text-sm text-white">
               <Clock size={16} className="text-orange-500" /> Horário de Funcionamento
             </CardTitle>
             <CardDescription>O agente responderá apenas nos períodos configurados abaixo.</CardDescription>
@@ -196,14 +197,14 @@ export function AgenteIAConfig() {
                         type="time" 
                         value={dayConfig.start} 
                         onChange={(e) => handleTimeChange(day.key, 'start', e.target.value)}
-                        className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs" 
+                        className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs text-white" 
                       />
                       <span className="text-zinc-500">-</span>
                       <Input 
                         type="time" 
                         value={dayConfig.end} 
                         onChange={(e) => handleTimeChange(day.key, 'end', e.target.value)}
-                        className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs" 
+                        className="h-8 w-24 bg-zinc-900 border-zinc-800 text-xs text-white" 
                       />
                     </div>
                   )}

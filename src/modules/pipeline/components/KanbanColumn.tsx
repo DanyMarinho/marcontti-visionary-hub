@@ -30,10 +30,10 @@ export function KanbanColumn({ stage, cards, color, onCardClick }: KanbanColumnP
       >
         <div className="flex items-center justify-between">
           <h3 className="text-[10px] font-black uppercase tracking-[0.1em] text-[#888888]">{stage.label}</h3>
-          <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">{cards.length}</Badge>
+          <Badge variant="secondary" className="h-5 px-1.5 text-[10px] bg-white/5 text-[#888888] border-[#1f1f1f]">{cards.length}</Badge>
         </div>
         <div className="text-[10px] font-medium text-muted-foreground">
-          Soma: R$ {totalValue.toLocaleString('pt-BR')}
+          Soma: <span className="text-white font-bold">R$ {totalValue.toLocaleString('pt-BR')}</span>
         </div>
       </div>
 

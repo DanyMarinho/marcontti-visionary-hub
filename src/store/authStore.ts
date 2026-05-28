@@ -5,9 +5,12 @@ interface AuthState {
   user: User | null;
   currentTenant: Tenant | null;
   tenants: Tenant[];
+  selectedTenantId: string | null;
   setUser: (user: User | null) => void;
   setCurrentTenant: (tenant: Tenant | null) => void;
+  setSelectedTenant: (tenantId: string) => void;
   setRole: (role: Role) => void;
+  login: () => void; // Keep for legacy
 }
 
 const mockTenants: Tenant[] = [
@@ -71,9 +74,21 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: mockUser,
   currentTenant: mockTenants[0],
   tenants: mockTenants,
+  selectedTenantId: '1',
   setUser: (user) => set({ user }),
-  setCurrentTenant: (tenant) => set({ currentTenant: tenant }),
+  setCurrentTenant: (tenant) => set({ 
+    currentTenant: tenant,
+    selectedTenantId: tenant ? tenant.id : null
+  }),
+  setSelectedTenant: (tenantId) => set((state) => {
+    const tenant = state.tenants.find(t => t.id === tenantId) || null;
+    return {
+      selectedTenantId: tenantId,
+      currentTenant: tenant
+    };
+  }),
   setRole: (role) => set((state) => ({ 
     user: state.user ? { ...state.user, role } : null 
   })),
+  login: () => {},
 }));

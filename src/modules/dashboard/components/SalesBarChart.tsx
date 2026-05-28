@@ -30,18 +30,19 @@ export const SalesBarChart = React.memo(function SalesBarChart({ data, height = 
           data={data}
           margin={{ top: 10, right: 10, left: 20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.1} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f1f1f" />
           <XAxis 
             dataKey="month" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#71717a', fontSize: 12 }} 
+            tick={{ fill: '#888888', fontSize: 12, fontWeight: 500 }} 
+
             dy={10}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#71717a', fontSize: 12 }}
+            tick={{ fill: '#888888', fontSize: 12, fontWeight: 500 }}
             tickFormatter={(value) => `R$ ${value >= 1000 ? (value/1000).toFixed(0) + 'k' : value}`}
           />
           <Tooltip 

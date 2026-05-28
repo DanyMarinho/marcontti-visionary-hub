@@ -102,6 +102,20 @@ export default function Settings() {
                     <Input defaultValue={currentTenant?.name} className="bg-zinc-900 border-zinc-800" />
                   </div>
                   <div className="space-y-2">
+                    <Label className="text-zinc-400">Nicho</Label>
+                    <Select defaultValue={currentTenant?.niche}>
+                      <SelectTrigger className="bg-zinc-900 border-zinc-800 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Mecânica">Mecânica</SelectItem>
+                        <SelectItem value="Estética Automotiva">Estética Automotiva</SelectItem>
+                        <SelectItem value="Motopeças">Motopeças</SelectItem>
+                        <SelectItem value="Outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
                     <Label className="text-zinc-400">CNPJ</Label>
                     <Input defaultValue="00.000.000/0001-00" className="bg-zinc-900 border-zinc-800" />
                   </div>
@@ -110,9 +124,33 @@ export default function Settings() {
                     <Input defaultValue={currentTenant?.contact_email} className="bg-zinc-900 border-zinc-800" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-zinc-400">Responsável</Label>
-                    <Input defaultValue={currentTenant?.owner_name} className="bg-zinc-900 border-zinc-800" />
+                    <Label className="text-zinc-400">Fuso Horário</Label>
+                    <Select defaultValue="America/Sao_Paulo">
+                      <SelectTrigger className="bg-zinc-900 border-zinc-800 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="America/Sao_Paulo">Brasília (GMT-3)</SelectItem>
+                        <SelectItem value="America/Manaus">Manaus (GMT-4)</SelectItem>
+                        <SelectItem value="America/New_York">New York (GMT-5)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label className="text-zinc-400">Logotipo</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                        <Upload size={18} className="text-zinc-500" />
+                      </div>
+                      <Button variant="outline" size="sm" className="h-9 border-zinc-800">Alterar Logo</Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end pt-4 border-t border-zinc-800">
+                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    Salvar Dados
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -121,21 +159,48 @@ export default function Settings() {
           <TabsContent value="pipeline">
             <Card className="bg-[#0a0a0a] border-zinc-800">
               <CardHeader>
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                   <GitMerge size={20} className="text-orange-500" /> Etapas do Método MEC
-                </CardTitle>
-                <CardDescription>Personalize o nome das etapas para melhor adaptação ao seu nicho.</CardDescription>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-white text-lg flex items-center gap-2">
+                       <GitMerge size={20} className="text-orange-500" /> Etapas do Método MEC
+                    </CardTitle>
+                    <CardDescription>Personalize o nome das etapas. A ordem é fixa para manter a engenharia do processo.</CardDescription>
+                  </div>
+                  <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 gap-1 h-6">
+                    <AlertTriangle size={12} /> Ordem Obrigatória
+                  </Badge>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  'Prospecção', 'Qualificação', 'Apresentação', 'Proposta', 'Negociação', 'Fechamento', 'Pós-venda'
+                  { label: 'Prospecção', key: 'prospeccao' },
+                  { label: 'Qualificação', key: 'qualificacao' },
+                  { label: 'Apresentação', key: 'apresentacao' },
+                  { label: 'Proposta', key: 'proposta' },
+                  { label: 'Negociação', key: 'negociacao' },
+                  { label: 'Fechamento', key: 'fechamento' },
+                  { label: 'Pós-venda', key: 'pos_venda' }
                 ].map((stage, i) => (
-                  <div key={i} className="flex items-center gap-4 py-2 border-b border-zinc-800 last:border-0">
-                    <span className="w-8 h-8 rounded bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-500">{i+1}</span>
-                    <Input defaultValue={stage} className="flex-1 bg-zinc-900 border-zinc-800" />
-                    <Switch defaultChecked />
+                  <div key={i} className="flex items-center gap-4 py-3 border-b border-zinc-800 last:border-0">
+                    <span className="w-8 h-8 rounded bg-zinc-900 flex items-center justify-center text-xs font-black text-white border border-zinc-800">{i+1}</span>
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <Label className="text-[9px] uppercase font-bold text-zinc-500">Label de Exibição</Label>
+                        <Input defaultValue={stage.label} className="bg-zinc-900 border-zinc-800 text-white" />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[9px] uppercase font-bold text-zinc-500">Chave do Sistema (Read-only)</Label>
+                        <Input value={stage.key} readOnly className="bg-[#050505] border-zinc-900 text-zinc-600 cursor-not-allowed" />
+                      </div>
+                    </div>
                   </div>
                 ))}
+                <div className="flex justify-end pt-4">
+                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    Salvar Pipeline
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

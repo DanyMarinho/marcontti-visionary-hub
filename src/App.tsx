@@ -6,7 +6,11 @@ import AppShell from "./components/layout/AppShell";
 import Dashboard from "./pages/Dashboard";
 import ClienteList from "./modules/crm/ClienteList";
 import KanbanBoard from "./modules/pipeline/KanbanBoard";
-import WhatsApp from "./pages/WhatsApp";
+import { WhatsAppInbox } from "./modules/whatsapp/WhatsAppInbox";
+import { QRCodeConnect } from "./modules/whatsapp/QRCodeConnect";
+import { AgenteIAConfig } from "./modules/agente-ia/AgenteIAConfig";
+import { AgenteIALogs } from "./modules/agente-ia/AgenteIALogs";
+
 import { TenantList } from "./modules/admin/Tenants/TenantList";
 import { LojaList } from "./modules/admin/Stores/LojaList";
 import { VendedorList } from "./modules/admin/Vendors/VendedorList";
@@ -32,7 +36,11 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/crm" element={<ClienteList />} />
             <Route path="/pipeline" element={<KanbanBoard />} />
-            <Route path="/whatsapp" element={<WhatsApp />} />
+            <Route path="/whatsapp" element={<WhatsAppInbox />} />
+            <Route path="/whatsapp/connect" element={<QRCodeConnect />} />
+            <Route path="/ai-agent" element={<AgenteIAConfig />} />
+            <Route path="/ai-agent/logs" element={<AgenteIALogs />} />
+
             <Route path="/tenants" element={<TenantList />} />
             <Route path="/shops" element={<LojaList />} />
             <Route path="/vendors" element={<VendedorList />} />

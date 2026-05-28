@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/vendors" element={<VendedorList />} />
             <Route path="/team" element={<VendedorList />} /> {/* Common page for Loja role */}
             <Route path="/metrics" element={<Metricas />} />
+            <Route path="/projection" element={<ProjecaoFinanceira />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

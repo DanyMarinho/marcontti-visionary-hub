@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTenant } from '@/hooks/useTenant';
 import { calculateProjection } from '../utils/calculateProjection';
@@ -6,8 +6,35 @@ import { startOfMonth, endOfMonth, format } from 'date-fns';
 
 export function useProjecao() {
   const { activeTenantId } = useTenant();
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  const goalsQuery = useQuery({
+    queryKey: ['goals', activeTenantId],
+    queryFn: async () => {
+      if (!activeTenantId || activeTenantId === 'all') return [];
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('tenant_id', activeTenantId)
+        .order('period_start', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!activeTenantId && activeTenantId !== 'all',
+  });
+
+  const deleteGoal = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('goals').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['projecao-financeira'] });
+    }
+  });
+
+  const projectionQuery = useQuery({
     queryKey: ['projecao-financeira', activeTenantId],
     queryFn: async () => {
       if (!activeTenantId || activeTenantId === 'all') return null;
@@ -83,4 +110,11 @@ export function useProjecao() {
     },
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
+
+  return {
+    data: projectionQuery.data,
+    isLoading: projectionQuery.isLoading || goalsQuery.isLoading,
+    goals: goalsQuery.data || [],
+    deleteGoal
+  };
 }

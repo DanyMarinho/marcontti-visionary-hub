@@ -117,7 +117,14 @@ export default function ClienteList() {
               <DropdownMenuItem onClick={() => { setSelectedCliente(cliente); setIsFormOpen(true); }}>
                 Editar Cliente
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500 focus:text-red-500" onClick={() => deleteCliente.mutate(cliente.id)}>
+              <DropdownMenuItem 
+                className="text-red-500 focus:text-red-500" 
+                onClick={() => {
+                  if (confirm(`Deseja realmente excluir o cliente ${cliente.full_name}?`)) {
+                    deleteCliente.mutate(cliente.id);
+                  }
+                }}
+              >
                 Excluir (Soft-delete)
               </DropdownMenuItem>
             </DropdownMenuContent>

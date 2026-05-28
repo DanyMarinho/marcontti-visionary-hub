@@ -73,7 +73,7 @@ export function ConversationView({ clientId }: ConversationViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0a0a0a] flex items-center justify-between">
+      <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between h-20">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
             {client?.full_name?.substring(0, 2).toUpperCase()}
@@ -109,8 +109,8 @@ export function ConversationView({ clientId }: ConversationViewProps) {
                 <div className={cn(
                   "p-3 rounded-2xl text-sm shadow-sm relative group",
                   msg.direction === 'sent' 
-                    ? "bg-orange-500 text-white rounded-tr-none" 
-                    : "bg-white dark:bg-[#1a1a1a] dark:text-zinc-100 rounded-tl-none border border-zinc-100 dark:border-zinc-800"
+                    ? "bg-orange-500 text-white rounded-tr-none shadow-none" 
+                    : "bg-[#1a1a1a] text-zinc-100 rounded-tl-none border border-[#1f1f1f] shadow-none"
                 )}>
                   {msg.processed_by_ai && (
                     <div className="flex items-center gap-1 mb-1">
@@ -137,7 +137,7 @@ export function ConversationView({ clientId }: ConversationViewProps) {
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 bg-white dark:bg-[#0a0a0a] border-t border-zinc-200 dark:border-zinc-800">
+      <div className="p-4 bg-[#0d0d0d] border-t border-[#1f1f1f]">
         <form onSubmit={handleSend} className="flex gap-2 items-center">
           <Input 
             placeholder="Digite sua resposta..." 

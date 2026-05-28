@@ -31,7 +31,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="h-16 bg-white dark:bg-card border-b flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors">
+    <header className="h-20 bg-[#0d0d0d] border-b border-[#1f1f1f] flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors">
       <div className="flex items-center gap-2 md:gap-4">
         <Button 
           variant="ghost" 
@@ -44,7 +44,12 @@ export function Header({ onMenuClick }: HeaderProps) {
         </Button>
 
         <div className="flex items-center gap-2">
-          <div className="bg-orange-500 text-white w-8 h-8 rounded flex items-center justify-center lg:hidden font-bold">M</div>
+          <div className="flex flex-col lg:hidden">
+            <h1 className="text-lg font-bold tracking-tight text-white leading-none font-sans">
+              MEC <span className="text-orange-500">Hub</span>
+            </h1>
+            <span className="text-[9px] text-[#888888] font-medium uppercase tracking-[0.1em]">by Infinda</span>
+          </div>
           <h2 className="text-sm font-semibold text-foreground hidden sm:block">
             {isGlobal ? 'Plataforma MEC Hub' : activeTenant?.name}
           </h2>

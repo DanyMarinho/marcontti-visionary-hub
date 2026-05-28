@@ -34,7 +34,7 @@ export default function AppShell({ children }: AppShellProps) {
   const closeSidebar = () => isMobile && setSidebarOpen(false);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex min-h-screen bg-[#0a0a0a] text-white transition-colors duration-300 font-sans">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <div 
@@ -53,7 +53,7 @@ export default function AppShell({ children }: AppShellProps) {
 
       <div className="flex flex-col flex-1 min-w-0 h-screen overflow-hidden">
         <Header onMenuClick={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
           <div className="max-w-[1600px] mx-auto w-full">
             {children}
           </div>

@@ -33,11 +33,11 @@ export function WhatsAppInbox() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-140px)] border rounded-xl overflow-hidden bg-white dark:bg-[#0a0a0a]">
+    <div className="flex h-[calc(100vh-140px)] border border-[#1f1f1f] rounded-lg overflow-hidden bg-[#0a0a0a]">
       {/* Sidebar - Conversations List */}
-      <div className="w-full md:w-80 flex flex-col border-r border-zinc-200 dark:border-zinc-800">
-        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 space-y-4">
-          <h2 className="text-xl font-bold">Conversas</h2>
+      <div className="w-full md:w-80 flex flex-col border-r border-[#1f1f1f]">
+        <div className="p-4 border-b border-[#1f1f1f] space-y-4">
+          <h2 className="text-xl font-bold text-white">Conversas</h2>
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input 
@@ -115,7 +115,7 @@ export function WhatsAppInbox() {
       </div>
 
       {/* Conversation Area */}
-      <div className="flex-1 hidden md:flex flex-col bg-zinc-50 dark:bg-[#050505]">
+      <div className="flex-1 hidden md:flex flex-col bg-[#0a0a0a]">
         {activeChat ? (
           <ConversationView clientId={activeChat} />
         ) : (

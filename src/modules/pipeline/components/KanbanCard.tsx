@@ -28,7 +28,7 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "mb-3 cursor-grab active:cursor-grabbing hover:border-orange-500/50 transition-all duration-200 group touch-none",
+        "mb-3 cursor-grab active:cursor-grabbing bg-[#111111] border-[#1f1f1f] hover:border-orange-500/50 transition-all duration-200 group touch-none shadow-none",
         isDragging && "opacity-50 border-orange-500 ring-2 ring-orange-500/20",
         isOverdue && "border-l-4 border-l-red-500"
       )}
@@ -53,7 +53,7 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
         </div>
 
         <div className="space-y-1">
-          <h4 className="font-bold text-sm leading-tight line-clamp-2">{card.title || card.client?.full_name || 'Sem título'}</h4>
+          <h4 className="font-bold text-sm leading-tight line-clamp-2 text-white">{card.title || card.client?.full_name || 'Sem título'}</h4>
           <p className="text-[10px] text-muted-foreground truncate">{card.client?.full_name}</p>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Phone size={10} />
@@ -61,7 +61,7 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
           </div>
         </div>
 
-        <div className="pt-2 border-t border-dashed flex items-center justify-between">
+        <div className="pt-2 border-t border-[#1f1f1f] border-dashed flex items-center justify-between">
           <div className="flex items-center gap-1 text-orange-600 font-bold">
             <span className="text-[10px]">R$</span>
             <span className="text-xs">{Number(card.estimated_value).toLocaleString('pt-BR')}</span>

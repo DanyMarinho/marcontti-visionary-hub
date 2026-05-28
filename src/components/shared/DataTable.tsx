@@ -61,10 +61,10 @@ export function DataTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-card overflow-x-auto scrollbar-thin">
+      <div className="rounded-lg border border-[#1f1f1f] bg-[#111111] overflow-x-auto scrollbar-thin">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent bg-muted/50">
+            <TableRow className="hover:bg-transparent bg-[#1a1a1a]/50 border-b border-[#1f1f1f]">
               {columns.map((col, i) => (
                 <TableHead key={i} className={cn("font-bold", col.className)}>
                   {col.header}
@@ -91,7 +91,7 @@ export function DataTable({
               </TableRow>
             ) : (
               data.map((item, i) => (
-                <TableRow key={item.id || i} className="group transition-colors hover:bg-muted/50">
+                <TableRow key={item.id || i} className="group transition-colors hover:bg-white/5 border-b border-[#1f1f1f] last:border-0">
                   {columns.map((col, j) => (
                     <TableCell key={j} className={col.className}>
                       {col.cell ? col.cell(item) : (col.accessorKey ? item[col.accessorKey] : null)}

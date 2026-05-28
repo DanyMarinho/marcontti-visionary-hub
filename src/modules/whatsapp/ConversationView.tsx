@@ -111,8 +111,9 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   });
 
   const updateConvMutation = useMutation({
-    mutationFn: async ({ updates, logMessage }: { updates: any, logMessage?: string }) => {
+    mutationFn: async ({ updates, logMessage, targetUserId }: { updates: any, logMessage?: string, targetUserId?: string }) => {
       const data = await whatsappService.updateConversation(conversation!.id, updates);
+      
       if (logMessage) {
         await supabase.from('reactivation_logs').insert([{
           tenant_id: activeTenantId!,
@@ -122,6 +123,19 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
           notes: logMessage
         }]);
       }
+
+      if (targetUserId) {
+        await supabase.from('notifications').insert([{
+          tenant_id: activeTenantId!,
+          user_id: targetUserId,
+          title: 'Conversa Transferida',
+          message: `${user?.full_name} transferiu a conversa de ${client?.full_name} para você.`,
+          type: 'transfer',
+          related_id: conversation?.id,
+          is_read: false
+        }]);
+      }
+      
       return data;
     },
     onSuccess: () => {

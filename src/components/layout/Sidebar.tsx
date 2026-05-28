@@ -112,15 +112,15 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-[#888888] hover:text-white hover:bg-[#1a1a1a] px-3 h-11 transition-all rounded-[6px] relative",
-                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500 rounded-l-none",
+                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500 rounded-l-none after:hidden",
                   collapsed && !isMobile && "justify-center px-0"
                 )}
                 onClick={() => handleNavigate(item.path)}
                 aria-label={label}
               >
                 <item.icon className={cn("h-5 w-5 flex-shrink-0", (!collapsed || isMobile) && "mr-3")} />
-                {(!collapsed || isMobile) && <span className="truncate">{label}</span>}
-                {(!collapsed || isMobile) && isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                {(!collapsed || isMobile) && <span className="truncate flex-1">{label}</span>}
+                {(!collapsed || isMobile) && isActive && <div className="ml-auto w-1 h-1 rounded-full bg-orange-500" />}
               </Button>
             );
           })}

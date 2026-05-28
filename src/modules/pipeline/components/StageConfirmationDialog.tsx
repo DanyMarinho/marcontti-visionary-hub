@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 interface StageConfirmationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (data: { value: number }) => void;
+  onConfirm: (data: { value: number; date: string }) => void;
   title: string;
   description: string;
 }

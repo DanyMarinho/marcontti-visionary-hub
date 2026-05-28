@@ -15,6 +15,7 @@ import { KanbanColumn } from './components/KanbanColumn';
 import { KanbanCard } from './components/KanbanCard';
 import { CardForm } from './components/CardForm';
 import { StageConfirmationDialog } from './components/StageConfirmationDialog';
+import { CardDetail } from './components/CardDetail';
 import { Button } from '@/components/ui/button';
 import { Plus, Filter, Search, GitMerge } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ export default function KanbanBoard() {
   const { cards, moveCard, isLoading } = usePipeline();
   const [activeCard, setActiveCard] = useState<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<any>(null);
   const [pendingMove, setPendingMove] = useState<{ cardId: string, fromStage: string, toStage: string } | null>(null);
   
   const sensors = useSensors(
@@ -129,7 +131,7 @@ export default function KanbanBoard() {
                     stage={stage}
                     color={stage.color}
                     cards={cards.filter(c => c.stage_key === stage.key)}
-                    onCardClick={(card) => console.log('Click card', card)}
+                    onCardClick={(card) => setSelectedCard(card)}
                   />
                 ))
               )}
@@ -163,6 +165,12 @@ export default function KanbanBoard() {
             setPendingMove(null);
           }
         }}
+      />
+
+      <CardDetail 
+        open={!!selectedCard} 
+        onOpenChange={(open) => !open && setSelectedCard(null)} 
+        card={selectedCard} 
       />
     </div>
   );

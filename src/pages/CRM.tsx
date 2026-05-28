@@ -1,95 +1,87 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, UserPlus, CalendarPlus } from 'lucide-react';
-import { KanbanBoard } from '@/components/crm/KanbanBoard';
-import { LeadTable } from '@/components/crm/LeadTable';
-import { TaskPanel } from '@/components/crm/TaskPanel';
-import { CalendarView } from '@/components/crm/CalendarView';
-import { LeadDetailDrawer } from '@/components/crm/LeadDetailDrawer';
-import { AdImportModal } from '@/components/shared/AdImportModal';
-import { LeadFormModal } from '@/components/crm/LeadFormModal';
-import { TaskFormModal } from '@/components/crm/TaskFormModal';
-import { pageTransition } from '@/lib/animations';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, Plus, MessageSquare } from 'lucide-react';
 
-const CRM = () => {
-  const [view, setView] = useState<'kanban' | 'table'>('kanban');
-  const [importOpen, setImportOpen] = useState(false);
-  const [leadFormOpen, setLeadFormOpen] = useState(false);
-  const [taskFormOpen, setTaskFormOpen] = useState(false);
+const mockCustomers = [
+  { id: '1', name: 'João Silva', email: 'joao@email.com', phone: '(11) 98888-7777', status: 'lead', shop: 'Centro', lastContact: '2024-05-20' },
+  { id: '2', name: 'Maria Oliveira', email: 'maria@email.com', phone: '(11) 97777-6666', status: 'closed', shop: 'Sul', lastContact: '2024-05-18' },
+  { id: '3', name: 'Pedro Santos', email: 'pedro@email.com', phone: '(11) 96666-5555', status: 'proposal', shop: 'Centro', lastContact: '2024-05-15' },
+  { id: '4', name: 'Ana Costa', email: 'ana@email.com', phone: '(11) 95555-4444', status: 'contact', shop: 'Norte', lastContact: '2024-05-10' },
+];
 
-  return (
-    <motion.div
-      variants={pageTransition}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="p-4 md:p-6 space-y-8 max-w-[100vw] overflow-x-hidden"
-    >
-      <div className="flex flex-wrap justify-between items-center gap-3">
-        <div>
-          <h1 className="text-3xl font-bold text-white">CRM Automotivo</h1>
-          <p className="text-slate-400 text-sm mt-1">Gerencie seus leads e funil de vendas em tempo real.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setLeadFormOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600/20 border border-green-500/30 text-green-400 text-sm font-medium hover:bg-green-600/30 transition-all"
-          >
-            <UserPlus className="w-4 h-4" />
-            Novo Lead
-          </button>
-          <button
-            onClick={() => setTaskFormOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600/20 border border-purple-500/30 text-purple-400 text-sm font-medium hover:bg-purple-600/30 transition-all"
-          >
-            <CalendarPlus className="w-4 h-4" />
-            Nova Tarefa
-          </button>
-          <button
-            onClick={() => setImportOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-all shadow-lg shadow-blue-500/20"
-          >
-            <Upload className="w-4 h-4" />
-            Importar Anúncios
-          </button>
-          <div className="bg-white/5 rounded-lg p-1 flex">
-            <button
-              className={`px-4 py-2 rounded text-sm font-medium transition-all ${view === 'kanban' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'}`}
-              onClick={() => setView('kanban')}
-            >
-              Kanban
-            </button>
-            <button
-              className={`px-4 py-2 rounded text-sm font-medium transition-all ${view === 'table' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white'}`}
-              onClick={() => setView('table')}
-            >
-              Tabela
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <AdImportModal isOpen={importOpen} onClose={() => setImportOpen(false)} />
-      <LeadFormModal isOpen={leadFormOpen} onClose={() => setLeadFormOpen(false)} />
-      <TaskFormModal isOpen={taskFormOpen} onClose={() => setTaskFormOpen(false)} />
-
-      {view === 'kanban' ? (
-        <KanbanBoard />
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <LeadTable />
-          </div>
-          <div className="space-y-8">
-            <TaskPanel />
-            <CalendarView />
-          </div>
-        </div>
-      )}
-      
-      <LeadDetailDrawer />
-    </motion.div>
-  );
+const statusMap = {
+  lead: { label: 'Lead', color: 'bg-blue-500' },
+  contact: { label: 'Contato', color: 'bg-yellow-500' },
+  proposal: { label: 'Proposta', color: 'bg-orange-500' },
+  closed: { label: 'Fechado', color: 'bg-green-500' },
+  'post-sale': { label: 'Pós-venda', color: 'bg-purple-500' },
 };
 
-export default CRM;
+export default function CRM() {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Buscar clientes..." className="pl-8" />
+        </div>
+        <Button className="bg-[#f97316] hover:bg-[#f97316]/90">
+          <Plus className="mr-2 h-4 w-4" /> Novo Cliente
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Base de Clientes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Contato</TableHead>
+                <TableHead>Loja</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Última Interação</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mockCustomers.map((customer) => (
+                <TableRow key={customer.id}>
+                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">{customer.email}</div>
+                    <div className="text-xs text-muted-foreground">{customer.phone}</div>
+                  </TableCell>
+                  <TableCell>{customer.shop}</TableCell>
+                  <TableCell>
+                    <Badge className={statusMap[customer.status as keyof typeof statusMap].color}>
+                      {statusMap[customer.status as keyof typeof statusMap].label}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{customer.lastContact}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" title="Abrir WhatsApp">
+                      <MessageSquare className="h-4 w-4 text-[#25D366]" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

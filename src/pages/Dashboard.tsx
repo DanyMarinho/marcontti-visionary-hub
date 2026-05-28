@@ -1,78 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useAppStore } from '@/store';
-import { Upload } from 'lucide-react';
-import { MetricCards } from '@/components/dashboard/MetricCards';
-import { LeadsLineChart } from '@/components/dashboard/LeadsLineChart';
-import { SalesBarChart } from '@/components/dashboard/SalesBarChart';
-import { RevenueDonutChart } from '@/components/dashboard/RevenueDonutChart';
-import { OriginBarChart } from '@/components/dashboard/OriginBarChart';
-import { FinancialSummary } from '@/components/dashboard/FinancialSummary';
-import { PeriodSelector } from '@/components/dashboard/PeriodSelector';
-import { AdImportModal } from '@/components/shared/AdImportModal';
-import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
-import { pageTransition } from '@/lib/animations';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, PieChart, Pie, Cell, Legend
+} from 'recharts';
+import { TrendingUp, Users, DollarSign, Target } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 
-const Dashboard: React.FC = () => {
-  const [importOpen, setImportOpen] = useState(false);
-  const { leads, vehicles, recalculateFromLeads, recalculateFromVehicles } = useAppStore();
+const salesData = [
+  { name: 'Jan', sales: 4000 },
+  { name: 'Fev', sales: 3000 },
+  { name: 'Mar', sales: 5000 },
+  { name: 'Abr', sales: 4500 },
+  { name: 'Mai', sales: 6000 },
+  { name: 'Jun', sales: 5500 },
+];
 
-  useEffect(() => {
-    recalculateFromLeads(leads);
-    recalculateFromVehicles(vehicles);
-  }, [leads, vehicles]);
+const vendorData = [
+  { name: 'Carlos', sales: 12000 },
+  { name: 'Ana', sales: 15000 },
+  { name: 'Beatriz', sales: 10000 },
+  { name: 'Joao', sales: 8000 },
+];
+
+const productData = [
+  { name: 'SUV', value: 400 },
+  { name: 'Sedan', value: 300 },
+  { name: 'Hatch', value: 200 },
+  { name: 'Pickup', value: 100 },
+];
+
+const COLORS = ['#1e3a5f', '#f97316', '#0ea5e9', '#8b5cf6'];
+
+export default function Dashboard() {
+  const { user } = useAuthStore();
 
   return (
-    <motion.div
-      variants={pageTransition}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="space-y-6 max-w-7xl mx-auto"
-    >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard Empresarial</h1>
-          <p className="text-secondary text-sm">Visão geral de performance e métricas de negócio</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setImportOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-all shadow-lg shadow-blue-500/20"
-          >
-            <Upload className="w-4 h-4" />
-            Importar Anúncios
-          </button>
-          <PeriodSelector />
-        </div>
+    <div className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Vendas Totais</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">R$ 124.500</div>
+            <p className="text-xs text-muted-foreground">+12% em relação ao mês anterior</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ticket Médio</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">R$ 65.000</div>
+            <p className="text-xs text-muted-foreground">+5% em relação ao mês anterior</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Clientes Ativos</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1.250</div>
+            <p className="text-xs text-muted-foreground">+48 novos leads hoje</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Meta do Mês</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">85%</div>
+            <div className="mt-4 h-2 w-full bg-secondary rounded-full overflow-hidden">
+              <div className="h-full bg-[#f97316] w-[85%] transition-all" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <AdImportModal isOpen={importOpen} onClose={() => setImportOpen(false)} />
-
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        <div className="xl:col-span-3">
-          <MetricCards />
-        </div>
-        <div className="xl:col-span-1">
-          <AlertsPanel />
-        </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Vendas por Período</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="sales" stroke="#1e3a5f" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Vendas por Categoria</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={productData}
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {productData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <LeadsLineChart />
-        <SalesBarChart />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueDonutChart />
-        <OriginBarChart />
-      </div>
-
-      <div className="w-full">
-        <FinancialSummary />
-      </div>
-    </motion.div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Desempenho da Equipe</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={vendorData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="sales" fill="#1e3a5f" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </div>
   );
-};
-
-export default Dashboard;
+}

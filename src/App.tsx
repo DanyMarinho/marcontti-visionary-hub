@@ -1,119 +1,50 @@
-import React, { Suspense, lazy } from 'react';
-import { createBrowserRouter, RouterProvider, useLocation, useOutlet } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { RootLayout } from '@/components/layout/RootLayout';
-import { SkeletonLoader } from '@/components/shared/SkeletonLoader';
-import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
-import { pageTransition } from '@/lib/animations';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from './store/authStore';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import CRM from './pages/CRM';
+import WhatsApp from './pages/WhatsApp';
+import Projection from './pages/Projection';
+import Vendors from './pages/Vendors';
+import Settings from './pages/Settings';
+import Layout from './components/Layout';
 
-const NotFound = lazy(() => import('@/pages/NotFound'));
 
-const Home = lazy(() => import('@/pages/Home'));
-const CRM = lazy(() => import('@/pages/CRM'));
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
-const WhatsApp = lazy(() => import('@/pages/WhatsApp'));
-const Automations = lazy(() => import('@/pages/Automations'));
-const Inventory = lazy(() => import('@/pages/Inventory'));
 
-const AnimatedRoute = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
+
+function App() {
+  const user = useAuthStore((state) => state.user);
+
   return (
-    <motion.div
-      key={location.pathname}
-      variants={pageTransition}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="w-full h-full"
-    >
-      {children}
-    </motion.div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+        <Route
+          path="/*"
+          element={
+            user ? (
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/crm" element={<CRM />} />
+                  <Route path="/whatsapp" element={<WhatsApp />} />
+                  <Route path="/metrics" element={<Dashboard />} />
+                  <Route path="/projection" element={<Projection />} />
+                  <Route path="/vendors" element={<Vendors />} />
+                  <Route path="/shops" element={<div>Lojas</div>} />
+                  <Route path="/settings" element={<Settings />} />
+
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+      </Routes>
+    </Router>
   );
-};
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: (
-      <ErrorBoundary>
-        <RootLayout />
-      </ErrorBoundary>
-    ),
-    children: [
-      {
-        index: true,
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <AnimatedRoute>
-              <Home />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'crm',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <AnimatedRoute>
-              <CRM />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'dashboard',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="chart" className="h-full" />}>
-            <AnimatedRoute>
-              <Dashboard />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'whatsapp',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <AnimatedRoute>
-              <WhatsApp />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'automacoes',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <AnimatedRoute>
-              <Automations />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: 'estoque',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <AnimatedRoute>
-              <Inventory />
-            </AnimatedRoute>
-          </Suspense>
-        ),
-      },
-      {
-        path: '*',
-        element: (
-          <Suspense fallback={<SkeletonLoader variant="card" className="h-full" />}>
-            <NotFound />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-]);
-
-export function App() {
-  return <RouterProvider router={router} />;
 }
 
 export default App;

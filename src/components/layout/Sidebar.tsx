@@ -17,8 +17,10 @@ import {
   Bot,
   PieChart,
   Users2,
-  X
+  X,
+  AlertCircle
 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Role } from '@/types';
@@ -54,6 +56,8 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
     { label: 'Pipeline', icon: GitMerge, path: '/pipeline', roles: ['admin', 'loja', 'vendedor'], labelAlt: { vendedor: 'Meu Pipeline' } },
     { label: 'WhatsApp', icon: MessageSquare, path: '/whatsapp', roles: ['admin', 'loja', 'vendedor'] },
     { label: 'Agente IA', icon: Bot, path: '/ai-agent', roles: ['admin', 'loja'] },
+    { label: 'Reativação', icon: AlertCircle, path: '/reactivation', roles: ['admin', 'loja', 'vendedor'] },
+
     { label: 'Métricas', icon: PieChart, path: '/metrics', roles: ['admin', 'loja'], labelAlt: { vendedor: 'Minhas Metas' } },
     { label: 'Projeção Financeira', icon: TrendingUp, path: '/projection', roles: ['admin'] },
     { label: 'Configurações', icon: Settings, path: '/settings', roles: ['admin', 'loja', 'vendedor'] },

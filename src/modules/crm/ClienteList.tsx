@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ClienteForm } from './ClienteForm';
+import { ClienteDetails } from './components/ClienteDetails';
 import { ExportButton } from '@/components/shared/ExportButton';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -38,6 +39,7 @@ export default function ClienteList() {
   const [search, setSearch] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const debouncedSearch = useDebounce(search, 300);
   const { clientes, totalCount, isLoading, deleteCliente } = useClientes(page, 10, debouncedSearch);
@@ -165,6 +167,12 @@ export default function ClienteList() {
         open={isFormOpen} 
         onOpenChange={setIsFormOpen} 
         cliente={selectedCliente} 
+      />
+
+      <ClienteDetails
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        cliente={selectedCliente}
       />
     </div>
   );

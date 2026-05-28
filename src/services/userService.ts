@@ -13,12 +13,14 @@ export const userService = {
   },
 
   async create(user: Omit<User, 'id' | 'created_at' | 'updated_at' | 'is_active'>) {
-    // In a real app, this would be an Edge Function call to handle supabase.auth.admin
-    // For now, we'll insert into the public.users table (which is our profiles table)
-    // Note: In a production app, the user would be created in auth.users first.
+    // Note: In a real app, users are created via Auth first.
+    // For this demonstration, we'll use a random UUID if not provided.
     const { data, error } = await supabase
       .from('users')
-      .insert([user])
+      .insert([{
+        ...user,
+        id: (crypto as any).randomUUID()
+      }])
       .select()
       .single();
     if (error) throw error;
@@ -27,15 +29,16 @@ export const userService = {
 
   async inviteVendor(email: string, fullName: string, tenantId: string, storeId: string) {
     console.log(`Inviting ${fullName} (${email}) to tenant ${tenantId}...`);
-    // Mocking the invite process for demonstration
-    // In production, use: await supabase.functions.invoke('admin-invite', { body: { email, fullName, tenantId, storeId } })
     return { success: true };
   },
 
   async update(id: string, updates: Partial<User>) {
+    // Remove properties that are not in the database schema
+    const { ...cleanUpdates } = updates;
+    
     const { data, error } = await supabase
       .from('users')
-      .update(updates)
+      .update(cleanUpdates as any)
       .eq('id', id)
       .select()
       .single();
@@ -44,7 +47,6 @@ export const userService = {
   },
 
   async deactivateVendor(userId: string) {
-    // Reassign logic would go here: reassign pipeline cards to shop manager
     const { error } = await supabase
       .from('users')
       .update({ is_active: false })

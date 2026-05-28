@@ -43,13 +43,13 @@ export default function WhatsApp() {
           <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
             {!connected ? (
               <>
-                <div className="bg-white p-4 rounded-lg border-2 border-dashed border-[#1e3a5f]/20">
-                  <QrCode size={180} className="text-[#1e3a5f]" />
+                <div className="bg-white p-4 rounded-lg border-2 border-dashed border-[#f97316]/20">
+                  <QrCode size={180} className="text-[#0a0a0a]" />
                 </div>
                 <p className="text-sm text-center text-muted-foreground">
                   Escaneie o QR Code para conectar sua instância da Evolution API.
                 </p>
-                <Button className="w-full bg-[#1e3a5f]" onClick={() => setConnected(true)}>
+                <Button className="w-full bg-[#0a0a0a] hover:bg-[#0a0a0a]/90" onClick={() => setConnected(true)}>
                   <RefreshCw className="mr-2 h-4 w-4" /> Gerar Novo QR Code
                 </Button>
               </>
@@ -90,8 +90,8 @@ export default function WhatsApp() {
           <CardContent className="space-y-4">
             <textarea 
               className="w-full min-h-[150px] p-3 text-sm rounded-md border bg-background"
-              placeholder="Você é o assistente virtual da Marcontti Hub..."
-              defaultValue="Você é o assistente comercial da Marcontti Hub. Seja educado, focado em vendas e agendamento de visitas. Use os dados de estoque para responder sobre veículos."
+              placeholder="Você é o assistente virtual da MEC Hub..."
+              defaultValue="Você é o assistente comercial da MEC Hub. Seja educado, focado em vendas e agendamento de reuniões. Use os dados de estoque/serviços para responder."
             />
             <Button className="w-full" variant="outline">Salvar Prompt</Button>
           </CardContent>
@@ -104,7 +104,7 @@ export default function WhatsApp() {
           <CardHeader className="border-b">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white">
+                <div className="w-10 h-10 rounded-full bg-[#0a0a0a] flex items-center justify-center text-white">
                   JS
                 </div>
                 <div>
@@ -125,7 +125,7 @@ export default function WhatsApp() {
                       "max-w-[80%] p-3 rounded-lg text-sm shadow-sm",
                       msg.role === 'user' 
                         ? "bg-muted ml-auto" 
-                        : "bg-[#1e3a5f] text-white"
+                        : "bg-[#0a0a0a] text-white"
                     )}
                   >
                     <p>{msg.content}</p>
@@ -140,7 +140,7 @@ export default function WhatsApp() {
           </CardContent>
           <div className="p-4 border-t flex gap-2">
             <Input placeholder="Digite uma mensagem..." className="flex-1" />
-            <Button size="icon" className="bg-[#1e3a5f]">
+            <Button size="icon" className="bg-[#f97316] hover:bg-[#f97316]/90">
               <Send size={18} />
             </Button>
           </div>

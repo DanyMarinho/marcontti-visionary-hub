@@ -15,10 +15,26 @@ interface AuthState {
 }
 
 const mockTenants: Tenant[] = [
-  { id: '1', name: 'Marcontti', niche: 'mecanica', cnpj: '12.345.678/0001-01', contact_email: 'contato@marcontti.com', color: '#f97316', is_active: true, plan: 'premium', status: 'ativo', timezone: 'America/Sao_Paulo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '2', name: 'Clínica Vida', niche: 'clinica', cnpj: '12.345.678/0001-02', contact_email: 'contato@clinicavida.com', color: '#10b981', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '3', name: 'Casa & Lar', niche: 'comercio_local', cnpj: '12.345.678/0001-03', contact_email: 'contato@casalar.com', color: '#3b82f6', is_active: true, plan: 'basico', status: 'ativo', timezone: 'America/Sao_Paulo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '4', name: 'EduPro', niche: 'educacao', cnpj: '12.345.678/0001-04', contact_email: 'contato@edupro.com', color: '#8b5cf6', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+  { 
+    id: '1', name: 'Marcontti', niche: 'mecanica', cnpj: '12.345.678/0001-01', contact_email: 'contato@marcontti.com', color: '#f97316', is_active: true, plan: 'premium', status: 'ativo', timezone: 'America/Sao_Paulo', 
+    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
+  },
+  { 
+    id: '2', name: 'Clínica Vida', niche: 'clinica', cnpj: '12.345.678/0001-02', contact_email: 'contato@clinicavida.com', color: '#10b981', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', 
+    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
+  },
+  { 
+    id: '3', name: 'Casa & Lar', niche: 'comercio_local', cnpj: '12.345.678/0001-03', contact_email: 'contato@casalar.com', color: '#3b82f6', is_active: true, plan: 'basico', status: 'ativo', timezone: 'America/Sao_Paulo', 
+    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
+  },
+  { 
+    id: '4', name: 'EduPro', niche: 'educacao', cnpj: '12.345.678/0001-04', contact_email: 'contato@edupro.com', color: '#8b5cf6', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', 
+    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
+  }
 ];
 
 const mockUser: User = {

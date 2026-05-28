@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppShell from "./components/layout/AppShell";
 import Dashboard from "./pages/Dashboard";
 import ClienteList from "./modules/crm/ClienteList";
+import KanbanBoard from "./modules/pipeline/KanbanBoard";
 import WhatsApp from "./pages/WhatsApp";
 import { TenantList } from "./modules/admin/Tenants/TenantList";
 import { LojaList } from "./modules/admin/Stores/LojaList";
@@ -30,6 +31,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/crm" element={<ClienteList />} />
+            <Route path="/pipeline" element={<KanbanBoard />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
             <Route path="/tenants" element={<TenantList />} />
             <Route path="/shops" element={<LojaList />} />

@@ -29,7 +29,7 @@ const productData = [
   { name: 'Pickup', value: 100 },
 ];
 
-const COLORS = ['#1e3a5f', '#f97316', '#0ea5e9', '#8b5cf6'];
+const COLORS = ['#0a0a0a', '#f97316', '#71717a', '#a1a1aa'];
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -93,7 +93,7 @@ export default function Dashboard() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="sales" stroke="#1e3a5f" strokeWidth={2} />
+                <Line type="monotone" dataKey="sales" stroke="#f97316" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -135,7 +135,7 @@ export default function Dashboard() {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="sales" fill="#1e3a5f" />
+              <Bar dataKey="sales" fill="#0a0a0a" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

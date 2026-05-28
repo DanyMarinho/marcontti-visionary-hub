@@ -18,7 +18,7 @@ export default function Vendors() {
         <h3 className="text-xl font-semibold flex items-center gap-2">
           <Trophy className="text-yellow-500" /> Ranking de Vendedores
         </h3>
-        <Button className="bg-[#1e3a5f]">Gerenciar Equipe</Button>
+        <Button className="bg-[#0a0a0a] hover:bg-[#0a0a0a]/90">Gerenciar Equipe</Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -27,7 +27,7 @@ export default function Vendors() {
             <CardHeader className="flex flex-row items-center gap-4 pb-2">
               <div className="relative">
                 <Avatar className="h-12 w-12 border-2 border-muted">
-                  <AvatarFallback className="bg-[#1e3a5f] text-white">{vendor.avatar}</AvatarFallback>
+                  <AvatarFallback className="bg-[#0a0a0a] text-white">{vendor.avatar}</AvatarFallback>
                 </Avatar>
                 {vendor.rank === 1 && <Medal className="absolute -top-2 -right-2 text-yellow-500 fill-yellow-500 h-6 w-6" />}
                 {vendor.rank === 2 && <Medal className="absolute -top-2 -right-2 text-slate-400 fill-slate-400 h-6 w-6" />}
@@ -44,17 +44,17 @@ export default function Vendors() {
                   <span>Vendas: <strong>{vendor.sales}</strong></span>
                   <span>Meta: <strong>{vendor.meta}</strong></span>
                 </div>
-                <div className="text-lg font-bold text-[#1e3a5f] dark:text-blue-400">
+                <div className="text-lg font-bold text-[#0a0a0a] dark:text-orange-400">
                   {vendor.amount}
                 </div>
                 <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                   <div 
-                    className={`h-full ${vendor.rank === 1 ? 'bg-[#f97316]' : 'bg-[#1e3a5f]'} transition-all`} 
+                    className={`h-full ${vendor.rank === 1 ? 'bg-[#f97316]' : 'bg-[#0a0a0a]'} transition-all`} 
                     style={{ width: vendor.meta }}
                   />
                 </div>
               </div>
-              <Button variant="ghost" className="w-full mt-4 h-8 text-xs hover:bg-[#1e3a5f]/5" onClick={() => {}}>
+              <Button variant="ghost" className="w-full mt-4 h-8 text-xs hover:bg-[#0a0a0a]/5" onClick={() => {}}>
                 Ver Perfil Detalhado
               </Button>
             </CardContent>
@@ -74,7 +74,7 @@ export default function Vendors() {
               <div key={v.id} className="flex items-center gap-4">
                 <div className="w-32 text-sm font-medium">{v.name}</div>
                 <div className="flex-1 h-3 bg-secondary rounded-full overflow-hidden">
-                   <div className="h-full bg-[#1e3a5f] transition-all" style={{ width: v.meta }} />
+                   <div className="h-full bg-[#0a0a0a] transition-all" style={{ width: v.meta }} />
                 </div>
                 <div className="w-16 text-right text-sm font-bold">{v.meta}</div>
               </div>

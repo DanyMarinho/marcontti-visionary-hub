@@ -51,44 +51,11 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield size={20} className="text-[#1e3a5f]" /> Permissões
-              </CardTitle>
-              <CardDescription>Gerencie quem tem acesso ao sistema</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">Módulo de gestão de usuários.</p>
-              <Button variant="outline">Adicionar Usuário</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="whatsapp">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare size={20} className="text-[#1e3a5f]" /> Configurações API
-              </CardTitle>
-              <CardDescription>Integração com Evolution API</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>URL da Evolution API</Label>
-                <Input defaultValue="https://api.evolution.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Chave Global (API Key)</Label>
-                <Input type="password" placeholder="Sua chave secreta" />
-              </div>
-              <Button className="bg-[#f97316] hover:bg-[#f97316]/90">Testar Conexão</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell size={20} className="text-[#1e3a5f]" /> Alertas
+                <Shield size={20} className="text-[#f97316]" /> Permissões
+...
+                <MessageSquare size={20} className="text-[#f97316]" /> Configurações API
+...
+                <Bell size={20} className="text-[#f97316]" /> Alertas
               </CardTitle>
             </CardHeader>
             <CardContent>

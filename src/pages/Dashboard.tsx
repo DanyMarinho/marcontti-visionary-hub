@@ -14,11 +14,14 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const COLORS = ['#0a0a0a', '#f97316', '#71717a', '#a1a1aa'];
 
 export default function Dashboard() {
-  const { user, selectedTenantId, tenants } = useAuthStore();
+  const { user, selectedTenantId, setSelectedTenant, tenants } = useAuthStore();
+
 
   const isGlobal = selectedTenantId === 'all';
   const currentTenant = tenants.find(t => t.id === selectedTenantId);

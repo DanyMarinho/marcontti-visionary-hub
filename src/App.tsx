@@ -13,33 +13,25 @@ import Layout from './components/Layout';
 
 
 function App() {
-  const user = useAuthStore((state) => state.user);
-
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
         <Route
           path="/*"
           element={
-            user ? (
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/crm" element={<CRM />} />
-                  <Route path="/whatsapp" element={<WhatsApp />} />
-                  <Route path="/metrics" element={<Dashboard />} />
-                  <Route path="/projection" element={<Projection />} />
-                  <Route path="/vendors" element={<Vendors />} />
-                  <Route path="/shops" element={<div>Lojas</div>} />
-                  <Route path="/settings" element={<Settings />} />
-
-                  <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
-              </Layout>
-            ) : (
-              <Navigate to="/login" />
-            )
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/crm" element={<CRM />} />
+                <Route path="/whatsapp" element={<WhatsApp />} />
+                <Route path="/metrics" element={<Dashboard />} />
+                <Route path="/projection" element={<Projection />} />
+                <Route path="/vendors" element={<Vendors />} />
+                <Route path="/shops" element={<div>Lojas</div>} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </Layout>
           }
         />
       </Routes>

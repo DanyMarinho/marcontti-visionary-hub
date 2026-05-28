@@ -21,7 +21,12 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
-  const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date();
+  const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent dragging from triggering click, though dnd-kit usually handles this via sensors
+    onClick(card);
+  };
 
   return (
     <Card
@@ -30,9 +35,9 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
       className={cn(
         "mb-3 cursor-grab active:cursor-grabbing bg-[#111111] border-[#1f1f1f] hover:border-orange-500/50 transition-all duration-200 group touch-none shadow-none",
         isDragging && "opacity-50 border-orange-500 ring-2 ring-orange-500/20",
-        isOverdue && "border-l-4 border-l-red-500"
+        isOverdue && "border-l-4 border-l-red-600 bg-red-500/5"
       )}
-      onClick={() => onClick(card)}
+      onClick={handleClick}
       {...attributes}
       {...listeners}
       aria-label={`Card de ${card.client?.full_name || 'Cliente'}, valor R$ ${card.estimated_value}`}

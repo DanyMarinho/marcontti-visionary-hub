@@ -16,7 +16,7 @@ export function usePipeline(filters = {}) {
   });
 
   const moveCardMutation = useMutation({
-    mutationFn: ({ cardId, fromStage, toStage }: { cardId: string, fromStage: string, toStage: string }) => 
+    mutationFn: ({ cardId, fromStage, toStage, finalValue, closingDate }: { cardId: string, fromStage: string, toStage: string, finalValue?: number, closingDate?: string }) => 
       pipelineCardService.moveCard(cardId, activeTenantId!, user!.id, fromStage, toStage),
     onMutate: async ({ cardId, toStage }) => {
       await queryClient.cancelQueries({ queryKey: ['pipeline-cards', activeTenantId] });
@@ -31,11 +31,12 @@ export function usePipeline(filters = {}) {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(['pipeline-cards', activeTenantId, filters], context?.previousCards);
-      toast.error('Erro ao mover card');
+      toast.error('Erro ao mover card. Verificando rastro de falha...');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pipeline-cards', activeTenantId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-kpis'] });
+      queryClient.invalidateQueries({ queryKey: ['projecao-financeira'] });
     }
   });
 

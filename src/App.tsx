@@ -36,7 +36,11 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/crm" element={<ClienteList />} />
             <Route path="/pipeline" element={<KanbanBoard />} />
-            <Route path="/whatsapp" element={<WhatsApp />} />
+            <Route path="/whatsapp" element={<WhatsAppInbox />} />
+            <Route path="/whatsapp/connect" element={<QRCodeConnect />} />
+            <Route path="/ai-agent" element={<AgenteIAConfig />} />
+            <Route path="/ai-agent/logs" element={<AgenteIALogs />} />
+
             <Route path="/tenants" element={<TenantList />} />
             <Route path="/shops" element={<LojaList />} />
             <Route path="/vendors" element={<VendedorList />} />

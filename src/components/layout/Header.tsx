@@ -67,11 +67,12 @@ export function Header({ onMenuClick }: HeaderProps) {
   });
 
   const markAllAsRead = async () => {
-    if (!activeTenant?.id) return;
+    if (!activeTenant?.id || !user?.id) return;
     await supabase
       .from('notifications')
       .update({ is_read: true })
       .eq('tenant_id', activeTenant.id)
+      .eq('user_id', user.id)
       .eq('is_read', false);
     refetch();
   };

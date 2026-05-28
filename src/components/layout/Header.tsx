@@ -17,7 +17,8 @@ import {
   Menu,
   Bell,
   MessageSquare,
-  AlertCircle
+  AlertCircle,
+  Share2
 } from 'lucide-react';
 import {
   DropdownMenu,

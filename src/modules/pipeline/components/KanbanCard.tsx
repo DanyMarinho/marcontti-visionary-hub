@@ -28,7 +28,11 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
     onClick(card);
   };
 
+  const idleDays = differenceInDays(new Date(), new Date(card.updated_at));
+  const isIdle = idleDays >= 7;
+
   return (
+
     <Card
       ref={setNodeRef}
       style={style}

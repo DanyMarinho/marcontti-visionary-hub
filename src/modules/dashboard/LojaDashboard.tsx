@@ -47,6 +47,28 @@ export function LojaDashboard() {
     enabled: !!activeTenantId
   });
 
+  const { data: whatsappStats } = useQuery({
+    queryKey: ['whatsapp-stats', activeTenantId],
+    queryFn: async () => {
+      if (!activeTenantId) return { waiting: 0, attending: 0, resolved: 0 };
+      const { data, error } = await supabase
+        .from('whatsapp_conversations')
+        .select('status')
+        .eq('tenant_id', activeTenantId);
+      
+      if (error) throw error;
+      
+      const stats = { waiting: 0, attending: 0, resolved: 0 };
+      (data || []).forEach(conv => {
+        if (conv.status === 'waiting') stats.waiting++;
+        else if (conv.status === 'attending') stats.attending++;
+        else if (conv.status === 'resolved') stats.resolved++;
+      });
+      return stats;
+    },
+    enabled: !!activeTenantId
+  });
+
   const { data: kpis, isLoading } = useQuery({
     queryKey: ['dashboard-kpis', activeTenantId],
     queryFn: async () => {

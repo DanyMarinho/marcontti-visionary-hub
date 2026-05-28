@@ -17,16 +17,18 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ onFilter, isLoading }: FilterBarProps) {
-  const [period, setPeriod] = React.useState('30d');
+  const [period, setPeriod] = React.useState('month');
   const [store, setStore] = React.useState('all');
 
   const handleApply = () => {
     let startDate = subMonths(new Date(), 1);
     const endDate = new Date();
 
-    if (period === '7d') startDate = subMonths(new Date(), 0.25);
+    if (period === '7d' || period === 'week') startDate = subMonths(new Date(), 0.25);
     if (period === '3m') startDate = subMonths(new Date(), 3);
     if (period === '6m') startDate = subMonths(new Date(), 6);
+    if (period === 'today') startDate = new Date();
+    if (period === 'last_month') startDate = subMonths(startOfMonth(new Date()), 1);
 
     onFilter({
       startDate: format(startDate, 'yyyy-MM-dd'),
@@ -48,11 +50,11 @@ export function FilterBar({ onFilter, isLoading }: FilterBarProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7d">Últimos 7 dias</SelectItem>
-              <SelectItem value="30d">Últimos 30 dias</SelectItem>
+              <SelectItem value="today">Hoje</SelectItem>
+              <SelectItem value="week">Esta Semana</SelectItem>
+              <SelectItem value="month">Mês Atual</SelectItem>
+              <SelectItem value="last_month">Mês Anterior</SelectItem>
               <SelectItem value="3m">Últimos 3 meses</SelectItem>
-              <SelectItem value="6m">Últimos 6 meses</SelectItem>
-              <SelectItem value="12m">Últimos 12 meses</SelectItem>
             </SelectContent>
           </Select>
         </div>

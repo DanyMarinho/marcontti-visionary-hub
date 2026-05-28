@@ -27,10 +27,12 @@ export function WhatsAppInbox() {
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
 
-  const filteredConversations = conversations.filter(conv => 
-    conv.client?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    conv.client?.phone?.includes(search)
-  );
+  const filteredConversations = conversations
+    .filter(conv => 
+      conv.client?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      conv.client?.phone?.includes(search)
+    )
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
     <div className="flex h-[calc(100vh-140px)] border border-[#1f1f1f] rounded-lg overflow-hidden bg-[#0a0a0a] relative">

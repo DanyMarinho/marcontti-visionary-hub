@@ -22,6 +22,7 @@ export function QRCodeConnect() {
   const { activeTenant } = useTenant();
   const [showConfig, setShowConfig] = useState(false);
   const [qrTimeout, setQrTimeout] = useState(false);
+  const [countdown, setCountdown] = useState(30);
   
   const [formData, setFormData] = useState({
     instance_name: '',
@@ -51,15 +52,19 @@ export function QRCodeConnect() {
 
   const handleGenerateQR = () => {
     setQrTimeout(false);
+    setCountdown(30);
     connectInstance.mutate(instance!.id);
-    
-    // Simulating QR timeout
-    setTimeout(() => {
-      if (instance?.status === 'connecting') {
-        // In real app, check if QR actually arrived
-      }
-    }, 30000);
   };
+
+  useEffect(() => {
+    let timer: any;
+    if (instance?.status === 'connecting' && countdown > 0) {
+      timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
+    } else if (countdown === 0 && instance?.status === 'connecting') {
+      setQrTimeout(true);
+    }
+    return () => clearInterval(timer);
+  }, [instance?.status, countdown]);
 
   if (isLoading) {
     return (
@@ -163,8 +168,11 @@ export function QRCodeConnect() {
                       Abra o WhatsApp {'>'} Configurações {'>'} Dispositivos Conectados {'>'} Conectar um Dispositivo.
                     </p>
                   </div>
-                  <div className="flex items-center justify-center gap-2 text-orange-500 text-xs font-bold uppercase tracking-wider animate-pulse">
-                    <RefreshCw size={14} className="animate-spin" /> Aguardando leitura...
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center justify-center gap-2 text-orange-500 text-[10px] font-black uppercase tracking-widest animate-pulse">
+                      <RefreshCw size={14} className="animate-spin" /> Aguardando leitura...
+                    </div>
+                    <p className="text-[10px] text-[#888888] font-bold">O QR Code expira em {countdown}s</p>
                   </div>
                 </div>
               ) : (

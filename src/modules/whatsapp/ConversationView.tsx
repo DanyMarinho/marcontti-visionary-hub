@@ -73,21 +73,21 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#0a0a0a]">
       {/* Header */}
       <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between h-20">
         <div className="flex items-center gap-3">
           {onBack && (
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={onBack}>
+            <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={onBack}>
               <ChevronLeft size={20} />
             </Button>
           )}
-          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+          <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold border border-orange-500/20">
             {client?.full_name?.substring(0, 2).toUpperCase()}
           </div>
           <div>
-            <h3 className="font-bold text-sm">{client?.full_name}</h3>
-            <p className="text-[10px] text-muted-foreground uppercase">{client?.phone}</p>
+            <h3 className="font-bold text-sm text-white">{client?.full_name}</h3>
+            <p className="text-[10px] text-[#888888] uppercase font-black tracking-widest">{client?.phone}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

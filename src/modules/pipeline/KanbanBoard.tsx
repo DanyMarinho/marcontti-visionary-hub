@@ -82,9 +82,9 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <div className="flex-1 w-full overflow-hidden">
-        <div className="kanban-scroll-area h-full">
-          <div className="flex gap-3 md:gap-4 min-h-full min-w-max pb-4">
+      <div className="flex-1 w-full overflow-hidden -mx-4 md:mx-0">
+        <div className="h-full overflow-x-auto overflow-y-hidden px-4 md:px-0 scrollbar-thin">
+          <div className="flex gap-3 md:gap-4 min-h-full pb-4">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCorners}
@@ -93,7 +93,7 @@ export default function KanbanBoard() {
             >
               {isLoading ? (
                 MEC_STAGES.map((stage) => (
-                  <div key={stage.key} className="flex flex-col w-[280px] md:w-72 flex-shrink-0 space-y-3">
+                  <div key={stage.key} className="flex flex-col w-[260px] md:w-72 flex-shrink-0 space-y-3">
                     <div className="h-10 w-full bg-muted animate-pulse rounded-lg" />
                     {[1, 2, 3].map(i => (
                       <div key={i} className="h-32 w-full bg-muted animate-pulse rounded-lg" />

@@ -3,7 +3,10 @@ import { useAuthStore } from './store/authStore';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CRM from './pages/CRM';
+import WhatsApp from './pages/WhatsApp';
+import Projection from './pages/Projection';
 import Layout from './components/Layout';
+
 
 function App() {
   const user = useAuthStore((state) => state.user);
@@ -20,12 +23,13 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/crm" element={<CRM />} />
-                  <Route path="/whatsapp" element={<div>WhatsApp / Agente IA</div>} />
-                  <Route path="/metrics" element={<div>Métricas</div>} />
-                  <Route path="/projection" element={<div>Projeção Financeira</div>} />
+                  <Route path="/whatsapp" element={<WhatsApp />} />
+                  <Route path="/metrics" element={<Dashboard />} />
+                  <Route path="/projection" element={<Projection />} />
                   <Route path="/vendors" element={<div>Vendedores</div>} />
                   <Route path="/shops" element={<div>Lojas</div>} />
                   <Route path="/settings" element={<div>Configurações</div>} />
+
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </Layout>

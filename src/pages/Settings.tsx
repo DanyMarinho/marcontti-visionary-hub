@@ -208,43 +208,91 @@ export default function Settings() {
           <TabsContent value="notifications">
              <Card className="bg-[#0a0a0a] border-zinc-800">
                <CardHeader>
-                 <CardTitle className="text-white">Central de Alertas</CardTitle>
+                 <CardTitle className="text-white flex items-center gap-2">
+                   <Bell size={20} className="text-orange-500" /> Central de Alertas
+                 </CardTitle>
+                 <CardDescription>Defina quais eventos disparam e-mails de notificação.</CardDescription>
                </CardHeader>
                <CardContent className="space-y-4">
                  {[
-                   { label: 'Novos leads recebidos', desc: 'Notificar quando um lead entrar pelo WhatsApp.' },
-                   { label: 'Cards atrasados', desc: 'Alertar sobre cards sem movimentação há mais de 3 dias.' },
-                   { label: 'Relatório diário', desc: 'Enviar resumo de performance às 08:00.' },
-                   { label: 'Meta atingida', desc: 'Celebrar quando uma meta for 100% concluída.' }
+                   { id: 'idle', label: 'Cards sem movimentação (+3 dias)', desc: 'Alerta preventivo para evitar perda de rastro comercial.' },
+                   { id: 'goal', label: 'Meta 100% atingida', desc: 'Notificar quando o realizado igualar a meta do período.' },
+                   { id: 'whatsapp', label: 'WhatsApp Desconectado', desc: 'Alerta crítico de interrupção na comunicação.' }
                  ].map((item, i) => (
-                   <div key={i} className="flex items-start justify-between p-4 rounded-lg bg-zinc-900/30 border border-zinc-800">
-                     <div className="space-y-0.5">
-                       <h4 className="text-sm font-bold text-white">{item.label}</h4>
-                       <p className="text-xs text-zinc-500">{item.desc}</p>
+                   <div key={i} className="p-4 rounded-lg bg-zinc-900/30 border border-zinc-800 space-y-4">
+                     <div className="flex items-start justify-between">
+                       <div className="space-y-0.5">
+                         <h4 className="text-sm font-bold text-white">{item.label}</h4>
+                         <p className="text-xs text-zinc-500">{item.desc}</p>
+                       </div>
+                       <Switch defaultChecked={i > 0} />
                      </div>
-                     <Switch defaultChecked={i < 2} />
+                     <div className="flex items-center gap-3 bg-[#0a0a0a] p-2 rounded border border-zinc-800">
+                       <Mail size={14} className="text-zinc-600 ml-2" />
+                       <Input placeholder="E-mail de destino..." className="border-none bg-transparent h-8 text-xs focus-visible:ring-0" />
+                     </div>
                    </div>
                  ))}
+                 <div className="flex justify-end pt-4">
+                   <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 min-w-[120px]">Salvar Notificações</Button>
+                 </div>
                </CardContent>
              </Card>
           </TabsContent>
 
           <TabsContent value="audit">
              <Card className="bg-[#0a0a0a] border-zinc-800">
-               <CardHeader>
-                 <CardTitle className="text-white">Logs de Auditoria</CardTitle>
-                 <CardDescription>Rastro de todas as alterações críticas no sistema.</CardDescription>
+               <CardHeader className="flex flex-row items-center justify-between">
+                 <div className="space-y-1">
+                   <CardTitle className="text-white flex items-center gap-2">
+                     <Terminal size={20} className="text-orange-500" /> Logs de Auditoria
+                   </CardTitle>
+                   <CardDescription>Rastro de todas as alterações críticas no sistema.</CardDescription>
+                 </div>
+                 <div className="flex gap-2">
+                   <div className="relative">
+                     <Search className="absolute left-3 top-2.5 h-3 w-3 text-zinc-500" />
+                     <Input placeholder="Filtrar usuário..." className="pl-8 h-8 w-40 text-xs bg-zinc-900 border-zinc-800" />
+                   </div>
+                   <Button variant="outline" size="sm" className="h-8 border-zinc-800 text-[10px] uppercase font-bold gap-2">
+                     <Filter size={14} /> Período
+                   </Button>
+                 </div>
                </CardHeader>
                <CardContent>
-                  <div className="space-y-4">
-                    {[1,2,3,4,5].map(i => (
-                      <div key={i} className="flex items-center gap-4 text-xs p-3 rounded bg-zinc-900/50 border-l-2 border-orange-500">
-                        <span className="text-zinc-500 font-mono shrink-0">14:2{i}:05</span>
-                        <span className="font-bold text-white shrink-0">Admin</span>
-                        <span className="text-zinc-400">Alterou valor do card #842 para R$ 15.000</span>
-                      </div>
-                    ))}
+                  <div className="rounded-md border border-zinc-800 overflow-hidden">
+                    <table className="w-full text-[11px]">
+                      <thead className="bg-zinc-900/50 border-b border-zinc-800">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-black uppercase text-[#888888] tracking-widest">Data/Hora</th>
+                          <th className="px-4 py-3 text-left font-black uppercase text-[#888888] tracking-widest">Usuário</th>
+                          <th className="px-4 py-3 text-left font-black uppercase text-[#888888] tracking-widest">Ação/Campo</th>
+                          <th className="px-4 py-3 text-left font-black uppercase text-[#888888] tracking-widest">Novo Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-900">
+                        {[
+                          { date: '28/05/2026 14:22', user: 'Admin MEC', field: 'Valor do card #842', value: 'R$ 15.000' },
+                          { date: '28/05/2026 13:05', user: 'Gerente Loja', field: 'Status Cliente #12', value: 'Ativo' },
+                          { date: '28/05/2026 11:40', user: 'Admin MEC', field: 'Meta Mensal', value: 'R$ 80.000' },
+                          { date: '27/05/2026 16:15', user: 'Admin MEC', field: 'Nicho Empresa', value: 'Mecânica' },
+                          { date: '27/05/2026 09:30', user: 'Vendedor', field: 'Novo Card #901', value: 'Criado' }
+                        ].map((log, i) => (
+                          <tr key={i} className="hover:bg-white/5 transition-colors">
+                            <td className="px-4 py-3 text-zinc-500 font-mono">{log.date}</td>
+                            <td className="px-4 py-3 font-bold text-white">{log.user}</td>
+                            <td className="px-4 py-3 text-zinc-300">{log.field}</td>
+                            <td className="px-4 py-3">
+                              <Badge variant="outline" className="bg-orange-500/5 text-orange-500 border-orange-500/20 text-[10px]">
+                                {log.value}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
+                  <p className="mt-4 text-[10px] text-zinc-500 text-center uppercase font-bold tracking-widest">Mostrando as últimas 100 alterações críticas</p>
                </CardContent>
              </Card>
           </TabsContent>

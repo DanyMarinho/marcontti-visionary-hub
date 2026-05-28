@@ -25,30 +25,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from '../types';
+import { User, Role } from '../types';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, login, tenants, selectedTenantId, setSelectedTenant } = useAuthStore();
+export default function Layout({ children }: { children: React.AmericanNode }) {
+  const { user, tenants, selectedTenantId, setSelectedTenant, setRole } = useAuthStore();
   const [collapsed, setCollapsed] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const menuItems = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/', roles: ['admin', 'shop', 'vendor'] },
-    { label: 'CRM', icon: Users, path: '/crm', roles: ['admin', 'shop', 'vendor'], labelAlt: { vendor: 'Meus Clientes' } },
-    { label: 'WhatsApp', icon: MessageSquare, path: '/whatsapp', roles: ['admin', 'shop', 'vendor'] },
+    { label: 'Dashboard', icon: LayoutDashboard, path: '/', roles: ['admin', 'loja', 'vendedor'] },
+    { label: 'CRM', icon: Users, path: '/crm', roles: ['admin', 'loja', 'vendedor'], labelAlt: { vendedor: 'Meus Clientes' } },
+    { label: 'WhatsApp', icon: MessageSquare, path: '/whatsapp', roles: ['admin', 'loja', 'vendedor'] },
     { label: 'Empresas', icon: Building2, path: '/tenants', roles: ['admin'] },
-    { label: 'Vendedores', icon: UserCircle, path: '/vendors', roles: ['admin', 'shop'] },
+    { label: 'Vendedores', icon: UserCircle, path: '/vendors', roles: ['admin', 'loja'] },
     { label: 'Lojas', icon: Store, path: '/shops', roles: ['admin'] },
-    { label: 'Métricas', icon: BarChart3, path: '/metrics', roles: ['admin', 'shop'], labelAlt: { vendor: 'Minhas Metas' } },
+    { label: 'Métricas', icon: BarChart3, path: '/metrics', roles: ['admin', 'loja'], labelAlt: { vendedor: 'Minhas Metas' } },
     { label: 'Projeção', icon: TrendingUp, path: '/projection', roles: ['admin'] },
-    { label: 'Configurações', icon: Settings, path: '/settings', roles: ['admin', 'shop', 'vendor'] },
+    { label: 'Configurações', icon: Settings, path: '/settings', roles: ['admin', 'loja', 'vendedor'] },
   ];
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(user?.role || ''));
 
   const handleRoleChange = (role: string) => {
-    login(role as User['role']);
+    setRole(role as Role);
   };
 
   return (
@@ -86,8 +86,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="admin">Administrador</SelectItem>
-                <SelectItem value="shop">Loja / Unidade</SelectItem>
-                <SelectItem value="vendor">Vendedor</SelectItem>
+                <SelectItem value="loja">Loja / Unidade</SelectItem>
+                <SelectItem value="vendedor">Vendedor</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -125,8 +125,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="text-white/60"
               title="Trocar Perfil"
               onClick={() => {
-                const roles: User['role'][] = ['admin', 'shop', 'vendor'];
-                const currentIndex = roles.indexOf(user?.role as User['role']);
+                const roles: Role[] = ['admin', 'loja', 'vendedor'];
+                const currentIndex = roles.indexOf(user?.role as Role);
                 const nextRole = roles[(currentIndex + 1) % roles.length];
                 handleRoleChange(nextRole);
               }}
@@ -147,7 +147,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {user?.role === 'admin' && (
               <div className="flex items-center gap-2 border-l pl-6 h-8">
                 <span className="text-xs font-medium text-muted-foreground uppercase">Empresa:</span>
-                <Select value={selectedTenantId} onValueChange={setSelectedTenant}>
+                <Select value={selectedTenantId || undefined} onValueChange={setSelectedTenant}>
                   <SelectTrigger className="w-[180px] h-9 border-none bg-transparent hover:bg-muted font-semibold">
                     <SelectValue placeholder="Todas as Empresas" />
                   </SelectTrigger>
@@ -168,9 +168,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end">
-              <span className="text-sm font-medium text-[#0a0a0a]">{user?.name}</span>
+              <span className="text-sm font-medium text-[#0a0a0a]">{user?.full_name}</span>
               <span className="text-[10px] text-muted-foreground uppercase bg-muted px-1.5 rounded">
-                {user?.role} {user?.tenantId !== 'system' && `• ${tenants.find(t => t.id === user?.tenantId)?.name}`}
+                {user?.role} {user?.tenant_id !== 'system' && `• ${tenants.find(t => t.id === user?.tenant_id)?.name}`}
               </span>
             </div>
           </div>

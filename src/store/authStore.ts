@@ -1,31 +1,79 @@
 import { create } from 'zustand';
-import { User, Tenant } from '../types';
+import { User, Tenant, Role } from '../types';
 
 interface AuthState {
   user: User | null;
-  selectedTenantId: string | 'all';
+  currentTenant: Tenant | null;
   tenants: Tenant[];
-  login: (role: User['role']) => void;
-  setSelectedTenant: (id: string | 'all') => void;
+  setUser: (user: User | null) => void;
+  setCurrentTenant: (tenant: Tenant | null) => void;
+  setRole: (role: Role) => void;
 }
 
-export const mockTenants: Tenant[] = [
-  { id: 'tenant-1', name: 'Marcontti', niche: 'mecanica', color: '#f97316', ownerName: 'João Marcontti', plan: 'premium', status: 'ativo' },
-  { id: 'tenant-2', name: 'Clínica Vida', niche: 'clinica', color: '#10b981', ownerName: 'Dra. Maria', plan: 'pro', status: 'ativo' },
-  { id: 'tenant-3', name: 'Casa & Lar', niche: 'comercio', color: '#3b82f6', ownerName: 'Ricardo Santos', plan: 'basico', status: 'ativo' },
-  { id: 'tenant-4', name: 'EduPro', niche: 'educacao', color: '#8b5cf6', ownerName: 'Prof. Ana', plan: 'pro', status: 'ativo' },
+const mockTenants: Tenant[] = [
+  { 
+    id: '1', 
+    name: 'Marcontti', 
+    niche: 'mecanica', 
+    color: '#f97316', 
+    owner_name: 'Marcos Silva', 
+    plan: 'premium', 
+    status: 'ativo',
+    contact_email: 'marcos@marcontti.com',
+    timezone: 'America/Sao_Paulo',
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  { 
+    id: '2', 
+    name: 'Clínica Vida', 
+    niche: 'clinica', 
+    color: '#ec4899', 
+    owner_name: 'Dra. Ana Paula', 
+    plan: 'pro', 
+    status: 'ativo',
+    contact_email: 'ana@clinicavida.com',
+    timezone: 'America/Sao_Paulo',
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  { 
+    id: '3', 
+    name: 'EduPro', 
+    niche: 'educacao', 
+    color: '#0ea5e9', 
+    owner_name: 'Roberto Santos', 
+    plan: 'basico', 
+    status: 'ativo',
+    contact_email: 'roberto@edupro.com',
+    timezone: 'America/Sao_Paulo',
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
 ];
 
-const mockUsers: Record<string, User> = {
-  admin: { id: '1', name: 'Admin Infinda', email: 'admin@infindadigital.com', role: 'admin', tenantId: 'system' },
-  shop: { id: '2', name: 'Gerente Loja', email: 'loja@infindadigital.com', role: 'shop', tenantId: 'tenant-1' },
-  vendor: { id: '3', name: 'Vendedor MEC', email: 'vendedor@infindadigital.com', role: 'vendor', tenantId: 'tenant-1' },
+const mockUser: User = {
+  id: '1',
+  full_name: 'Admin MEC',
+  name: 'Admin MEC',
+  email: 'admin@mec.com',
+  role: 'admin',
+  tenant_id: '1',
+  is_active: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: mockUsers.admin,
-  selectedTenantId: 'all',
+  user: mockUser,
+  currentTenant: mockTenants[0],
   tenants: mockTenants,
-  login: (role) => set({ user: mockUsers[role] }),
-  setSelectedTenant: (id) => set({ selectedTenantId: id }),
+  setUser: (user) => set({ user }),
+  setCurrentTenant: (tenant) => set({ currentTenant: tenant }),
+  setRole: (role) => set((state) => ({ 
+    user: state.user ? { ...state.user, role } : null 
+  })),
 }));

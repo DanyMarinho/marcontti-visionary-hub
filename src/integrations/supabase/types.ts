@@ -761,6 +761,7 @@ export type Database = {
           ai_enabled: boolean
           assigned_to: string | null
           client_id: string
+          content: string | null
           created_at: string | null
           id: string
           last_activity_at: string | null
@@ -773,6 +774,7 @@ export type Database = {
           ai_enabled?: boolean
           assigned_to?: string | null
           client_id: string
+          content?: string | null
           created_at?: string | null
           id?: string
           last_activity_at?: string | null
@@ -785,6 +787,7 @@ export type Database = {
           ai_enabled?: boolean
           assigned_to?: string | null
           client_id?: string
+          content?: string | null
           created_at?: string | null
           id?: string
           last_activity_at?: string | null
@@ -794,6 +797,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversations_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "whatsapp_conversations_client_id_fkey"
             columns: ["client_id"]

@@ -4,6 +4,7 @@ import { useTenant } from '@/hooks/useTenant';
 import { TenantSwitcher } from './TenantSwitcher';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/ThemeProvider';
+import { useWhatsAppInstance } from '@/modules/whatsapp/hooks/useWhatsAppInstance';
 import { 
   LogOut, 
   Sun, 
@@ -29,6 +30,14 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useAuthStore();
   const { activeTenant, isGlobal } = useTenant();
   const { theme, setTheme } = useTheme();
+  const { instance } = useWhatsAppInstance();
+
+  const getStatusColor = () => {
+    if (!instance) return 'bg-zinc-800';
+    if (instance.status === 'connected') return 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]';
+    if (instance.status === 'connecting') return 'bg-yellow-500 animate-pulse';
+    return 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]';
+  };
 
   return (
     <header className="h-20 bg-[#0d0d0d] border-b border-[#1f1f1f] flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors">
@@ -62,12 +71,21 @@ export function Header({ onMenuClick }: HeaderProps) {
         )}
       </div>
 
-      <div className="flex items-center gap-1 md:gap-2">
+      <div className="flex items-center gap-1 md:gap-3">
+        {instance && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-[#1f1f1f] hidden sm:flex">
+            <div className={cn("w-2 h-2 rounded-full", getStatusColor())} />
+            <span className="text-[9px] font-black uppercase text-[#888888] tracking-widest">
+              WhatsApp {instance.status === 'connected' ? 'OK' : instance.status === 'connecting' ? 'SYNC' : 'OFF'}
+            </span>
+          </div>
+        )}
+        
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="text-muted-foreground hover:text-foreground h-9 w-9"
+          className="text-[#888888] hover:text-white h-9 w-9"
           aria-label="Alternar tema"
         >
           {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}

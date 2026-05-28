@@ -15,16 +15,18 @@ import {
   Video,
   Loader2,
   Check,
-  CheckCheck
+  CheckCheck,
+  ChevronLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 interface ConversationViewProps {
   clientId: string;
+  onBack?: () => void;
 }
 
-export function ConversationView({ clientId }: ConversationViewProps) {
+export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   const { activeTenantId } = useTenant();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -75,6 +77,11 @@ export function ConversationView({ clientId }: ConversationViewProps) {
       {/* Header */}
       <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between h-20">
         <div className="flex items-center gap-3">
+          {onBack && (
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={onBack}>
+              <ChevronLeft size={20} />
+            </Button>
+          )}
           <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
             {client?.full_name?.substring(0, 2).toUpperCase()}
           </div>

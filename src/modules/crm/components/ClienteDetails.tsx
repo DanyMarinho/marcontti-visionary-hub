@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ConversationView } from '@/modules/whatsapp/ConversationView';
 import { usePipeline } from '@/modules/pipeline/hooks/usePipeline';
 import { KanbanCard } from '@/modules/pipeline/components/KanbanCard';
+import { Label } from "@/components/ui/label";
 
 interface ClienteDetailsProps {
   open: boolean;
@@ -138,7 +139,5 @@ export function ClienteDetails({ open, onOpenChange, cliente }: ClienteDetailsPr
       </DialogContent>
     </Dialog>
   );
-}
+// Helper components
 
-// Helper Label since it's used
-import { Label } from "@/components/ui/label";

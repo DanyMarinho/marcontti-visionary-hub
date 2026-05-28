@@ -1,4 +1,4 @@
-import { Tenant, Customer, Sale } from './types';
+import { Tenant, Customer, Sale } from '../types';
 
 export const mockCustomers: Customer[] = [
   // Tenant 1 (Marcontti - Mecânica)

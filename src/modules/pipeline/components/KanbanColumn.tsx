@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { KanbanCard } from './KanbanCard';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,7 @@ export function KanbanColumn({ stage, cards, color, onCardClick }: KanbanColumnP
     id: stage.key,
   });
 
-  const totalValue = cards.reduce((acc, card) => acc + Number(card.estimated_value), 0);
+  const totalValue = useMemo(() => cards.reduce((acc, card) => acc + Number(card.estimated_value || 0), 0), [cards]);
 
   return (
     <div className="flex flex-col w-[260px] md:w-72 flex-shrink-0 bg-[#111111] rounded-lg border border-[#1f1f1f] transition-colors duration-200">

@@ -31,7 +31,7 @@ export function usePipeline(filters = {}) {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(['pipeline-cards', activeTenantId, filters], context?.previousCards);
-      toast.error('Erro ao mover card');
+      toast.error('Erro ao mover card. Verificando rastro de falha...');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pipeline-cards', activeTenantId] });

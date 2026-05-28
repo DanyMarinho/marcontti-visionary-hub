@@ -31,7 +31,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="h-16 bg-white dark:bg-card border-b flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors">
+    <header className="h-20 bg-[#0d0d0d] border-b border-[#1f1f1f] flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 transition-colors">
       <div className="flex items-center gap-2 md:gap-4">
         <Button 
           variant="ghost" 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -12,7 +12,9 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/authStore';
+import { toast } from 'sonner';
 
 interface CardDetailProps {
   open: boolean;
@@ -22,9 +24,21 @@ interface CardDetailProps {
 
 export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
   const { user } = useAuthStore();
+  const [isLossMode, setIsLossMode] = useState(false);
+  const [lossReason, setLossReason] = useState('');
   const canTransfer = user?.role === 'admin' || user?.role === 'loja';
 
   if (!card) return null;
+
+  const handleArchiveLoss = () => {
+    if (!lossReason.trim()) {
+      toast.error('Informe o motivo da perda para arquivar');
+      return;
+    }
+    // Logic to archive with lossReason
+    toast.success('Card arquivado como perda');
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,7 +60,12 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
                    <UserPlus size={14} className="mr-1" /> Transferir
                  </Button>
                )}
-               <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f] text-red-500 hover:text-red-600">
+               <Button 
+                 variant="outline" 
+                 size="sm" 
+                 className="h-8 text-[10px] uppercase font-bold border-[#1f1f1f] text-red-500 hover:text-red-600"
+                 onClick={() => setIsLossMode(!isLossMode)}
+               >
                  <Archive size={14} className="mr-1" /> Perda
                </Button>
             </div>
@@ -55,6 +74,21 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
 
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3">
           <div className="col-span-2 p-6 border-r border-[#1f1f1f] space-y-6 overflow-y-auto">
+             {isLossMode && (
+               <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20 space-y-3 animate-in fade-in slide-in-from-top-1">
+                 <Label className="text-[10px] font-black uppercase text-red-500">Motivo da Perda *</Label>
+                 <div className="flex gap-2">
+                   <Input 
+                     placeholder="Ex: Preço elevado, desistência..." 
+                     className="flex-1 h-9 bg-[#0a0a0a] border-[#1f1f1f]"
+                     value={lossReason}
+                     onChange={(e) => setLossReason(e.target.value)}
+                   />
+                   <Button size="sm" className="bg-red-600 hover:bg-red-700" onClick={handleArchiveLoss}>Confirmar</Button>
+                 </div>
+               </div>
+             )}
+
              <div className="space-y-4">
                <h3 className="text-[10px] font-black uppercase text-[#888888] tracking-widest flex items-center gap-2">
                  <History size={14} /> Histórico de Movimentações

@@ -63,4 +63,4 @@ export const ConversionLineChart = React.memo(function ConversionLineChart({ dat
       </ResponsiveContainer>
     </div>
   );
-}
+});

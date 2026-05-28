@@ -65,4 +65,4 @@ export const SalesBarChart = React.memo(function SalesBarChart({ data, height = 
       </ResponsiveContainer>
     </div>
   );
-}
+});

@@ -321,7 +321,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
           {logs.length > 0 && (
             <div className="space-y-2 mb-6">
               <div className="flex items-center gap-2 text-[#888888] px-2">
-                <HistoryIcon size={12} />
+                <History size={12} />
                 <span className="text-[10px] font-black uppercase tracking-widest">Histórico da Conversa</span>
               </div>
               {logs.map((log: any) => (

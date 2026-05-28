@@ -157,7 +157,8 @@ export default function KanbanBoard() {
           if (pendingMove) {
             moveCard.mutate({ 
               ...pendingMove,
-              // In real app, moveCard would accept finalValue
+              finalValue: data.value,
+              closingDate: data.date
             });
             setPendingMove(null);
           }

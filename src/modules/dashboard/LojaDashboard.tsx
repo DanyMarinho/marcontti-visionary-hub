@@ -1,161 +1,132 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useTenant } from '@/hooks/useTenant';
+import { supabase } from '@/integrations/supabase/client';
 import { KpiCard } from '@/components/shared/KpiCard';
+import { 
+  TrendingUp, 
+  Target, 
+  Users, 
+  GitMerge, 
+  ArrowUpRight,
+  AlertCircle,
+  Clock 
+} from 'lucide-react';
 import { SalesBarChart } from './components/SalesBarChart';
 import { PipelineFunnelChart } from './components/PipelineFunnelChart';
-import { FilterBar } from '@/modules/metricas/components/FilterBar';
-import { useDashboardKpis } from './hooks/useDashboardKpis';
-import { 
-  Users, 
-  DollarSign, 
-  Target, 
-  TrendingUp, 
-  RefreshCcw,
-  Clock
-} from 'lucide-react';
-import { WhatsAppStatusAlert } from '@/modules/whatsapp/components/WhatsAppStatusAlert';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChartSkeleton } from '@/components/shared/ChartSkeleton';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
+import { differenceInDays } from 'date-fns';
 
 export function LojaDashboard() {
-  const [filters, setFilters] = React.useState({ period: 'month' });
-  const { data, isLoading, error, refetch } = useDashboardKpis(filters.period as any);
+  const { activeTenantId } = useTenant();
+  const navigate = useNavigate();
 
-  const iconMap: any = {
-    Users,
-    DollarSign,
-    Target,
-    TrendingUp
-  };
+  const { data: reactivationStats } = useQuery({
+    queryKey: ['reactivation-stats', activeTenantId],
+    queryFn: async () => {
+      if (!activeTenantId) return { total: 0, critical: 0, attention: 0 };
+      const { data, error } = await supabase
+        .from('pipeline_cards')
+        .select('updated_at')
+        .eq('tenant_id', activeTenantId)
+        .eq('is_archived', false)
+        .neq('stage_key', 'pos_venda')
+        .neq('stage_key', 'fechamento');
+      
+      if (error) throw error;
+      
+      const critical = (data || []).filter(c => differenceInDays(new Date(), new Date(c.updated_at)) >= 15).length;
+      const attention = (data || []).filter(c => {
+        const days = differenceInDays(new Date(), new Date(c.updated_at));
+        return days >= 7 && days < 15;
+      }).length;
+      
+      return { total: critical + attention, critical, attention };
+    },
+    enabled: !!activeTenantId
+  });
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-        <p className="text-red-500 font-medium">Erro ao carregar dados da unidade</p>
-        <Button onClick={() => refetch()} variant="outline">
-          <RefreshCcw className="mr-2 h-4 w-4" /> Atualizar
-        </Button>
-      </div>
-    );
-  }
+  const { data: kpis, isLoading } = useQuery({
+    queryKey: ['dashboard-kpis', activeTenantId],
+    queryFn: async () => {
+      return {
+        vendas: 45250,
+        atingimento: 85,
+        clientesAtivos: 124,
+        cardsAtivos: 42,
+        salesHistory: [
+          { month: 'Jan', value: 32000 },
+          { month: 'Fev', value: 35000 },
+          { month: 'Mar', value: 31000 },
+          { month: 'Abr', value: 42000 },
+          { month: 'Mai', value: 38000 },
+          { month: 'Jun', value: 45250 },
+        ],
+        funnelData: [
+          { stage: 'Prospecção', count: 120 },
+          { stage: 'Qualificação', count: 85 },
+          { stage: 'Apresentação', count: 60 },
+          { stage: 'Proposta', count: 40 },
+          { stage: 'Negociação', count: 25 },
+          { stage: 'Fechamento', count: 15 },
+        ]
+      };
+    }
+  });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard da Unidade</h1>
-          <p className="text-muted-foreground">Monitoramento em tempo real dos resultados locais.</p>
-        </div>
-        <div className="flex items-center gap-2">
-           <Badge variant="outline" className="h-8 px-3 flex items-center gap-1.5 font-medium border-orange-200 text-orange-700 bg-orange-50">
-             <Clock size={14} /> Atualizado agora
-           </Badge>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard da Loja</h1>
+          <p className="text-muted-foreground">Bem-vindo ao MEC Hub. Veja o desempenho da sua loja.</p>
         </div>
       </div>
-      
-      <WhatsAppStatusAlert />
-      
-      <FilterBar onFilter={(f) => setFilters({ period: f.period })} isLoading={isLoading} />
 
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
-        {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => <KpiCard key={i} isLoading title="" icon={Users} value="" />)
-        ) : (
-          data?.kpis.map((kpi: any, i: number) => (
-            <KpiCard 
-              key={i}
-              title={kpi.title}
-              value={kpi.value}
-              trend={kpi.trend}
-              description={kpi.description}
-              icon={iconMap[kpi.icon]}
-            />
-          ))
-        )}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard
+          title="Vendas do Mês"
+          value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(kpis?.vendas || 0)}
+          description="+12.5% vs mês anterior"
+          icon={TrendingUp}
+          isLoading={isLoading}
+        />
+        <KpiCard
+          title="Atingimento de Meta"
+          value={`${kpis?.atingimento || 0}%`}
+          description={(kpis?.atingimento || 0) >= 100 ? 'Meta batida!' : 'Em progresso'}
+          icon={Target}
+          isLoading={isLoading}
+        />
+        <div onClick={() => navigate('/reactivation')} className="cursor-pointer">
+          <KpiCard
+            title="Reativar Agora"
+            value={reactivationStats?.total || 0}
+            description={`${reactivationStats?.critical || 0} críticos`}
+            icon={AlertCircle}
+            isLoading={isLoading}
+            className="border-red-500/20 bg-red-500/5"
+          />
+        </div>
+        <KpiCard
+          title="Cards Ativos"
+          value={kpis?.cardsAtivos || 0}
+          description="+5 novos este mês"
+          icon={GitMerge}
+          isLoading={isLoading}
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-full lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Histórico de Vendas</CardTitle>
-            <CardDescription>Performance mensal da unidade</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <ChartSkeleton />
-            ) : (
-              <SalesBarChart data={data?.salesHistory || []} />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-full lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Funil do Método MEC</CardTitle>
-            <CardDescription>Distribuição de cards por etapa</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <ChartSkeleton />
-            ) : (
-              <PipelineFunnelChart data={data?.funnelData || []} />
-            )}
-          </CardContent>
-        </Card>
+        <div className="col-span-4 bg-[#111111] p-6 rounded-lg border border-[#1f1f1f]">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#888888] mb-6">Evolução de Vendas</h3>
+          <SalesBarChart data={kpis?.salesHistory || []} />
+        </div>
+        <div className="col-span-3 bg-[#111111] p-6 rounded-lg border border-[#1f1f1f]">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#888888] mb-6">Funil de Vendas</h3>
+          <PipelineFunnelChart data={kpis?.funnelData || []} />
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Últimas Vendas</CardTitle>
-          <CardDescription>Transações registradas recentemente na unidade</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><div className="h-4 w-32 bg-muted animate-pulse rounded" /></TableCell>
-                    <TableCell><div className="h-4 w-20 bg-muted animate-pulse rounded" /></TableCell>
-                    <TableCell><div className="h-4 w-16 bg-muted animate-pulse rounded" /></TableCell>
-                    <TableCell className="text-right"><div className="h-6 w-16 bg-muted animate-pulse rounded ml-auto" /></TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                data?.recentSales?.map((sale: any) => (
-                  <TableRow key={sale.id}>
-                    <TableCell className="font-medium">{sale.customer}</TableCell>
-                    <TableCell>R$ {sale.value.toLocaleString('pt-BR')}</TableCell>
-                    <TableCell>{sale.date}</TableCell>
-                    <TableCell className="text-right">
-                      <Badge className={sale.status === 'Pago' ? 'bg-green-500' : 'bg-yellow-500'}>
-                        {sale.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
   );
 }

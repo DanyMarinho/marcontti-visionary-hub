@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { whatsappService } from '@/services/whatsappService';
 import { useTenant } from '@/hooks/useTenant';
+import { useAuthStore } from '@/store/authStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { 
   Send, 
   Bot, 
@@ -16,10 +19,29 @@ import {
   Loader2,
   Check,
   CheckCheck,
-  ChevronLeft
+  ChevronLeft,
+  Share2,
+  CheckCircle2
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface ConversationViewProps {
   clientId: string;
@@ -28,9 +50,28 @@ interface ConversationViewProps {
 
 export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   const { activeTenantId } = useTenant();
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState('');
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [transferUserId, setTransferUserId] = useState('');
+
+
+  const { data: conversation, isLoading: isLoadingConv } = useQuery({
+    queryKey: ['whatsapp-conversation', activeTenantId, clientId],
+    queryFn: async () => {
+      const conv = await whatsappService.getConversationByClient(activeTenantId!, clientId);
+      if (conv && conv.status === 'waiting') {
+        // Automatically change status to attending when opening
+        await whatsappService.updateConversation(conv.id, { status: 'attending' });
+        queryClient.invalidateQueries({ queryKey: ['whatsapp-conversations'] });
+      }
+      return conv;
+    },
+
+    enabled: !!activeTenantId && !!clientId,
+  });
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['whatsapp-messages', activeTenantId, clientId],
@@ -38,14 +79,65 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
     enabled: !!activeTenantId && !!clientId,
   });
 
+  const { data: sellers = [] } = useQuery({
+    queryKey: ['sellers', activeTenantId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('tenant_id', activeTenantId!)
+        .eq('is_active', true);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeTenantId,
+  });
+
   const { data: client } = useQuery({
     queryKey: ['client', clientId],
     queryFn: async () => {
-      // Try to find the client name from the messages or database
-      // For now, using a fallback but prioritizing actual data if available
-      return { id: clientId, full_name: 'Lead WhatsApp', phone: 'Sincronizando...' };
+      const { data, error } = await supabase.from('clients').select('*').eq('id', clientId).single();
+      if (error) return { id: clientId, full_name: 'Lead WhatsApp', phone: '...' };
+      return data;
     }
   });
+
+  const updateConvMutation = useMutation({
+    mutationFn: async ({ updates, logMessage }: { updates: any, logMessage?: string }) => {
+      const data = await whatsappService.updateConversation(conversation!.id, updates);
+      if (logMessage) {
+        await supabase.from('reactivation_logs').insert([{
+          tenant_id: activeTenantId!,
+          client_id: clientId,
+          user_id: user?.id,
+          type: 'transfer',
+          notes: logMessage
+        }]);
+      }
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-conversation', activeTenantId, clientId] });
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-conversations'] });
+    }
+  });
+
+  const { data: logs = [] } = useQuery({
+    queryKey: ['reactivation-logs', clientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reactivation_logs')
+        .select('*, user:users(full_name)')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!clientId
+  });
+
+
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -74,33 +166,158 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a]">
-      {/* Header */}
-      <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between h-20">
+      <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between min-h-20 flex-wrap gap-4">
         <div className="flex items-center gap-3">
           {onBack && (
             <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={onBack}>
               <ChevronLeft size={20} />
             </Button>
           )}
-          <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold border border-orange-500/20">
-            {client?.full_name?.substring(0, 2).toUpperCase()}
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold border border-orange-500/20">
+              {client?.full_name?.substring(0, 2).toUpperCase()}
+            </div>
+            {conversation?.status && (
+              <div className={cn(
+                "absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#0d0d0d]",
+                conversation.status === 'waiting' ? "bg-yellow-500" :
+                conversation.status === 'attending' ? "bg-blue-500" : "bg-green-500"
+              )} />
+            )}
           </div>
           <div>
-            <h3 className="font-bold text-sm text-white">{client?.full_name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-white">{client?.full_name}</h3>
+              {conversation?.status && (
+                <Badge variant="outline" className={cn(
+                  "text-[8px] h-4 px-1 uppercase font-black tracking-tighter",
+                  conversation.status === 'waiting' ? "border-yellow-500 text-yellow-500" :
+                  conversation.status === 'attending' ? "border-blue-500 text-blue-500" :
+                  "border-green-500 text-green-500"
+                )}>
+                  {conversation.status === 'waiting' ? 'Aguardando' : conversation.status === 'attending' ? 'Em atendimento' : 'Resolvido'}
+                </Badge>
+              )}
+            </div>
             <p className="text-[10px] text-[#888888] uppercase font-black tracking-widest">{client?.phone}</p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><Phone size={18} /></Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><Video size={18} /></Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><MoreVertical size={18} /></Button>
+          {/* IA Toggle */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#1f1f1f] mr-2">
+            <Label htmlFor="ia-mode" className="text-[10px] font-black uppercase text-[#888888] cursor-pointer">
+              Agente IA
+            </Label>
+            <Switch 
+              id="ia-mode" 
+              checked={conversation?.ai_enabled} 
+              onCheckedChange={(checked) => {
+                updateConvMutation.mutate({ 
+                  updates: { ai_enabled: checked },
+                  logMessage: checked ? undefined : `IA desativada por ${user?.full_name}`
+                });
+                if (!checked) {
+                   toast.info(`IA desativada por ${user?.full_name}`);
+                }
+              }}
+            />
+
+          </div>
+
+          {(user?.role === 'admin' || user?.role === 'loja') && (
+            <Dialog open={isTransferModalOpen} onOpenChange={setIsTransferModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-[#888888] hover:text-white">
+                  <Share2 size={14} /> Transferir
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#0d0d0d] border-[#1f1f1f]">
+                <DialogHeader>
+                  <DialogTitle>Transferir Conversa</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label>Vendedor Destino</Label>
+                    <Select value={transferUserId} onValueChange={setTransferUserId}>
+                      <SelectTrigger className="bg-[#1a1a1a] border-[#1f1f1f]">
+                        <SelectValue placeholder="Selecione um vendedor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sellers
+                          .filter(s => s.id !== user?.id)
+                          .map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.full_name}</SelectItem>
+                          ))
+                        }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    disabled={!transferUserId}
+                    onClick={() => {
+                      const seller = sellers.find(s => s.id === transferUserId);
+                      updateConvMutation.mutate({ 
+                        updates: { assigned_to: transferUserId },
+                        logMessage: `Transferido por ${user?.full_name} para ${seller?.full_name}`
+                      });
+                      toast.success(`Conversa transferida para ${seller?.full_name}`);
+                      setIsTransferModalOpen(false);
+                    }}
+                  >
+
+                    Confirmar Transferência
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {conversation?.status !== 'resolved' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 text-xs gap-1 text-green-500 hover:text-green-400 hover:bg-green-500/10"
+              onClick={() => updateConvMutation.mutate({ updates: { status: 'resolved' } })}
+            >
+              <CheckCircle2 size={14} /> Resolver
+            </Button>
+          )}
+          
+          <div className="h-6 w-[1px] bg-[#1f1f1f] mx-1" />
+          
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-[#888888]"><Phone size={18} /></Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-[#888888]"><Video size={18} /></Button>
         </div>
       </div>
 
+
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+        <div className="space-y-4 pb-4">
+          {/* History / Timeline Logs */}
+          {logs.length > 0 && (
+            <div className="space-y-2 mb-6">
+              <div className="flex items-center gap-2 text-[#888888] px-2">
+                <HistoryIcon size={12} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Histórico da Conversa</span>
+              </div>
+              {logs.map((log: any) => (
+                <div key={log.id} className="mx-auto bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-2 text-center max-w-sm">
+                  <p className="text-[10px] text-zinc-400 font-medium italic">
+                    {log.notes}
+                  </p>
+                  <p className="text-[8px] text-zinc-600 mt-0.5">
+                    {format(new Date(log.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
           {isLoading ? (
+
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-orange-500" />
             </div>
@@ -121,11 +338,12 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
                 )}>
                   {msg.processed_by_ai && (
                     <div className="flex items-center gap-1 mb-1">
-                       <Badge variant="secondary" className="h-4 px-1.5 text-[8px] bg-orange-100 text-orange-600 border-none font-black uppercase">
-                        <Bot size={8} className="mr-0.5" /> Agente IA
+                       <Badge variant="secondary" className="h-4 px-1.5 text-[8px] bg-orange-100/10 text-orange-500 border-orange-500/20 font-black uppercase">
+                        <Bot size={8} className="mr-0.5" /> {conversation?.ai_enabled ? 'Agente IA' : 'Atendimento Humano'}
                       </Badge>
                     </div>
                   )}
+
                   <p className="leading-relaxed">{msg.content}</p>
                   <div className={cn(
                     "flex items-center gap-1 mt-1 justify-end",

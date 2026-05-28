@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { WhatsAppInstance, WhatsAppMessage } from "../types";
+import { WhatsAppInstance, WhatsAppMessage, WhatsAppConversation } from "../types";
 
 export const whatsappService = {
   async getInstance(tenantId: string) {
@@ -49,23 +49,46 @@ export const whatsappService = {
     return data as WhatsAppMessage[];
   },
 
-  async getConversations(tenantId: string) {
-    // This is a simplified version. In a real app, we might want a 'conversations' view or table.
-    // Here we'll get the last message per client for the tenant.
-    const { data, error } = await supabase
-      .from('whatsapp_messages')
-      .select('*, client:clients(*)')
+  async getConversations(tenantId: string, status?: string): Promise<WhatsAppConversation[]> {
+    let query = supabase
+      .from('whatsapp_conversations')
+      .select('*, client:clients(*), assigned_user:users(*)')
       .eq('tenant_id', tenantId)
-      .order('timestamp', { ascending: false });
+      .order('last_activity_at', { ascending: false });
+    
+    if (status && status !== 'all') {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map(conv => ({
+      ...conv,
+      content: conv.content || '' // Handle possible missing content if table is empty or differently structured
+    })) as WhatsAppConversation[];
+  },
+
+  async updateConversation(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('whatsapp_conversations')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
     
     if (error) throw error;
+    return data as WhatsAppConversation;
+  },
+
+  async getConversationByClient(tenantId: string, clientId: string) {
+    const { data, error } = await supabase
+      .from('whatsapp_conversations')
+      .select('*, client:clients(*), assigned_user:users(*)')
+      .eq('tenant_id', tenantId)
+      .eq('client_id', clientId)
+      .maybeSingle();
     
-    // Simple deduplication by client_id to get "conversations"
-    const uniqueClients = new Set();
-    return (data || []).filter(msg => {
-      if (uniqueClients.has(msg.client_id)) return false;
-      uniqueClients.add(msg.client_id);
-      return true;
-    });
+    if (error) throw error;
+    return data as WhatsAppConversation | null;
   }
 };

@@ -347,6 +347,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          related_id: string | null
+          tenant_id: string
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_id?: string | null
+          tenant_id: string
+          title: string
+          type?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_id?: string | null
+          tenant_id?: string
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pipeline_cards: {
         Row: {
           client_id: string
@@ -465,6 +509,57 @@ export type Database = {
           },
         ]
       }
+      reactivation_logs: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          result: string | null
+          stage_at_time: string | null
+          tenant_id: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          result?: string | null
+          stage_at_time?: string | null
+          tenant_id: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          result?: string | null
+          stage_at_time?: string | null
+          tenant_id?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactivation_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactivation_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           address: string | null
@@ -546,8 +641,14 @@ export type Database = {
           logo_url: string | null
           name: string
           niche: string
+          no_response_threshold_minutes: number | null
           owner_name: string | null
           plan: string | null
+          reactivation_auto_enabled: boolean | null
+          reactivation_idle_days: number | null
+          reactivation_interval_days: number | null
+          reactivation_max_attempts: number | null
+          reactivation_messages: Json | null
           status: string | null
           timezone: string
           updated_at: string
@@ -562,8 +663,14 @@ export type Database = {
           logo_url?: string | null
           name: string
           niche: string
+          no_response_threshold_minutes?: number | null
           owner_name?: string | null
           plan?: string | null
+          reactivation_auto_enabled?: boolean | null
+          reactivation_idle_days?: number | null
+          reactivation_interval_days?: number | null
+          reactivation_max_attempts?: number | null
+          reactivation_messages?: Json | null
           status?: string | null
           timezone?: string
           updated_at?: string
@@ -578,8 +685,14 @@ export type Database = {
           logo_url?: string | null
           name?: string
           niche?: string
+          no_response_threshold_minutes?: number | null
           owner_name?: string | null
           plan?: string | null
+          reactivation_auto_enabled?: boolean | null
+          reactivation_idle_days?: number | null
+          reactivation_interval_days?: number | null
+          reactivation_max_attempts?: number | null
+          reactivation_messages?: Json | null
           status?: string | null
           timezone?: string
           updated_at?: string
@@ -636,6 +749,70 @@ export type Database = {
           },
           {
             foreignKeyName: "users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_conversations: {
+        Row: {
+          ai_enabled: boolean
+          assigned_to: string | null
+          client_id: string
+          content: string | null
+          created_at: string | null
+          id: string
+          last_activity_at: string | null
+          last_message_direction: string | null
+          status: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          ai_enabled?: boolean
+          assigned_to?: string | null
+          client_id: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          last_activity_at?: string | null
+          last_message_direction?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          ai_enabled?: boolean
+          assigned_to?: string | null
+          client_id?: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          last_activity_at?: string | null
+          last_message_direction?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversations_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversations_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"

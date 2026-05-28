@@ -2,9 +2,16 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { User, Phone, MessageSquare, Clock, MoreVertical } from 'lucide-react';
+import { User, Phone, MessageSquare, Clock, MoreVertical, Bell, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
+import { differenceInDays } from 'date-fns';
 
 interface KanbanCardProps {
   card: any;
@@ -21,10 +28,11 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
+  const idleDays = differenceInDays(new Date(), new Date(card.updated_at));
+  const isIdle = idleDays >= 7;
   const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
   const handleClick = (e: React.MouseEvent) => {
-    // Prevent dragging from triggering click, though dnd-kit usually handles this via sensors
     onClick(card);
   };
 
@@ -47,14 +55,30 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
           <Badge variant="outline" className="text-[9px] uppercase font-bold py-0 h-4 bg-orange-500/5 text-orange-600 border-orange-500/20">
             {card.id.substring(0, 8)}
           </Badge>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-            aria-label="Mais opções"
-          >
-            <MoreVertical size={14} />
-          </Button>
+          <div className="flex items-center gap-1">
+            {isIdle && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-red-500 animate-pulse cursor-help">
+                      <Bell size={14} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-red-500 border-none text-white text-[10px]">
+                    Sem movimentação há {idleDays} dias
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Mais opções"
+            >
+              <MoreVertical size={14} />
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-1">

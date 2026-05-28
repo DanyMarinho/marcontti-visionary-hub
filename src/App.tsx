@@ -21,7 +21,9 @@ const VendedorList = lazy(() => import("./modules/admin/Vendors/VendedorList").t
 const Settings = lazy(() => import("./pages/Settings"));
 const Metricas = lazy(() => import("./modules/metricas/Metricas"));
 const ProjecaoFinanceira = lazy(() => import("./modules/projecao/ProjecaoFinanceira"));
+const Reactivation = lazy(() => import("./pages/Reactivation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,7 +70,9 @@ const App = () => (
                 <Route path="/team" element={<VendedorList />} />
                 <Route path="/metrics" element={<Metricas />} />
                 <Route path="/projection" element={<ProjecaoFinanceira />} />
+                <Route path="/reactivation" element={<Reactivation />} />
                 <Route path="/settings" element={<Settings />} />
+
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

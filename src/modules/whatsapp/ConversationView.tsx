@@ -90,7 +90,7 @@ export function ConversationView({ clientId }: ConversationViewProps) {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4" viewportRef={scrollRef}>
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">

@@ -20,6 +20,7 @@ import {
   X,
   AlertCircle
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -115,16 +116,24 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                 key={item.path}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start text-[#888888] hover:text-white hover:bg-[#1a1a1a] px-3 h-11 transition-all rounded-[6px] relative",
-                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500 rounded-l-none after:hidden",
+                  "w-full justify-start text-[#888888] hover:text-white hover:bg-[#1a1a1a]/50 px-3 h-11 transition-all rounded-[6px] relative group overflow-hidden",
+                  isActive && "text-white font-bold",
                   collapsed && !isMobile && "justify-center px-0"
                 )}
                 onClick={() => handleNavigate(item.path)}
                 aria-label={label}
               >
-                <item.icon className={cn("h-5 w-5 flex-shrink-0", (!collapsed || isMobile) && "mr-3")} />
-                {(!collapsed || isMobile) && <span className="truncate flex-1">{label}</span>}
-                {(!collapsed || isMobile) && isActive && <div className="ml-auto w-1 h-1 rounded-full bg-orange-500" />}
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 bg-[#1a1a1a] border-l-2 border-orange-500 rounded-lg"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <div className="relative z-10 flex items-center w-full">
+                  <item.icon className={cn("h-5 w-5 flex-shrink-0 transition-colors", isActive ? "text-orange-500" : "group-hover:text-white", (!collapsed || isMobile) && "mr-3")} />
+                  {(!collapsed || isMobile) && <span className="truncate flex-1">{label}</span>}
+                </div>
               </Button>
             );
           })}
@@ -136,22 +145,31 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
           {(!collapsed || isMobile) && (
             <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.1em]">Troca Rápida de Perfil</span>
           )}
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 relative">
             {(['admin', 'loja', 'vendedor'] as Role[]).map((r) => (
               <Button
                 key={r}
                 variant="ghost"
                 size={(collapsed && !isMobile) ? "icon" : "sm"}
                 className={cn(
-                  "h-8 text-[10px] uppercase font-bold",
-                  user?.role === r ? "bg-orange-500/20 text-orange-500 border border-orange-500/30" : "text-[#888888] hover:text-white hover:bg-white/5",
+                  "h-8 text-[10px] uppercase font-bold relative transition-colors",
+                  user?.role === r ? "text-orange-500" : "text-[#888888] hover:text-white",
                   (!collapsed || isMobile) && "px-2"
                 )}
                 onClick={() => setRole(r)}
                 title={r.toUpperCase()}
                 aria-label={`Trocar para perfil ${r}`}
               >
-                {(collapsed && !isMobile) ? r.substring(0, 1).toUpperCase() : r}
+                {user?.role === r && (
+                  <motion.div
+                    layoutId="role-pill"
+                    className="absolute inset-0 bg-orange-500/10 border border-orange-500/30 rounded-md"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className="relative z-10">
+                  {(collapsed && !isMobile) ? r.substring(0, 1).toUpperCase() : r}
+                </span>
               </Button>
             ))}
           </div>
@@ -160,3 +178,4 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
     </aside>
   );
 }
+

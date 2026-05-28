@@ -112,7 +112,7 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-[#888888] hover:text-white hover:bg-[#1a1a1a] px-3 h-11 transition-all rounded-[6px] relative",
-                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500",
+                  isActive && "bg-[#1a1a1a] text-white font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:bg-orange-500 rounded-l-none",
                   collapsed && !isMobile && "justify-center px-0"
                 )}
                 onClick={() => handleNavigate(item.path)}

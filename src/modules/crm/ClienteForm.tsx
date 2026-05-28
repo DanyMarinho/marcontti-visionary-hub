@@ -31,6 +31,7 @@ interface ClienteFormProps {
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const { createCliente, updateCliente } = useClientes();
   const [duplicateAlert, setDuplicateAlert] = React.useState(false);
+  const [duplicateClient, setDuplicateClient] = React.useState<any>(null);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formData, setFormData] = React.useState({
     full_name: '',
@@ -83,6 +84,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       const result: any = await createCliente.mutateAsync({ ...formData, confirmDuplicate });
       if (result?.isDuplicate) {
         setDuplicateAlert(true);
+        setDuplicateClient(result.existingClient);
       } else {
         onOpenChange(false);
       }

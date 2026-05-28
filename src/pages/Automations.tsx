@@ -7,6 +7,7 @@ import { FlowDiagram } from '@/components/automation/FlowDiagram';
 import { TriggerCards } from '@/components/automation/TriggerCards';
 import { IntegrationGrid } from '@/components/automation/IntegrationGrid';
 import { FlowNodeModal } from '@/components/automation/FlowNodeModal';
+import { EvolutionConfig } from '@/components/automation/EvolutionConfig';
 import { FlowNodeData } from '@/types/flow';
 
 const Automations: React.FC = () => {
@@ -43,6 +44,10 @@ const Automations: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TriggerCards />
           <IntegrationGrid />
+        </div>
+        
+        <div className="w-full">
+          <EvolutionConfig />
         </div>
       </div>
 

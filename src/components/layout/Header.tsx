@@ -5,6 +5,7 @@ import { TenantSwitcher } from './TenantSwitcher';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/ThemeProvider';
 import { useWhatsAppInstance } from '@/modules/whatsapp/hooks/useWhatsAppInstance';
+import { cn } from '@/lib/utils';
 import { 
   LogOut, 
   Sun, 

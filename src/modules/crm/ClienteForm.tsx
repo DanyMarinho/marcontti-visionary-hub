@@ -31,6 +31,7 @@ interface ClienteFormProps {
 export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
   const { createCliente, updateCliente } = useClientes();
   const [duplicateAlert, setDuplicateAlert] = React.useState(false);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formData, setFormData] = React.useState({
     full_name: '',
     phone: '',
@@ -65,6 +66,15 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
 
   const handleSubmit = async (e: React.FormEvent, confirmDuplicate = false) => {
     e.preventDefault();
+    
+    const newErrors: Record<string, string> = {};
+    if (!formData.full_name) newErrors.full_name = 'Nome é obrigatório';
+    if (!formData.phone) newErrors.phone = 'WhatsApp é obrigatório';
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     
     if (cliente) {
       updateCliente.mutate({ id: cliente.id, updates: formData });
@@ -127,9 +137,11 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                   id="full_name" 
                   required
                   value={formData.full_name}
-                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                   placeholder="Ex: João Roberto Silva" 
+                  className={errors.full_name ? "border-red-500" : ""}
                 />
+                {errors.full_name && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.full_name}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,9 +151,11 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                     id="phone" 
                     required
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     placeholder="5511999998888" 
+                    className={errors.phone ? "border-red-500" : ""}
                   />
+                  {errors.phone && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.phone}</p>}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="status">Status</Label>

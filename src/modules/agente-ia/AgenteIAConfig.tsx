@@ -108,6 +108,11 @@ export function AgenteIAConfig() {
     });
   };
 
+  const handleToggleActiveUI = (val: boolean) => {
+    handleToggleActive(val);
+    toast.info(`Agente IA ${val ? 'ativado' : 'desativado'} (clique em Salvar para confirmar)`);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     saveMutation.mutate(localConfig);
@@ -134,7 +139,7 @@ export function AgenteIAConfig() {
             <span className="text-xs font-bold uppercase tracking-wider text-white">
               {localConfig.is_active ? 'Ativado' : 'Desativado'}
             </span>
-            <Switch checked={localConfig.is_active} onCheckedChange={handleToggleActive} />
+            <Switch checked={localConfig.is_active} onCheckedChange={handleToggleActiveUI} />
           </div>
         </div>
       </div>

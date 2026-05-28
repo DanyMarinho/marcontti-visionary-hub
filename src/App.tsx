@@ -16,6 +16,7 @@ import { LojaList } from "./modules/admin/Stores/LojaList";
 import { VendedorList } from "./modules/admin/Vendors/VendedorList";
 import Settings from "./pages/Settings";
 import Metricas from "./modules/metricas/Metricas";
+import ProjecaoFinanceira from "./modules/projecao/ProjecaoFinanceira";
 import NotFound from "./pages/NotFound";
 
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/vendors" element={<VendedorList />} />
             <Route path="/team" element={<VendedorList />} /> {/* Common page for Loja role */}
             <Route path="/metrics" element={<Metricas />} />
+            <Route path="/projection" element={<ProjecaoFinanceira />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

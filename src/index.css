@@ -92,5 +92,7 @@
 
 /* Kanban specific styles for horizontal scroll */
 .kanban-scroll-area {
-  @apply overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/40;
+  @apply overflow-x-auto pb-4;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary) / 0.2) transparent;
 }

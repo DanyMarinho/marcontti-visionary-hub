@@ -47,18 +47,38 @@ export function FilterBar({ onFilter, isLoading }: FilterBarProps) {
           <label className="text-[10px] font-bold uppercase text-zinc-500 flex items-center gap-1">
             <Calendar size={12} /> Período
           </label>
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[180px] bg-zinc-900 border-zinc-800 text-zinc-300">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">Hoje</SelectItem>
-              <SelectItem value="week">Esta Semana</SelectItem>
-              <SelectItem value="month">Mês Atual</SelectItem>
-              <SelectItem value="last_month">Mês Anterior</SelectItem>
-              <SelectItem value="3m">Últimos 3 meses</SelectItem>
-            </SelectContent>
-          </Select>
+          <ShiftingDropDown 
+            tabs={[{
+              id: 'period-filter',
+              title: period === 'today' ? 'Hoje' :
+                     period === 'week' ? 'Esta Semana' :
+                     period === 'month' ? 'Mês Atual' :
+                     period === 'last_month' ? 'Mês Anterior' : 'Últimos 3 meses',
+              Component: () => (
+                <div className="w-full space-y-1">
+                  {[
+                    { id: 'today', name: 'Hoje' },
+                    { id: 'week', name: 'Esta Semana' },
+                    { id: 'month', name: 'Mês Atual' },
+                    { id: 'last_month', name: 'Mês Anterior' },
+                    { id: '3m', name: 'Últimos 3 meses' }
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPeriod(p.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-2 rounded-lg transition-colors group",
+                        period === p.id ? "bg-orange-500/10 text-orange-500" : "hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      <span className="text-sm font-medium">{p.name}</span>
+                      {period === p.id && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              )
+            }]}
+          />
         </div>
 
         <div className="space-y-2">

@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppShell from "./components/layout/AppShell";
 import Dashboard from "./pages/Dashboard";
 import ClienteList from "./modules/crm/ClienteList";
+import KanbanBoard from "./modules/pipeline/KanbanBoard";
 import WhatsApp from "./pages/WhatsApp";
 import { TenantList } from "./modules/admin/Tenants/TenantList";
 import { LojaList } from "./modules/admin/Stores/LojaList";

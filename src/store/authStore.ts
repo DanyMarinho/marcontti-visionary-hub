@@ -16,7 +16,7 @@ interface AuthState {
 
 const mockTenants: Tenant[] = [
   { 
-    id: '1', name: 'Marcontti', niche: 'mecanica', cnpj: '12.345.678/0001-01', contact_email: 'contato@marcontti.com', color: '#f97316', is_active: true, plan: 'premium', status: 'ativo', timezone: 'America/Sao_Paulo', 
+    id: '1', name: 'MA Marcontti', niche: 'mecanica', cnpj: '12.345.678/0001-01', contact_email: 'contato@marcontti.com', color: '#f97316', is_active: true, plan: 'premium', status: 'ativo', timezone: 'America/Sao_Paulo', 
     no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
     created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
   },

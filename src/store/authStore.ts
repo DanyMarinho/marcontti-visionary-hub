@@ -52,7 +52,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: mockUser,
   currentTenant: null,
   tenants: mockTenants,
-  selectedTenantId: 'all',
+  selectedTenantId: localStorage.getItem('activeTenantId') || 'all',
+
   setUser: (user) => set({ user }),
   setCurrentTenant: (tenant) => set({ 
     currentTenant: tenant,

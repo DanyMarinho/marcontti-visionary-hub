@@ -2,6 +2,7 @@ import React from 'react';
 import { useProjecao } from './hooks/useProjecao';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { MetaComparativeChart } from './components/MetaComparativeChart';
 import { GoalForm } from './components/GoalForm';

@@ -84,12 +84,17 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   const { data: sellers = [] } = useQuery({
     queryKey: ['sellers', activeTenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('users')
         .select('*')
         .eq('tenant_id', activeTenantId!)
         .eq('is_active', true);
+      
+      if (user?.store_id) {
+        query = query.eq('store_id', user.store_id);
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },

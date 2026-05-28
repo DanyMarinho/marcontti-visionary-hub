@@ -1,44 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from './store/authStore';
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppShell from "./components/layout/AppShell";
+import Dashboard from "./pages/Dashboard";
+import CRM from "./pages/CRM";
+import WhatsApp from "./pages/WhatsApp";
+import { TenantList } from "./modules/admin/Tenants/TenantList";
+import { LojaList } from "./modules/admin/Stores/LojaList";
+import { VendedorList } from "./modules/admin/Vendors/VendedorList";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 
-import Dashboard from './pages/Dashboard';
-import CRM from './pages/CRM';
-import WhatsApp from './pages/WhatsApp';
-import Projection from './pages/Projection';
-import Vendors from './pages/Vendors';
-import Settings from './pages/Settings';
-import Layout from './components/Layout';
-import Tenants from './pages/Tenants';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
-
-
-
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route
-          path="/*"
-          element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/crm" element={<CRM />} />
-                <Route path="/whatsapp" element={<WhatsApp />} />
-                <Route path="/metrics" element={<Dashboard />} />
-                <Route path="/projection" element={<Projection />} />
-                <Route path="/vendors" element={<Vendors />} />
-                <Route path="/tenants" element={<Tenants />} />
-                <Route path="/shops" element={<div>Lojas</div>} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </Layout>
-          }
-        />
-      </Routes>
-    </Router>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <BrowserRouter>
+        <AppShell>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/crm" element={<CRM />} />
+            <Route path="/whatsapp" element={<WhatsApp />} />
+            <Route path="/tenants" element={<TenantList />} />
+            <Route path="/shops" element={<LojaList />} />
+            <Route path="/vendors" element={<VendedorList />} />
+            <Route path="/team" element={<VendedorList />} /> {/* Common page for Loja role */}
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AppShell>
+      </BrowserRouter>
+      <Toaster />
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

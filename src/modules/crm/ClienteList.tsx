@@ -19,6 +19,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ClienteForm } from './ClienteForm';
 import { ClienteDetails } from './components/ClienteDetails';
 import { ExportButton } from '@/components/shared/ExportButton';

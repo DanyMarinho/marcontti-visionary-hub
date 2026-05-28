@@ -53,7 +53,7 @@ export default function KanbanBoard() {
       const toStage = over.id as string;
       const card = active.data.current;
       
-      if (card.stage_key !== toStage) {
+      if (card && card.stage_key !== toStage) {
         moveCard.mutate({ 
           cardId, 
           fromStage: card.stage_key, 

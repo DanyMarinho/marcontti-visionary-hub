@@ -15,6 +15,7 @@ import { TenantList } from "./modules/admin/Tenants/TenantList";
 import { LojaList } from "./modules/admin/Stores/LojaList";
 import { VendedorList } from "./modules/admin/Vendors/VendedorList";
 import Settings from "./pages/Settings";
+import Metricas from "./modules/metricas/Metricas";
 import NotFound from "./pages/NotFound";
 
 

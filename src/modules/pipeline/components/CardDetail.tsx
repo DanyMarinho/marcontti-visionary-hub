@@ -75,8 +75,15 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3">
-          <div className="col-span-2 p-6 border-r border-[#1f1f1f] space-y-6 overflow-y-auto">
+        <Tabs defaultValue="details" className="flex-1 overflow-hidden">
+          <TabsList className="w-full justify-start bg-[#0d0d0d] border-b border-[#1f1f1f] rounded-none px-6">
+            <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none h-12">Detalhes</TabsTrigger>
+            <TabsTrigger value="reactivations" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none h-12">Reativações</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="h-[calc(90vh-140px)] m-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 h-full">
+              <div className="col-span-2 p-6 border-r border-[#1f1f1f] space-y-6 overflow-y-auto">
              {isLossMode && (
                <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20 space-y-3 animate-in fade-in slide-in-from-top-1">
                  <Label className="text-[10px] font-black uppercase text-red-500">Motivo da Perda *</Label>

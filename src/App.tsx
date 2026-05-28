@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/shops" element={<LojaList />} />
             <Route path="/vendors" element={<VendedorList />} />
             <Route path="/team" element={<VendedorList />} /> {/* Common page for Loja role */}
+            <Route path="/metrics" element={<Metricas />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { whatsappService } from '@/services/whatsappService';
 import { useTenant } from '@/hooks/useTenant';
+import { useAuthStore } from '@/store/authStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { 
   Send, 
   Bot, 
@@ -16,10 +19,29 @@ import {
   Loader2,
   Check,
   CheckCheck,
-  ChevronLeft
+  ChevronLeft,
+  Share2,
+  CheckCircle2
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface ConversationViewProps {
   clientId: string;
@@ -28,9 +50,27 @@ interface ConversationViewProps {
 
 export function ConversationView({ clientId, onBack }: ConversationViewProps) {
   const { activeTenantId } = useTenant();
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState('');
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [transferUserId, setTransferUserId] = useState('');
+
+
+  const { data: conversation, isLoading: isLoadingConv } = useQuery({
+    queryKey: ['whatsapp-conversation', activeTenantId, clientId],
+    queryFn: async () => {
+      const conv = await whatsappService.getConversationByClient(activeTenantId!, clientId);
+      if (conv && conv.status === 'waiting') {
+        // Automatically change status to attending when opening
+        await whatsappService.updateConversation(conv.id, { status: 'attending' });
+        queryClient.invalidateQueries({ queryKey: ['whatsapp-conversations'] });
+      }
+      return conv;
+    },
+    enabled: !!activeTenantId && !!clientId,
+  });
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['whatsapp-messages', activeTenantId, clientId],
@@ -38,14 +78,37 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
     enabled: !!activeTenantId && !!clientId,
   });
 
+  const { data: sellers = [] } = useQuery({
+    queryKey: ['sellers', activeTenantId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('tenant_id', activeTenantId)
+        .eq('is_active', true);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeTenantId,
+  });
+
   const { data: client } = useQuery({
     queryKey: ['client', clientId],
     queryFn: async () => {
-      // Try to find the client name from the messages or database
-      // For now, using a fallback but prioritizing actual data if available
-      return { id: clientId, full_name: 'Lead WhatsApp', phone: 'Sincronizando...' };
+      const { data, error } = await supabase.from('clients').select('*').eq('id', clientId).single();
+      if (error) return { id: clientId, full_name: 'Lead WhatsApp', phone: '...' };
+      return data;
     }
   });
+
+  const updateConvMutation = useMutation({
+    mutationFn: (updates: any) => whatsappService.updateConversation(conversation!.id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-conversation', activeTenantId, clientId] });
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-conversations'] });
+    }
+  });
+
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -74,28 +137,124 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a]">
-      {/* Header */}
-      <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between h-20">
+      <div className="p-4 border-b border-[#1f1f1f] bg-[#0d0d0d] flex items-center justify-between min-h-20 flex-wrap gap-4">
         <div className="flex items-center gap-3">
           {onBack && (
             <Button variant="ghost" size="icon" className="md:hidden text-white" onClick={onBack}>
               <ChevronLeft size={20} />
             </Button>
           )}
-          <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold border border-orange-500/20">
-            {client?.full_name?.substring(0, 2).toUpperCase()}
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold border border-orange-500/20">
+              {client?.full_name?.substring(0, 2).toUpperCase()}
+            </div>
+            {conversation?.status && (
+              <div className={cn(
+                "absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#0d0d0d]",
+                conversation.status === 'waiting' ? "bg-yellow-500" :
+                conversation.status === 'attending' ? "bg-blue-500" : "bg-green-500"
+              )} />
+            )}
           </div>
           <div>
-            <h3 className="font-bold text-sm text-white">{client?.full_name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-white">{client?.full_name}</h3>
+              {conversation?.status && (
+                <Badge variant="outline" className={cn(
+                  "text-[8px] h-4 px-1 uppercase font-black tracking-tighter",
+                  conversation.status === 'waiting' ? "border-yellow-500 text-yellow-500" :
+                  conversation.status === 'attending' ? "border-blue-500 text-blue-500" :
+                  "border-green-500 text-green-500"
+                )}>
+                  {conversation.status === 'waiting' ? 'Aguardando' : conversation.status === 'attending' ? 'Em atendimento' : 'Resolvido'}
+                </Badge>
+              )}
+            </div>
             <p className="text-[10px] text-[#888888] uppercase font-black tracking-widest">{client?.phone}</p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><Phone size={18} /></Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><Video size={18} /></Button>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground"><MoreVertical size={18} /></Button>
+          {/* IA Toggle */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#1f1f1f] mr-2">
+            <Label htmlFor="ia-mode" className="text-[10px] font-black uppercase text-[#888888] cursor-pointer">
+              Agente IA
+            </Label>
+            <Switch 
+              id="ia-mode" 
+              checked={conversation?.ai_enabled} 
+              onCheckedChange={(checked) => {
+                updateConvMutation.mutate({ ai_enabled: checked });
+                if (!checked) {
+                   toast.info(`IA desativada por ${user?.full_name}`);
+                }
+              }}
+            />
+          </div>
+
+          {(user?.role === 'admin' || user?.role === 'loja') && (
+            <Dialog open={isTransferModalOpen} onOpenChange={setIsTransferModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-[#888888] hover:text-white">
+                  <Share2 size={14} /> Transferir
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#0d0d0d] border-[#1f1f1f]">
+                <DialogHeader>
+                  <DialogTitle>Transferir Conversa</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label>Vendedor Destino</Label>
+                    <Select value={transferUserId} onValueChange={setTransferUserId}>
+                      <SelectTrigger className="bg-[#1a1a1a] border-[#1f1f1f]">
+                        <SelectValue placeholder="Selecione um vendedor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sellers
+                          .filter(s => s.id !== user?.id)
+                          .map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.full_name}</SelectItem>
+                          ))
+                        }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    disabled={!transferUserId}
+                    onClick={() => {
+                      const seller = sellers.find(s => s.id === transferUserId);
+                      updateConvMutation.mutate({ assigned_to: transferUserId });
+                      toast.success(`Conversa transferida para ${seller?.full_name}`);
+                      setIsTransferModalOpen(false);
+                    }}
+                  >
+                    Confirmar Transferência
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {conversation?.status !== 'resolved' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 text-xs gap-1 text-green-500 hover:text-green-400 hover:bg-green-500/10"
+              onClick={() => updateConvMutation.mutate({ status: 'resolved' })}
+            >
+              <CheckCircle2 size={14} /> Resolver
+            </Button>
+          )}
+          
+          <div className="h-6 w-[1px] bg-[#1f1f1f] mx-1" />
+          
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-[#888888]"><Phone size={18} /></Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-[#888888]"><Video size={18} /></Button>
         </div>
       </div>
+
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">

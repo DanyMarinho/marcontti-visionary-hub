@@ -29,7 +29,7 @@ const App = () => (
         <AppShell>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/crm" element={<CRM />} />
+            <Route path="/crm" element={<ClienteList />} />
             <Route path="/whatsapp" element={<WhatsApp />} />
             <Route path="/tenants" element={<TenantList />} />
             <Route path="/shops" element={<LojaList />} />

@@ -134,3 +134,15 @@ export interface Goal {
   period_end: string;
   created_at: string;
 }
+
+export interface Sale {
+  id: string;
+  tenant_id: string;
+  client_id: string;
+  seller_id: string;
+  store_id: string;
+  amount: number;
+  date: string;
+  product: string;
+}
+

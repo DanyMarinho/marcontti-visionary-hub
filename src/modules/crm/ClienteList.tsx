@@ -31,13 +31,16 @@ const statusMap: any = {
   lead_unidentified: { label: 'Lead Não Identificado', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' },
 };
 
+import { useDebounce } from '@/hooks/useDebounce';
+
 export default function ClienteList() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<any>(null);
 
-  const { clientes, totalCount, isLoading, deleteCliente } = useClientes(page, 10, search);
+  const debouncedSearch = useDebounce(search, 300);
+  const { clientes, totalCount, isLoading, deleteCliente } = useClientes(page, 10, debouncedSearch);
 
   const columns = [
     {

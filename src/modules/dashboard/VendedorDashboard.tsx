@@ -52,7 +52,7 @@ export default function VendedorDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <KpiCard key={i} isLoading title="" icon={DollarSign} value="" />)
         ) : (

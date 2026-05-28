@@ -29,11 +29,11 @@ export default function Dashboard() {
   // Filter data based on selection
   const filteredCustomers = isGlobal 
     ? mockCustomers 
-    : mockCustomers.filter(c => c.tenantId === selectedTenantId);
+    : mockCustomers.filter(c => c.tenant_id === selectedTenantId);
   
   const filteredSales = isGlobal 
     ? mockSales 
-    : mockSales.filter(s => s.tenantId === selectedTenantId);
+    : mockSales.filter(s => s.tenant_id === selectedTenantId);
 
   // Statistics
   const totalSalesAmount = filteredSales.reduce((acc, s) => acc + s.amount, 0);
@@ -51,13 +51,13 @@ export default function Dashboard() {
 
   const tenantComparison = tenants.map(t => ({
     name: t.name,
-    sales: mockSales.filter(s => s.tenantId === t.id).reduce((acc, s) => acc + s.amount, 0),
-    customers: mockCustomers.filter(c => c.tenantId === t.id).length
+    sales: mockSales.filter(s => s.tenant_id === t.id).reduce((acc, s) => acc + s.amount, 0),
+    customers: mockCustomers.filter(c => c.tenant_id === t.id).length
   })).sort((a, b) => b.sales - a.sales);
 
   const nicheData = [
     { name: 'Mecânica', value: tenants.filter(t => t.niche === 'mecanica').length },
-    { name: 'Comércio', value: tenants.filter(t => t.niche === 'comercio').length },
+    { name: 'Comércio Local', value: tenants.filter(t => t.niche === 'comercio_local').length },
     { name: 'Clínica', value: tenants.filter(t => t.niche === 'clinica').length },
     { name: 'Educação', value: tenants.filter(t => t.niche === 'educacao').length },
   ];
@@ -166,9 +166,8 @@ export default function Dashboard() {
               <PieChart>
                 <Pie
                   data={isGlobal ? nicheData : [
-                    { name: 'Lead', value: filteredCustomers.filter(c => c.status === 'lead').length },
-                    { name: 'Proposta', value: filteredCustomers.filter(c => c.status === 'proposal').length },
-                    { name: 'Fechado', value: filteredCustomers.filter(c => c.status === 'closed').length },
+                    { name: 'Lead', value: filteredCustomers.filter(c => c.status === 'lead_unidentified').length },
+                    { name: 'Ativo', value: filteredCustomers.filter(c => c.status === 'active').length },
                   ]}
                   innerRadius={60}
                   outerRadius={80}

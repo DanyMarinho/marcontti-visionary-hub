@@ -1,31 +1,58 @@
 import { create } from 'zustand';
-import { User, Tenant } from '../types';
+import { User, Tenant, Role } from '../types';
 
 interface AuthState {
   user: User | null;
-  selectedTenantId: string | 'all';
+  currentTenant: Tenant | null;
   tenants: Tenant[];
-  login: (role: User['role']) => void;
-  setSelectedTenant: (id: string | 'all') => void;
+  selectedTenantId: string | null;
+  setUser: (user: User | null) => void;
+  setCurrentTenant: (tenant: Tenant | null) => void;
+  setSelectedTenant: (tenantId: string) => void;
+  setRole: (role: Role) => void;
+  setTenants: (tenants: Tenant[]) => void;
+  login: () => void;
 }
 
-export const mockTenants: Tenant[] = [
-  { id: 'tenant-1', name: 'Marcontti', niche: 'mecanica', color: '#f97316', ownerName: 'João Marcontti', plan: 'premium', status: 'ativo' },
-  { id: 'tenant-2', name: 'Clínica Vida', niche: 'clinica', color: '#10b981', ownerName: 'Dra. Maria', plan: 'pro', status: 'ativo' },
-  { id: 'tenant-3', name: 'Casa & Lar', niche: 'comercio', color: '#3b82f6', ownerName: 'Ricardo Santos', plan: 'basico', status: 'ativo' },
-  { id: 'tenant-4', name: 'EduPro', niche: 'educacao', color: '#8b5cf6', ownerName: 'Prof. Ana', plan: 'pro', status: 'ativo' },
-];
-
-const mockUsers: Record<string, User> = {
-  admin: { id: '1', name: 'Admin Infinda', email: 'admin@infindadigital.com', role: 'admin', tenantId: 'system' },
-  shop: { id: '2', name: 'Gerente Loja', email: 'loja@infindadigital.com', role: 'shop', tenantId: 'tenant-1' },
-  vendor: { id: '3', name: 'Vendedor MEC', email: 'vendedor@infindadigital.com', role: 'vendor', tenantId: 'tenant-1' },
+const mockUser: User = {
+  id: '1',
+  full_name: 'Admin MEC',
+  name: 'Admin MEC',
+  email: 'admin@mec.com',
+  role: 'admin',
+  tenant_id: '1',
+  is_active: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: mockUsers.admin,
+  user: mockUser,
+  currentTenant: null,
+  tenants: [],
   selectedTenantId: 'all',
-  tenants: mockTenants,
-  login: (role) => set({ user: mockUsers[role] }),
-  setSelectedTenant: (id) => set({ selectedTenantId: id }),
+  setUser: (user) => set({ user }),
+  setCurrentTenant: (tenant) => set({ 
+    currentTenant: tenant,
+    selectedTenantId: tenant ? tenant.id : 'all'
+  }),
+  setSelectedTenant: (tenantId) => set((state) => {
+    if (tenantId === 'all') {
+      return { selectedTenantId: 'all', currentTenant: null };
+    }
+    const tenant = state.tenants.find(t => t.id === tenantId) || null;
+    return {
+      selectedTenantId: tenantId,
+      currentTenant: tenant
+    };
+  }),
+  setRole: (role) => set((state) => ({ 
+    user: state.user ? { ...state.user, role } : null 
+  })),
+  setTenants: (tenants) => set((state) => {
+    // If currentTenant is null and we have tenants, maybe set the first one?
+    // But usually for admin we want 'all' by default
+    return { tenants };
+  }),
+  login: () => {},
 }));

@@ -15,11 +15,9 @@ import { useAuthStore } from '../store/authStore';
 import { mockCustomers } from '../lib/mockData';
 
 const statusMap = {
-  lead: { label: 'Lead', color: 'bg-blue-500' },
-  contact: { label: 'Contato', color: 'bg-yellow-500' },
-  proposal: { label: 'Proposta', color: 'bg-orange-500' },
-  closed: { label: 'Fechado', color: 'bg-green-500' },
-  'post-sale': { label: 'Pós-venda', color: 'bg-purple-500' },
+  active: { label: 'Ativo', color: 'bg-green-500' },
+  lead_unidentified: { label: 'Lead Não Identificado', color: 'bg-blue-500' },
+  deleted: { label: 'Deletado', color: 'bg-red-500' },
 };
 
 export default function CRM() {
@@ -27,7 +25,7 @@ export default function CRM() {
   
   const filteredCustomers = selectedTenantId === 'all' 
     ? mockCustomers 
-    : mockCustomers.filter(c => c.tenantId === selectedTenantId);
+    : mockCustomers.filter(c => c.tenant_id === selectedTenantId);
 
   return (
     <div className="space-y-6">
@@ -63,14 +61,13 @@ export default function CRM() {
                 <TableHead>Contato</TableHead>
                 {selectedTenantId === 'all' && <TableHead>Empresa</TableHead>}
                 <TableHead>Status</TableHead>
-                <TableHead>Score</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id}>
-                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell className="font-medium">{customer.full_name}</TableCell>
                   <TableCell>
                     <div className="text-sm">{customer.email}</div>
                     <div className="text-xs text-muted-foreground">{customer.phone}</div>
@@ -78,25 +75,14 @@ export default function CRM() {
                   {selectedTenantId === 'all' && (
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
-                        {tenants.find(t => t.id === customer.tenantId)?.name}
+                        {tenants.find(t => t.id === customer.tenant_id)?.name}
                       </Badge>
                     </TableCell>
                   )}
                   <TableCell>
-                    <Badge className={statusMap[customer.status as keyof typeof statusMap].color}>
-                      {statusMap[customer.status as keyof typeof statusMap].label}
+                    <Badge className={statusMap[customer.status].color}>
+                      {statusMap[customer.status].label}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <div className="text-xs font-bold">{customer.score}</div>
-                      <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-green-500" 
-                          style={{ width: `${customer.score}%` }} 
-                        />
-                      </div>
-                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" title="Abrir WhatsApp">

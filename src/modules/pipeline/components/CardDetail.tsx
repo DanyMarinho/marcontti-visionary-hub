@@ -165,7 +165,47 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </TabsContent>
+
+      <TabsContent value="reactivations" className="h-[calc(90vh-140px)] m-0 overflow-y-auto p-6">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+              <RefreshCw size={14} className="text-orange-500" /> Histórico de Reativações
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {reactivationLogs.length === 0 ? (
+              <div className="text-center py-12 text-[#888888] text-xs">Nenhuma reativação registrada</div>
+            ) : (
+              reactivationLogs.map((log: any) => (
+                <div key={log.id} className="p-4 rounded-lg bg-[#0d0d0d] border border-[#1f1f1f] space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className={cn(
+                      "text-[8px] uppercase font-black",
+                      log.type === 'whatsapp' ? "border-green-500/30 text-green-500" :
+                      log.type === 'follow_up' ? "border-blue-500/30 text-blue-500" :
+                      "border-orange-500/30 text-orange-500"
+                    )}>
+                      {log.type}
+                    </Badge>
+                    <span className="text-[9px] text-[#555555]">
+                      {format(new Date(log.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white font-medium">{log.notes}</p>
+                  <div className="flex items-center gap-2 text-[10px] text-[#888888]">
+                    <User size={10} /> {log.user?.full_name}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  </DialogContent>
+</Dialog>
   );
 }

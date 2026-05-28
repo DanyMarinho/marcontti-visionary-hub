@@ -30,7 +30,7 @@ export const SalesBarChart = React.memo(function SalesBarChart({ data, height = 
           data={data}
           margin={{ top: 10, right: 10, left: 20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" opacity={0.5} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.1} />
           <XAxis 
             dataKey="month" 
             axisLine={false} 

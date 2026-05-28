@@ -21,13 +21,16 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
 
+  const isOverdue = card.expected_close_date && new Date(card.expected_close_date) < new Date();
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       className={cn(
         "mb-3 cursor-grab active:cursor-grabbing hover:border-orange-500/50 transition-all duration-200 group touch-none",
-        isDragging && "opacity-50 border-orange-500 ring-2 ring-orange-500/20"
+        isDragging && "opacity-50 border-orange-500 ring-2 ring-orange-500/20",
+        isOverdue && "border-l-4 border-l-red-500"
       )}
       onClick={() => onClick(card)}
       {...attributes}
@@ -64,8 +67,10 @@ export function KanbanCard({ card, onClick }: KanbanCardProps) {
             <span className="text-xs">{Number(card.estimated_value).toLocaleString('pt-BR')}</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock size={10} />
-            <span className="text-[9px] font-medium">3d</span>
+            <Clock size={10} className={isOverdue ? "text-red-500" : ""} />
+            <span className={cn("text-[9px] font-medium", isOverdue && "text-red-500 font-bold")}>
+              {isOverdue ? 'Atrasado' : '3d'}
+            </span>
           </div>
         </div>
 

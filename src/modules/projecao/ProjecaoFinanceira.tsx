@@ -52,6 +52,8 @@ export default function ProjecaoFinanceira() {
     ? 'danger'
     : 'warning';
 
+  const residualValue = Math.max(0, projection.realistic - closedSales);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -123,7 +125,7 @@ export default function ProjecaoFinanceira() {
             <CardTitle className="text-sm">Comparativo: Meta vs Projeção vs Realizado</CardTitle>
             <CardDescription>Histórico de performance dos últimos 6 meses</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="h-[300px]">
             <MetaComparativeChart data={data?.historicalData || []} />
           </CardContent>
         </Card>
@@ -159,7 +161,7 @@ export default function ProjecaoFinanceira() {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-zinc-400">Potencial Bruto</span>
-                    <span className="font-bold text-white">{formatCurrency(projection.realistic - closedSales)}</span>
+                    <span className="font-bold text-white">{formatCurrency(residualValue)}</span>
                   </div>
                 </div>
               </div>

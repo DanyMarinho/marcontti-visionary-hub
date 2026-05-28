@@ -134,7 +134,7 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="tenant">Toda a Unidade</SelectItem>
+                  <SelectItem value="tenant">Toda a Unidade (Tenant)</SelectItem>
                   <SelectItem value="store">Loja Específica</SelectItem>
                   <SelectItem value="seller">Vendedor Específico</SelectItem>
                 </SelectContent>

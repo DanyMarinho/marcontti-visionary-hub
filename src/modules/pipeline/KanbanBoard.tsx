@@ -20,6 +20,7 @@ import { Plus, Filter, Search, GitMerge } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const MEC_STAGES = [
   { key: 'prospeccao', label: '1. Prospecção', color: '#f97316' },
@@ -102,9 +103,9 @@ export default function KanbanBoard() {
               {isLoading ? (
                 MEC_STAGES.map((stage) => (
                   <div key={stage.key} className="flex flex-col w-[260px] md:w-72 flex-shrink-0 space-y-3">
-                    <div className="h-10 w-full bg-muted animate-pulse rounded-lg" />
+                    <Skeleton className="h-10 w-full" />
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="h-32 w-full bg-muted animate-pulse rounded-lg" />
+                      <Skeleton key={i} className="h-32 w-full" />
                     ))}
                   </div>
                 ))

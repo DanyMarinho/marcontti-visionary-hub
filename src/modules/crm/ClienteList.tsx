@@ -143,6 +143,18 @@ export default function ClienteList() {
         totalCount={totalCount}
         page={page}
         onPageChange={setPage}
+        emptyState={
+          <EmptyState 
+            icon={User}
+            title="Nenhum cliente cadastrado"
+            description="Adicione o primeiro cliente para começar a gerenciar sua base e oportunidades."
+            action={
+              <Button onClick={() => setIsFormOpen(true)} className="bg-orange-500 hover:bg-orange-600">
+                <Plus className="mr-2 h-4 w-4" /> Adicionar Primeiro Cliente
+              </Button>
+            }
+          />
+        }
       />
 
       <ClienteForm 

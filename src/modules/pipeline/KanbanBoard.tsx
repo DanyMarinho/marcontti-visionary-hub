@@ -14,8 +14,9 @@ import { usePipeline } from './hooks/usePipeline';
 import { KanbanColumn } from './components/KanbanColumn';
 import { KanbanCard } from './components/KanbanCard';
 import { Button } from '@/components/ui/button';
-import { Plus, Filter, Search } from 'lucide-react';
+import { Plus, Filter, Search, GitMerge } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const MEC_STAGES = [

@@ -81,7 +81,7 @@ export default function Settings() {
 
       <Tabs defaultValue="dados" className="w-full">
         <TabsList className="bg-zinc-950 border border-zinc-800 p-1 h-14 w-full justify-start gap-2 overflow-x-auto">
-          <TabsTrigger value="dados" className="gap-2 px-4 h-11"><Store size={16} /> Dados</TabsTrigger>
+          <TabsTrigger value="dados" className="gap-2 px-4 h-11"><Store size={16} /> Dados da Empresa</TabsTrigger>
           <TabsTrigger value="pipeline" className="gap-2 px-4 h-11"><GitMerge size={16} /> Pipeline</TabsTrigger>
           <TabsTrigger value="notifications" className="gap-2 px-4 h-11"><Bell size={16} /> Notificações</TabsTrigger>
           <TabsTrigger value="audit" className="gap-2 px-4 h-11"><Terminal size={16} /> Auditoria</TabsTrigger>

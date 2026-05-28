@@ -30,7 +30,7 @@ const QUOTES = [
   "Sua base de dados é seu maior ativo."
 ];
 
-export function AdminDashboard() {
+export default function AdminDashboard() {
   const { data, isLoading, error, refetch } = useDashboardKpis();
   const [quote] = React.useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
@@ -143,7 +143,7 @@ export function AdminDashboard() {
                   </TableRow>
                 ))
               ) : (
-                data?.tenantRanking.map((item: any, i: number) => (
+                data?.tenantRanking?.map((item: any, i: number) => (
                   <TableRow key={i}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>R$ {item.sales.toLocaleString('pt-BR')}</TableCell>

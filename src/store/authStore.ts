@@ -1,16 +1,20 @@
 import { create } from 'zustand';
-import { User, Tenant, Role } from '../types';
+import { User, Tenant, Role, Store } from '../types';
 
 interface AuthState {
   user: User | null;
   currentTenant: Tenant | null;
   tenants: Tenant[];
   selectedTenantId: string | null;
+  selectedStoreId: string | null;
+  stores: Store[];
   setUser: (user: User | null) => void;
   setCurrentTenant: (tenant: Tenant | null) => void;
   setSelectedTenant: (tenantId: string) => void;
+  setSelectedStore: (storeId: string) => void;
   setRole: (role: Role) => void;
   setTenants: (tenants: Tenant[]) => void;
+  setStores: (stores: Store[]) => void;
   login: () => void;
 }
 
@@ -52,7 +56,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: mockUser,
   currentTenant: null,
   tenants: mockTenants,
+  stores: [],
   selectedTenantId: localStorage.getItem('activeTenantId') || 'all',
+  selectedStoreId: localStorage.getItem('activeStoreId') || 'all',
 
   setUser: (user) => set({ user }),
   setCurrentTenant: (tenant) => set({ 
@@ -69,13 +75,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       currentTenant: tenant
     };
   }),
+  setSelectedStore: (storeId) => set({ selectedStoreId: storeId }),
   setRole: (role) => set((state) => ({ 
     user: state.user ? { ...state.user, role } : null 
   })),
-  setTenants: (tenants) => set((state) => {
-    // If currentTenant is null and we have tenants, maybe set the first one?
-    // But usually for admin we want 'all' by default
-    return { tenants };
-  }),
+  setTenants: (tenants) => set({ tenants }),
+  setStores: (stores) => set({ stores }),
   login: () => {},
 }));

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useTenant } from '@/hooks/useTenant';
 import { TenantSwitcher } from './TenantSwitcher';
+import { StoreSwitcher } from './StoreSwitcher';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/ThemeProvider';
 import { useWhatsAppInstance } from '@/modules/whatsapp/hooks/useWhatsAppInstance';
@@ -207,9 +208,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           </h2>
         </div>
         
-        {user?.role === 'admin' && (
-          <div className="hidden sm:block">
-            <TenantSwitcher />
+        {(user?.role === 'admin' || user?.role === 'loja') && (
+          <div className="hidden sm:flex items-center">
+            {user?.role === 'admin' && <TenantSwitcher />}
+            <StoreSwitcher />
           </div>
         )}
       </div>

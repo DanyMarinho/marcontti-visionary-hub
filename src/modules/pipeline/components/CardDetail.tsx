@@ -7,13 +7,17 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { User, Calendar, DollarSign, History, ArrowRight, UserPlus, Archive } from 'lucide-react';
+import { User, Calendar, DollarSign, History, ArrowRight, UserPlus, Archive, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthStore } from '@/store/authStore';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface CardDetailProps {
@@ -27,6 +31,20 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
   const [isLossMode, setIsLossMode] = useState(false);
   const [lossReason, setLossReason] = useState('');
   const canTransfer = user?.role === 'admin' || user?.role === 'loja';
+
+  const { data: reactivationLogs = [] } = useQuery({
+    queryKey: ['reactivation-logs', card?.client_id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reactivation_logs')
+        .select('*, user:users(full_name)')
+        .eq('client_id', card.client_id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!card?.client_id && open
+  });
 
   if (!card) return null;
 
@@ -72,8 +90,15 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3">
-          <div className="col-span-2 p-6 border-r border-[#1f1f1f] space-y-6 overflow-y-auto">
+        <Tabs defaultValue="details" className="flex-1 overflow-hidden">
+          <TabsList className="w-full justify-start bg-[#0d0d0d] border-b border-[#1f1f1f] rounded-none px-6">
+            <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none h-12">Detalhes</TabsTrigger>
+            <TabsTrigger value="reactivations" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none h-12">Reativações</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="h-[calc(90vh-140px)] m-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 h-full">
+              <div className="col-span-2 p-6 border-r border-[#1f1f1f] space-y-6 overflow-y-auto">
              {isLossMode && (
                <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20 space-y-3 animate-in fade-in slide-in-from-top-1">
                  <Label className="text-[10px] font-black uppercase text-red-500">Motivo da Perda *</Label>
@@ -141,7 +166,47 @@ export function CardDetail({ open, onOpenChange, card }: CardDetailProps) {
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </TabsContent>
+
+      <TabsContent value="reactivations" className="h-[calc(90vh-140px)] m-0 overflow-y-auto p-6">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+              <RefreshCw size={14} className="text-orange-500" /> Histórico de Reativações
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {reactivationLogs.length === 0 ? (
+              <div className="text-center py-12 text-[#888888] text-xs">Nenhuma reativação registrada</div>
+            ) : (
+              reactivationLogs.map((log: any) => (
+                <div key={log.id} className="p-4 rounded-lg bg-[#0d0d0d] border border-[#1f1f1f] space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className={cn(
+                      "text-[8px] uppercase font-black",
+                      log.type === 'whatsapp' ? "border-green-500/30 text-green-500" :
+                      log.type === 'follow_up' ? "border-blue-500/30 text-blue-500" :
+                      "border-orange-500/30 text-orange-500"
+                    )}>
+                      {log.type}
+                    </Badge>
+                    <span className="text-[9px] text-[#555555]">
+                      {format(new Date(log.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white font-medium">{log.notes}</p>
+                  <div className="flex items-center gap-2 text-[10px] text-[#888888]">
+                    <User size={10} /> {log.user?.full_name}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  </DialogContent>
+</Dialog>
   );
 }

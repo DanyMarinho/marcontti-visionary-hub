@@ -156,7 +156,13 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
                   user?.role === r ? "text-orange-500" : "text-[#888888] hover:text-white",
                   (!collapsed || isMobile) && "px-2"
                 )}
-                onClick={() => setRole(r)}
+                onClick={() => {
+                  setRole(r);
+                  // Optional: stay on the same page but many pages are role-restricted
+                  // If on a page the new role cannot access, stay where possible or the 
+                  // App component / Protected Route would normally handle it.
+                  // For now we just allow the role change without forced navigation.
+                }}
                 title={r.toUpperCase()}
                 aria-label={`Trocar para perfil ${r}`}
               >

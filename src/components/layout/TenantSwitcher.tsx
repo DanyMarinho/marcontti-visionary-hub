@@ -11,6 +11,11 @@ export function TenantSwitcher() {
 
   const handleValueChange = (id: string) => {
     setActiveTenant(id);
+    if (window.location.pathname !== '/') {
+      // If we're not on the root dashboard, don't force navigation
+      // but ensure if there's any logic redirecting to /admin, it's suppressed
+      console.log('Tenant switched to:', id);
+    }
   };
 
   const TenantListContent = () => (

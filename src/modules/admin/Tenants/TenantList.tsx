@@ -90,6 +90,8 @@ export function TenantList() {
   const handleViewDashboard = (tenant: Tenant) => {
     setActiveTenant(tenant.id);
     setStoreSelectedTenant(tenant.id);
+    // Only navigate to dashboard if the user is an admin or has permission
+    // But since this is a list meant for management, we keep the navigation to the root
     navigate('/');
     toast.success(`Visualizando dashboard de ${tenant.name}`);
   };

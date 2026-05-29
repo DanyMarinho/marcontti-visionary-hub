@@ -7,13 +7,20 @@ import { cn } from '@/lib/utils';
 export function StoreSwitcher() {
   const { activeStoreId, setActiveStore, activeStore, stores } = useStore();
 
+  const handleSetActiveStore = (id: string) => {
+    setActiveStore(id);
+    if (window.location.pathname !== '/') {
+      console.log('Store switched to:', id);
+    }
+  };
+
   const StoreListContent = () => (
     <div className="w-full space-y-1">
       <div className="flex items-center justify-between mb-3 border-b border-zinc-800 pb-2">
         <h3 className="font-bold text-xs text-zinc-400 uppercase tracking-wider">Selecionar Unidade</h3>
       </div>
       <button
-        onClick={() => setActiveStore('all')}
+        onClick={() => handleSetActiveStore('all')}
         className={cn(
           "w-full flex items-center justify-between p-2 rounded-lg transition-colors group",
           activeStoreId === 'all' ? "bg-orange-500/10 text-orange-500" : "hover:bg-zinc-800 text-zinc-400 hover:text-white"
@@ -29,7 +36,7 @@ export function StoreSwitcher() {
       {stores.map((store) => (
         <button
           key={store.id}
-          onClick={() => setActiveStore(store.id)}
+          onClick={() => handleSetActiveStore(store.id)}
           className={cn(
             "w-full flex items-center justify-between p-2 rounded-lg transition-colors group",
             activeStoreId === store.id ? "bg-orange-500/10 text-orange-500" : "hover:bg-zinc-800 text-zinc-400 hover:text-white"

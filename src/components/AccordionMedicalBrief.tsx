@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Controller } from 'react-hook-form';

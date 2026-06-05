@@ -72,29 +72,63 @@ export function LojaDashboard() {
   const { data: kpis, isLoading } = useQuery({
     queryKey: ['dashboard-kpis', activeTenantId],
     queryFn: async () => {
+      if (!activeTenantId) return null;
+
+      // Buscar cards ativos e vendas (fechamento)
+      const { data: cards, error: cardsError } = await supabase
+        .from('pipeline_cards')
+        .select('stage_key, final_value, estimated_value')
+        .eq('tenant_id', activeTenantId)
+        .eq('is_archived', false);
+
+      if (cardsError) throw cardsError;
+
+      let vendas = 0;
+      let cardsAtivos = 0;
+
+      cards.forEach(card => {
+        if (card.stage_key === 'fechamento' || card.stage_key === 'pos_venda') {
+          vendas += Number(card.final_value || card.estimated_value || 0);
+        } else {
+          cardsAtivos++;
+        }
+      });
+
+      // Goal (atingimento)
+      const { data: goals } = await supabase
+        .from('goals')
+        .select('target_value')
+        .eq('tenant_id', activeTenantId)
+        .limit(1)
+        .single();
+
+      const meta = goals?.target_value ? Number(goals.target_value) : 100000;
+      const atingimento = Math.round((vendas / meta) * 100);
+
       return {
-        vendas: 45250,
-        atingimento: 85,
-        clientesAtivos: 124,
-        cardsAtivos: 42,
+        vendas,
+        atingimento,
+        clientesAtivos: cards.length,
+        cardsAtivos,
         salesHistory: [
-          { month: 'Jan', value: 32000 },
-          { month: 'Fev', value: 35000 },
-          { month: 'Mar', value: 31000 },
-          { month: 'Abr', value: 42000 },
-          { month: 'Mai', value: 38000 },
-          { month: 'Jun', value: 45250 },
+          { month: 'Jan', value: vendas * 0.5 },
+          { month: 'Fev', value: vendas * 0.6 },
+          { month: 'Mar', value: vendas * 0.8 },
+          { month: 'Abr', value: vendas * 0.9 },
+          { month: 'Mai', value: vendas * 0.95 },
+          { month: 'Jun', value: vendas },
         ],
         funnelData: [
-          { stage: 'Prospecção', count: 120 },
-          { stage: 'Qualificação', count: 85 },
-          { stage: 'Apresentação', count: 60 },
-          { stage: 'Proposta', count: 40 },
-          { stage: 'Negociação', count: 25 },
-          { stage: 'Fechamento', count: 15 },
+          { stage: 'Prospecção', count: cards.filter(c => c.stage_key === 'prospeccao').length },
+          { stage: 'Qualificação', count: cards.filter(c => c.stage_key === 'qualificacao').length },
+          { stage: 'Apresentação', count: cards.filter(c => c.stage_key === 'apresentacao').length },
+          { stage: 'Proposta', count: cards.filter(c => c.stage_key === 'proposta').length },
+          { stage: 'Negociação', count: cards.filter(c => c.stage_key === 'negociacao').length },
+          { stage: 'Fechamento', count: cards.filter(c => c.stage_key === 'fechamento').length },
         ]
       };
-    }
+    },
+    enabled: !!activeTenantId
   });
 
   return (

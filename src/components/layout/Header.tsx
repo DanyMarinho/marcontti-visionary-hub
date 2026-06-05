@@ -88,7 +88,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               key={n.id} 
               className="p-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 cursor-pointer transition-colors border border-transparent hover:border-zinc-700"
               onClick={() => {
-                if (n.type === 'no_response' || n.type === 'transfer') navigate('/whatsapp');
+                if (n.type === 'no_response' || n.type === 'transfer') navigate(`/whatsapp/${user?.role}`);
                 else if (n.type === 'idle_card') navigate('/reactivation');
               }}
             >
@@ -141,11 +141,15 @@ export function Header({ onMenuClick }: HeaderProps) {
         <Button 
           variant="ghost" 
           className="w-full justify-start text-xs text-red-400 hover:text-red-300 hover:bg-red-400/10 h-9"
-          onClick={() => {/* handle logout */}}
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
         >
           <LogOut size={14} className="mr-2" />
           Sair do Sistema
         </Button>
+
       </div>
 
       <div className="border-t border-zinc-800 pt-3">

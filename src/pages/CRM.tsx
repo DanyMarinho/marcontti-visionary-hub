@@ -11,11 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Plus, MessageSquare, Filter } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '../store/authStore';
 import { useTenant } from '@/hooks/useTenant';
-import { mockCustomers } from '../lib/mockData';
 
-const statusMap = {
+const statusMap: any = {
   active: { label: 'Ativo', color: 'bg-green-500' },
   lead_unidentified: { label: 'Lead Não Identificado', color: 'bg-blue-500' },
   deleted: { label: 'Deletado', color: 'bg-red-500' },
@@ -24,12 +25,22 @@ const statusMap = {
 export default function CRM() {
   const { tenants } = useAuthStore();
   const { activeTenantId, activeTenant, isGlobal } = useTenant();
-  
-  const filteredCustomers = isGlobal 
-    ? mockCustomers 
-    : mockCustomers.filter(c => c.tenant_id === activeTenantId);
 
-  return (
+  const { data: clients = [], isLoading } = useQuery({
+    queryKey: ['clients', activeTenantId, isGlobal],
+    queryFn: async () => {
+      let query = supabase.from('clients').select('*');
+      if (!isGlobal && activeTenantId) {
+        query = query.eq('tenant_id', activeTenantId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: isGlobal || !!activeTenantId
+  });
+
+  const filteredCustomers = clients;
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="relative w-full max-w-sm">
@@ -87,7 +98,22 @@ export default function CRM() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" title="Abrir WhatsApp">
+                                        <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Enviar mensagem via Evolution"
+                      onClick={async () => {
+                        try {
+                          await sendWhatsAppMessage(activeTenant.id, customer.phone, 'Olá! Como posso ajudar?');
+                          // opcional: toast de sucesso
+                        } catch (e) {
+                          console.error(e);
+                          // opcional: toast de erro
+                        }
+                      }}
+                    >
+                      <MessageSquare className="h-4 w-4 text-[#25D366]" />
+                    </Button>
                       <MessageSquare className="h-4 w-4 text-[#25D366]" />
                     </Button>
                   </TableCell>

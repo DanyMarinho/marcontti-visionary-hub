@@ -1,11 +1,9 @@
 import { User } from "../types";
 
 const mockUsers: User[] = [
-  { id: '1', tenant_id: '1', store_id: '1', full_name: 'Ricardo Oliveira', email: 'ricardo@marcontti.com', role: 'vendedor', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '2', tenant_id: '1', store_id: '1', full_name: 'Juliana Costa', email: 'juliana@marcontti.com', role: 'vendedor', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '3', tenant_id: '1', store_id: '2', full_name: 'Marcos Pereira', email: 'marcos@marcontti.com', role: 'loja', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '4', tenant_id: '2', store_id: '3', full_name: 'Fernanda Lima', email: 'fernanda@clinicavida.com', role: 'vendedor', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '5', tenant_id: '3', store_id: '4', full_name: 'Tiago Souza', email: 'tiago@casalar.com', role: 'vendedor', is_active: false, created_at: new Date().toISOString(), updated_at: new Date(Date.now() - 86400000 * 2).toISOString() }
+  { id: '1', tenant_id: '1', store_id: '1', full_name: 'Admin User', email: 'adm@adm.com', role: 'admin', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: '2', tenant_id: '1', store_id: '1', full_name: 'Loja 1', email: 'infindamidiadigital@gmail.com', role: 'loja', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: '3', tenant_id: '1', store_id: '1', full_name: 'Vendedor Danielly', email: 'cardosodanielly11@gmail.com', role: 'vendedor', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
 ];
 
 let users = [...mockUsers];

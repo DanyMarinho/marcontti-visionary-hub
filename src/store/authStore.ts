@@ -10,6 +10,7 @@ interface AuthState {
   stores: Store[];
   setUser: (user: User | null) => void;
   setCurrentTenant: (tenant: Tenant | null) => void;
+  logout: () => void;
   setSelectedTenant: (tenantId: string) => void;
   setSelectedStore: (storeId: string) => void;
   setRole: (role: Role) => void;
@@ -82,4 +83,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   setTenants: (tenants) => set({ tenants }),
   setStores: (stores) => set({ stores }),
   login: () => {},
+  logout: () => set({ user: null }),
 }));

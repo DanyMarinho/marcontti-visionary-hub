@@ -18,8 +18,10 @@ const AgenteIALogs = lazy(() => import("./modules/agente-ia/AgenteIALogs").then(
 const TenantList = lazy(() => import("./modules/admin/Tenants/TenantList").then(module => ({ default: module.TenantList })));
 const LojaList = lazy(() => import("./modules/admin/Stores/LojaList").then(module => ({ default: module.LojaList })));
 const VendedorList = lazy(() => import("./modules/admin/Vendors/VendedorList").then(module => ({ default: module.VendedorList })));
+const NewTenantWizard = lazy(() => import('./pages/Setup/NewTenantWizard'));
 const Settings = lazy(() => import("./pages/Settings"));
 const Metricas = lazy(() => import("./modules/metricas/Metricas"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ProjecaoFinanceira = lazy(() => import("./modules/projecao/ProjecaoFinanceira"));
 const Reactivation = lazy(() => import("./pages/Reactivation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -71,9 +73,10 @@ const App = () => (
                 <Route path="/metrics" element={<Metricas />} />
                 <Route path="/projection" element={<ProjecaoFinanceira />} />
                 <Route path="/reactivation" element={<Reactivation />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/settings" element={<Settings />} />
 
-                <Route path="*" element={<NotFound />} />
+<Route path="/setup/new-tenant" element={<NewTenantWizard />} />
               </Routes>
             </Suspense>
           </AppShell>

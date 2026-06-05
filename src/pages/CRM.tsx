@@ -41,6 +41,8 @@ export default function CRM() {
   });
 
   const filteredCustomers = clients;
+
+  return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="relative w-full max-w-sm">
@@ -112,8 +114,6 @@ export default function CRM() {
                         }
                       }}
                     >
-                      <MessageSquare className="h-4 w-4 text-[#25D366]" />
-                    </Button>
                       <MessageSquare className="h-4 w-4 text-[#25D366]" />
                     </Button>
                   </TableCell>

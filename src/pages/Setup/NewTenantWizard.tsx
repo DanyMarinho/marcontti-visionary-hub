@@ -3,13 +3,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../supabase/client';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { ToastProvider, useToast } from '../ui/toast';
-import SlugInput from '../../components/SlugInput';
-import AccordionMedicalBrief from '../../components/AccordionMedicalBrief';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import SlugInput from '@/components/SlugInput';
+import AccordionMedicalBrief from '@/components/AccordionMedicalBrief';
 
 const schema = z.object({
   companyName: z.string().min(2, 'Nome da empresa é obrigatório'),

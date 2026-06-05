@@ -55,13 +55,12 @@ export default function NewTenantWizard() {
     },
   });
   const navigate = useNavigate();
-  const toast = useToast();
   const [step, setStep] = useState(1);
 
   const onSubmit = async (data: FormData) => {
     try {
       // call RPC create_full_tenant (assumes it exists)
-      const { error, data: resp } = await supabase.rpc('create_full_tenant', {
+      const { error, data: resp } = await (supabase.rpc as any)('create_full_tenant', {
         p_company_name: data.companyName,
         p_cnpj_cpf: data.cnpjCpf,
         p_address: data.address,
@@ -82,7 +81,7 @@ export default function NewTenantWizard() {
       const adminEmail = `admin@${data.slug}.com`;
       const { error: signInErr } = await supabase.auth.signInWithPassword({
         email: adminEmail,
-        password: resp.temp_password, // server returns temp password
+        password: (resp as any)?.temp_password,
       });
       if (signInErr) throw signInErr;
       toast.success('Tenant criado com sucesso!');
@@ -205,8 +204,7 @@ export default function NewTenantWizard() {
   };
 
   return (
-    <ToastProvider>
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           {renderStep()}
           <div className="flex justify-between mt-6">
@@ -226,8 +224,7 @@ export default function NewTenantWizard() {
               </Button>
             )}
           </div>
-        </form>
-      </div>
-    </ToastProvider>
+      </form>
+    </div>
   );
 }

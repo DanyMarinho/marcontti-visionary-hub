@@ -114,8 +114,6 @@ export default function CRM() {
                     >
                       <MessageSquare className="h-4 w-4 text-[#25D366]" />
                     </Button>
-                      <MessageSquare className="h-4 w-4 text-[#25D366]" />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

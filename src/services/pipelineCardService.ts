@@ -12,6 +12,9 @@ export const pipelineService = {
     if (filters.seller_id) {
       query = query.eq('seller_id', filters.seller_id);
     }
+    if (filters.store_id) {
+      query = query.eq('store_id', filters.store_id);
+    }
 
     const { data, error } = await query.order('created_at', { ascending: false });
     

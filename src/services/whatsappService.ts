@@ -50,7 +50,7 @@ export const whatsappService = {
     return data as WhatsAppMessage[];
   },
 
-  async getConversations(tenantId: string, status?: string): Promise<WhatsAppConversation[]> {
+  async getConversations(tenantId: string, status?: string, scope?: { sellerId?: string; storeId?: string }): Promise<WhatsAppConversation[]> {
     let query = supabase
       .from('whatsapp_conversations')
       .select('*, client:clients(*), assigned_user:users(*)')
@@ -60,13 +60,20 @@ export const whatsappService = {
     if (status && status !== 'all') {
       query = query.eq('status', status);
     }
+    if (scope?.sellerId) {
+      query = query.eq('assigned_to', scope.sellerId);
+    }
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []).map(conv => ({
+    let rows: any[] = (data || []).map(conv => ({
       ...conv,
-      content: conv.content || '' // Handle possible missing content if table is empty or differently structured
-    })) as WhatsAppConversation[];
+      content: conv.content || ''
+    }));
+    if (scope?.storeId) {
+      rows = rows.filter(r => r.assigned_user?.store_id === scope.storeId || !r.assigned_to);
+    }
+    return rows as WhatsAppConversation[];
   },
 
   async updateConversation(id: string, updates: any) {

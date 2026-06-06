@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { whatsappService } from '@/services/whatsappService';
 import { useTenant } from '@/hooks/useTenant';
 import { useRealtime } from '@/hooks/useRealtime';
+import { useAuthStore } from '@/store/authStore';
 import { WhatsAppConversation } from '@/types';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import { ptBR } from 'date-fns/locale';
 
 export function WhatsAppInbox() {
   const { activeTenantId } = useTenant();
+  const { user } = useAuthStore();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeChat, setActiveChat] = useState<string | null>(null);
@@ -26,9 +28,15 @@ export function WhatsAppInbox() {
   // Realtime updates
   useRealtime(activeTenantId);
 
+  const scope = user?.role === 'vendedor'
+    ? { sellerId: user.id, storeId: user.store_id || undefined }
+    : user?.role === 'loja' && user.store_id
+      ? { storeId: user.store_id }
+      : undefined;
+
   const { data: conversations = [] as WhatsAppConversation[], isLoading } = useQuery({
-    queryKey: ['whatsapp-conversations', activeTenantId, statusFilter],
-    queryFn: () => whatsappService.getConversations(activeTenantId!, statusFilter),
+    queryKey: ['whatsapp-conversations', activeTenantId, statusFilter, user?.id, user?.role],
+    queryFn: () => whatsappService.getConversations(activeTenantId!, statusFilter, scope),
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
 

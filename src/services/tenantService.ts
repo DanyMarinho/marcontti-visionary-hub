@@ -1,45 +1,75 @@
 import { Tenant } from "../types";
-import { useAuthStore } from "@/store/authStore";
+import { supabase } from "@/integrations/supabase/client";
+
+const DEFAULT_STAGES: { stage_key: string; label: string; position: number }[] = [
+  { stage_key: 'prospeccao', label: 'Prospecção', position: 1 },
+  { stage_key: 'qualificacao', label: 'Qualificação', position: 2 },
+  { stage_key: 'apresentacao', label: 'Apresentação', position: 3 },
+  { stage_key: 'proposta', label: 'Proposta', position: 4 },
+  { stage_key: 'negociacao', label: 'Negociação', position: 5 },
+  { stage_key: 'fechamento', label: 'Fechamento', position: 6 },
+];
 
 export const tenantService = {
-  async getAll() {
-    // Returning mock data from store for demonstration
-    return useAuthStore.getState().tenants;
+  async getAll(): Promise<Tenant[]> {
+    const { data, error } = await supabase
+      .from('tenants')
+      .select('*')
+      .order('name', { ascending: true });
+    if (error) throw error;
+    return (data ?? []) as unknown as Tenant[];
   },
 
-  async getById(id: string) {
-    const tenants = useAuthStore.getState().tenants;
-    return tenants.find(t => t.id === id) || null;
+  async getById(id: string): Promise<Tenant | null> {
+    const { data, error } = await supabase
+      .from('tenants')
+      .select('*')
+      .eq('id', id)
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return (data as unknown as Tenant) ?? null;
   },
 
-  async create(tenant: Omit<Tenant, 'id' | 'created_at' | 'updated_at' | 'is_active'>) {
-    const newTenant: Tenant = {
-      ...tenant,
-      id: Math.random().toString(36).substr(2, 9),
-      is_active: true,
-      status: 'ativo',
-      timezone: 'America/Sao_Paulo',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    } as Tenant;
-    
-    const currentTenants = useAuthStore.getState().tenants;
-    useAuthStore.getState().setTenants([...currentTenants, newTenant]);
+  async create(tenant: Omit<Tenant, 'id' | 'created_at' | 'updated_at' | 'is_active'>): Promise<Tenant> {
+    const { data, error } = await supabase
+      .from('tenants')
+      .insert({
+        ...tenant,
+        is_active: true,
+        status: (tenant as any).status ?? 'ativo',
+        timezone: (tenant as any).timezone ?? 'America/Sao_Paulo',
+      } as any)
+      .select()
+      .single();
+    if (error) throw error;
+
+    const newTenant = data as unknown as Tenant;
+
+    // Create default pipeline stages
+    const stages = DEFAULT_STAGES.map((s) => ({ ...s, tenant_id: newTenant.id }));
+    const { error: stagesErr } = await supabase.from('pipeline_stages').insert(stages);
+    if (stagesErr) console.error('Failed to seed pipeline_stages:', stagesErr);
+
     return newTenant;
   },
 
-  async update(id: string, updates: Partial<Tenant>) {
-    const currentTenants = useAuthStore.getState().tenants;
-    const updatedTenants = currentTenants.map(t => 
-      t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
-    );
-    useAuthStore.getState().setTenants(updatedTenants);
-    return updatedTenants.find(t => t.id === id) as Tenant;
+  async update(id: string, updates: Partial<Tenant>): Promise<Tenant> {
+    const { data, error } = await supabase
+      .from('tenants')
+      .update({ ...updates, updated_at: new Date().toISOString() } as any)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as unknown as Tenant;
   },
 
-  async delete(id: string) {
-    const currentTenants = useAuthStore.getState().tenants;
-    const filteredTenants = currentTenants.filter(t => t.id !== id);
-    useAuthStore.getState().setTenants(filteredTenants);
-  }
+  async delete(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('tenants')
+      .update({ is_active: false, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw error;
+  },
 };

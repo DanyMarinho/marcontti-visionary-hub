@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./components/shared/ThemeProvider";
 import AppShell from "./components/layout/AppShell";
 import { Skeleton } from "./components/ui/skeleton";
@@ -25,6 +25,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ProjecaoFinanceira = lazy(() => import("./modules/projecao/ProjecaoFinanceira"));
 const Reactivation = lazy(() => import("./pages/Reactivation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
 
 
 const queryClient = new QueryClient({
@@ -51,14 +52,22 @@ const PageLoader = () => (
   </div>
 );
 
+const Shell = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const publicRoutes = ['/login', '/reset-password'];
+  if (publicRoutes.includes(location.pathname)) return <>{children}</>;
+  return <AppShell>{children}</AppShell>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark">
       <TooltipProvider>
         <BrowserRouter>
-          <AppShell>
+          <Shell>
             <Suspense fallback={<PageLoader />}>
               <Routes>
+                <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/crm" element={<ClienteList />} />
                 <Route path="/pipeline" element={<KanbanBoard />} />
@@ -79,7 +88,7 @@ const App = () => (
 <Route path="/setup/new-tenant" element={<NewTenantWizard />} />
               </Routes>
             </Suspense>
-          </AppShell>
+          </Shell>
         </BrowserRouter>
         <Toaster />
       </TooltipProvider>

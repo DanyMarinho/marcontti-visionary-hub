@@ -98,7 +98,7 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
       if (error) throw error;
       return data;
     },
-    enabled: !!activeTenantId,
+    enabled: !!activeTenantId && (user?.role === 'admin' || user?.role === 'loja'),
   });
 
   const { data: client } = useQuery({

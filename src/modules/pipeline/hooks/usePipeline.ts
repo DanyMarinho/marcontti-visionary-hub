@@ -9,9 +9,18 @@ export function usePipeline(filters = {}) {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
+  // Defense-in-depth: enforce client-side filters by role
+  const scopedFilters: any = { ...filters };
+  if (user?.role === 'vendedor') {
+    scopedFilters.seller_id = user.id;
+    if (user.store_id) scopedFilters.store_id = user.store_id;
+  } else if (user?.role === 'loja' && user.store_id) {
+    scopedFilters.store_id = user.store_id;
+  }
+
   const { data: cards = [], isLoading, error } = useQuery({
-    queryKey: ['pipeline-cards', activeTenantId, filters],
-    queryFn: () => pipelineCardService.getCards(activeTenantId!, filters),
+    queryKey: ['pipeline-cards', activeTenantId, scopedFilters, user?.id],
+    queryFn: () => pipelineCardService.getCards(activeTenantId!, scopedFilters),
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
 
@@ -20,9 +29,9 @@ export function usePipeline(filters = {}) {
       pipelineCardService.moveCard(cardId, activeTenantId!, user!.id, fromStage, toStage),
     onMutate: async ({ cardId, toStage }) => {
       await queryClient.cancelQueries({ queryKey: ['pipeline-cards', activeTenantId] });
-      const previousCards = queryClient.getQueryData(['pipeline-cards', activeTenantId, filters]);
-      
-      queryClient.setQueryData(['pipeline-cards', activeTenantId, filters], (old: any[] | undefined) => {
+      const previousCards = queryClient.getQueryData(['pipeline-cards', activeTenantId, scopedFilters, user?.id]);
+
+      queryClient.setQueryData(['pipeline-cards', activeTenantId, scopedFilters, user?.id], (old: any[] | undefined) => {
         if (!old) return [];
         return old.map(card => card.id === cardId ? { ...card, stage_key: toStage } : card);
       });
@@ -30,7 +39,7 @@ export function usePipeline(filters = {}) {
       return { previousCards };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['pipeline-cards', activeTenantId, filters], context?.previousCards);
+      queryClient.setQueryData(['pipeline-cards', activeTenantId, scopedFilters, user?.id], context?.previousCards);
       toast.error('Erro ao mover card. Verificando rastro de falha...');
     },
     onSuccess: () => {

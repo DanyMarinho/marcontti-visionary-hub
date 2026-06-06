@@ -19,69 +19,62 @@ interface AuthState {
   login: () => void;
 }
 
-const mockTenants: Tenant[] = [
-  { 
-    id: '1', name: 'MA Marcontti', niche: 'mecanica', cnpj: '12.345.678/0001-01', contact_email: 'contato@marcontti.com', color: '#f97316', is_active: true, plan: 'premium', status: 'ativo', timezone: 'America/Sao_Paulo', 
-    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
-  },
-  { 
-    id: '2', name: 'Clínica Vida', niche: 'clinica', cnpj: '12.345.678/0001-02', contact_email: 'contato@clinicavida.com', color: '#10b981', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', 
-    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
-  },
-  { 
-    id: '3', name: 'Casa & Lar', niche: 'comercio_local', cnpj: '12.345.678/0001-03', contact_email: 'contato@casalar.com', color: '#3b82f6', is_active: true, plan: 'basico', status: 'ativo', timezone: 'America/Sao_Paulo', 
-    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
-  },
-  { 
-    id: '4', name: 'EduPro', niche: 'educacao', cnpj: '12.345.678/0001-04', contact_email: 'contato@edupro.com', color: '#8b5cf6', is_active: true, plan: 'pro', status: 'ativo', timezone: 'America/Sao_Paulo', 
-    no_response_threshold_minutes: 30, reactivation_auto_enabled: false, reactivation_idle_days: 7, reactivation_max_attempts: 3, reactivation_interval_days: 3, reactivation_messages: {},
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString() 
-  }
-];
+const isAdmin = (state: { user: User | null }) => state.user?.role === 'admin';
 
-const mockUser: User = {
-  id: '1',
-  full_name: 'Admin MEC',
-  email: 'admin@mec.com',
-  role: 'admin',
-  tenant_id: '1',
-  is_active: true,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
-};
-
-export const useAuthStore = create<AuthState>((set) => ({
-  user: mockUser,
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
   currentTenant: null,
-  tenants: mockTenants,
+  tenants: [],
   stores: [],
-  selectedTenantId: localStorage.getItem('activeTenantId') || 'all',
-  selectedStoreId: localStorage.getItem('activeStoreId') || 'all',
+  selectedTenantId: null,
+  selectedStoreId: null,
 
-  setUser: (user) => set({ user }),
-  setCurrentTenant: (tenant) => set({ 
-    currentTenant: tenant,
-    selectedTenantId: tenant ? tenant.id : 'all'
-  }),
-  setSelectedTenant: (tenantId) => set((state) => {
-    if (tenantId === 'all') {
-      return { selectedTenantId: 'all', currentTenant: null };
+  setUser: (user) => set((state) => {
+    // When user is loaded, lock tenant/store to the user's own context (non-admins only)
+    if (!user) {
+      try { localStorage.removeItem('activeTenantId'); localStorage.removeItem('activeStoreId'); } catch {}
+      return { user: null, selectedTenantId: null, selectedStoreId: null, currentTenant: null, stores: [], tenants: [] };
     }
-    const tenant = state.tenants.find(t => t.id === tenantId) || null;
+    if (user.role !== 'admin') {
+      try { localStorage.removeItem('activeTenantId'); localStorage.removeItem('activeStoreId'); } catch {}
+      return {
+        user,
+        selectedTenantId: user.tenant_id,
+        selectedStoreId: user.store_id ?? null,
+      };
+    }
+    // Admin: respect previous selection or default to global
+    const savedTenant = (typeof localStorage !== 'undefined' && localStorage.getItem('activeTenantId')) || 'all';
+    const savedStore = (typeof localStorage !== 'undefined' && localStorage.getItem('activeStoreId')) || 'all';
     return {
-      selectedTenantId: tenantId,
-      currentTenant: tenant
+      user,
+      selectedTenantId: state.selectedTenantId ?? savedTenant,
+      selectedStoreId: state.selectedStoreId ?? savedStore,
     };
   }),
-  setSelectedStore: (storeId) => set({ selectedStoreId: storeId }),
-  setRole: (role) => set((state) => ({ 
-    user: state.user ? { ...state.user, role } : null 
-  })),
+  setCurrentTenant: (tenant) => {
+    if (!isAdmin(get())) return;
+    set({ currentTenant: tenant, selectedTenantId: tenant ? tenant.id : 'all' });
+  },
+  setSelectedTenant: (tenantId) => {
+    if (!isAdmin(get())) return;
+    set((state) => {
+      if (tenantId === 'all') return { selectedTenantId: 'all', currentTenant: null };
+      const tenant = state.tenants.find(t => t.id === tenantId) || null;
+      return { selectedTenantId: tenantId, currentTenant: tenant };
+    });
+  },
+  setSelectedStore: (storeId) => {
+    if (!isAdmin(get())) return;
+    set({ selectedStoreId: storeId });
+  },
+  // Role changes are server-side only (user_roles table). UI cannot self-promote.
+  setRole: () => {},
   setTenants: (tenants) => set({ tenants }),
   setStores: (stores) => set({ stores }),
   login: () => {},
-  logout: () => set({ user: null }),
+  logout: () => {
+    try { localStorage.removeItem('activeTenantId'); localStorage.removeItem('activeStoreId'); } catch {}
+    set({ user: null, currentTenant: null, selectedTenantId: null, selectedStoreId: null, stores: [], tenants: [] });
+  },
 }));

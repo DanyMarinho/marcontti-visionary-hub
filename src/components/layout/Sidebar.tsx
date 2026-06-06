@@ -43,7 +43,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: SidebarProps) {
-  const { user, setRole } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -141,39 +141,13 @@ export function Sidebar({ collapsed, open, onToggle, isMobile, onClose }: Sideba
       </ScrollArea>
 
       <div className="p-4 border-t border-[#1f1f1f]">
-        <div className={cn("flex flex-col gap-2", collapsed && !isMobile ? "items-center" : "")}>
-          {(!collapsed || isMobile) && (
-            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.1em]">Troca Rápida de Perfil</span>
-          )}
-          <div className="flex flex-wrap gap-1 relative">
-            {(['admin', 'loja', 'vendedor'] as Role[]).map((r) => (
-              <Button
-                key={r}
-                variant="ghost"
-                size={(collapsed && !isMobile) ? "icon" : "sm"}
-                className={cn(
-                  "h-8 text-[10px] uppercase font-bold relative transition-colors",
-                  user?.role === r ? "text-orange-500" : "text-[#888888] hover:text-white",
-                  (!collapsed || isMobile) && "px-2"
-                )}
-                onClick={() => setRole(r)}
-                title={r.toUpperCase()}
-                aria-label={`Trocar para perfil ${r}`}
-              >
-                {user?.role === r && (
-                  <motion.div
-                    layoutId="role-pill"
-                    className="absolute inset-0 bg-orange-500/10 border border-orange-500/30 rounded-md"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <span className="relative z-10">
-                  {(collapsed && !isMobile) ? r.substring(0, 1).toUpperCase() : r}
-                </span>
-              </Button>
-            ))}
+        {user && (!collapsed || isMobile) && (
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.1em]">Perfil</span>
+            <span className="text-xs font-semibold text-white truncate">{user.full_name}</span>
+            <span className="text-[10px] text-orange-500 uppercase font-bold tracking-wider">{user.role}</span>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );

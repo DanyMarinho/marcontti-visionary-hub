@@ -9,9 +9,18 @@ export function usePipeline(filters = {}) {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
+  // Defense-in-depth: enforce client-side filters by role
+  const scopedFilters: any = { ...filters };
+  if (user?.role === 'vendedor') {
+    scopedFilters.seller_id = user.id;
+    if (user.store_id) scopedFilters.store_id = user.store_id;
+  } else if (user?.role === 'loja' && user.store_id) {
+    scopedFilters.store_id = user.store_id;
+  }
+
   const { data: cards = [], isLoading, error } = useQuery({
-    queryKey: ['pipeline-cards', activeTenantId, filters],
-    queryFn: () => pipelineCardService.getCards(activeTenantId!, filters),
+    queryKey: ['pipeline-cards', activeTenantId, scopedFilters, user?.id],
+    queryFn: () => pipelineCardService.getCards(activeTenantId!, scopedFilters),
     enabled: !!activeTenantId && activeTenantId !== 'all',
   });
 

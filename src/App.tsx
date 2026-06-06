@@ -2,10 +2,12 @@ import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/shared/ThemeProvider";
 import AppShell from "./components/layout/AppShell";
 import { Skeleton } from "./components/ui/skeleton";
+import { useAuth } from "./hooks/useAuth";
+import type { Role } from "./types";
 
 // Lazy Loaded Modules
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -55,8 +57,20 @@ const PageLoader = () => (
 const Shell = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const publicRoutes = ['/login', '/reset-password'];
+  const { isAuthenticated, isLoading } = useAuth();
+
   if (publicRoutes.includes(location.pathname)) return <>{children}</>;
+  if (isLoading) return <PageLoader />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <AppShell>{children}</AppShell>;
+};
+
+const RequireRole = ({ roles, children }: { roles: Role[]; children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  if (isLoading) return <PageLoader />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!roles.includes(user.role)) return <Navigate to="/" replace />;
+  return <>{children}</>;
 };
 
 const App = () => (
@@ -73,19 +87,19 @@ const App = () => (
                 <Route path="/pipeline" element={<KanbanBoard />} />
                 <Route path="/whatsapp" element={<WhatsAppInbox />} />
                 <Route path="/whatsapp/connect" element={<QRCodeConnect />} />
-                <Route path="/ai-agent" element={<AgenteIAConfig />} />
-                <Route path="/ai-agent/logs" element={<AgenteIALogs />} />
-                <Route path="/tenants" element={<TenantList />} />
-                <Route path="/shops" element={<LojaList />} />
-                <Route path="/vendors" element={<VendedorList />} />
-                <Route path="/team" element={<VendedorList />} />
+                <Route path="/ai-agent" element={<RequireRole roles={['admin','loja']}><AgenteIAConfig /></RequireRole>} />
+                <Route path="/ai-agent/logs" element={<RequireRole roles={['admin','loja']}><AgenteIALogs /></RequireRole>} />
+                <Route path="/tenants" element={<RequireRole roles={['admin']}><TenantList /></RequireRole>} />
+                <Route path="/shops" element={<RequireRole roles={['admin']}><LojaList /></RequireRole>} />
+                <Route path="/vendors" element={<RequireRole roles={['admin']}><VendedorList /></RequireRole>} />
+                <Route path="/team" element={<RequireRole roles={['admin','loja']}><VendedorList /></RequireRole>} />
                 <Route path="/metrics" element={<Metricas />} />
-                <Route path="/projection" element={<ProjecaoFinanceira />} />
+                <Route path="/projection" element={<RequireRole roles={['admin']}><ProjecaoFinanceira /></RequireRole>} />
                 <Route path="/reactivation" element={<Reactivation />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/settings" element={<Settings />} />
 
-<Route path="/setup/new-tenant" element={<NewTenantWizard />} />
+                <Route path="/setup/new-tenant" element={<RequireRole roles={['admin']}><NewTenantWizard /></RequireRole>} />
               </Routes>
             </Suspense>
           </Shell>

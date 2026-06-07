@@ -121,8 +121,12 @@ export default function VendedorDashboard() {
                 Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="h-10 bg-muted animate-pulse rounded" />
                 ))
+              ) : (!data?.ranking || data.ranking.length === 0) ? (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  Nenhuma venda fechada ainda neste período.
+                </div>
               ) : (
-                data?.ranking?.map((rank: any) => (
+                data.ranking.map((rank: any) => (
                   <div 
                     key={rank.position} 
                     className={cn(

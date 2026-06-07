@@ -20,12 +20,14 @@ import { useTenant } from '@/hooks/useTenant';
 import { useAuthStore } from '@/store/authStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { storeService } from '@/services/storeService';
+import { supabase } from '@/integrations/supabase/client';
 
 export function VendedorList() {
   const { activeTenantId } = useTenant();
   const { tenants } = useAuthStore();
   const [users, setUsers] = useState<User[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
+  const [cardCountByUser, setCardCountByUser] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
@@ -37,6 +39,22 @@ export function VendedorList() {
         userService.getAll(activeTenantId || 'all'),
         storeService.getAll(activeTenantId || 'all')
       ]);
+
+      const vendorIds = usersData.filter(u => u.role === 'vendedor').map(u => u.id);
+      const cardCountMap: Record<string, number> = {};
+      if (vendorIds.length > 0) {
+        const { data: cardsData } = await supabase
+          .from('pipeline_cards')
+          .select('seller_id')
+          .eq('is_archived', false)
+          .not('stage_key', 'in', '("fechamento","pos_venda")')
+          .in('seller_id', vendorIds);
+        (cardsData || []).forEach((card: any) => {
+          if (!card.seller_id) return;
+          cardCountMap[card.seller_id] = (cardCountMap[card.seller_id] || 0) + 1;
+        });
+      }
+      setCardCountByUser(cardCountMap);
       setUsers(usersData);
       setStores(storesData);
     } catch (error) {
@@ -156,7 +174,7 @@ export function VendedorList() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center font-medium">
-                        {user.role === 'vendedor' ? Math.floor(Math.random() * 15) : '-'}
+                        {user.role === 'vendedor' ? (cardCountByUser[user.id] ?? 0) : '-'}
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge className={cn(

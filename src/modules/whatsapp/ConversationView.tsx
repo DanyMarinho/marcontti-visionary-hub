@@ -162,15 +162,38 @@ export function ConversationView({ clientId, onBack }: ConversationViewProps) {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      // Mock sending message
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // In production: await supabase.functions.invoke('evolution-proxy/send-message', { body: { clientId, content } })
-      return { success: true };
+      if (!activeTenantId) throw new Error('Tenant não identificado');
+      if (!client?.phone) throw new Error('Número do cliente não encontrado');
+
+      const { data, error } = await supabase.functions.invoke('evolution-send-message', {
+        body: {
+          tenant_id: activeTenantId,
+          phone: client.phone,
+          content,
+        },
+      });
+
+      if (error) throw new Error(error.message || 'Falha ao enviar mensagem');
+      if (data?.error) throw new Error(data.error);
+
+      await supabase.from('whatsapp_messages').insert([{
+        tenant_id: activeTenantId,
+        client_id: clientId,
+        direction: 'sent',
+        content,
+        processed_by_ai: false,
+        timestamp: new Date().toISOString(),
+      }]);
+
+      return data;
     },
     onSuccess: () => {
       setMessage('');
       queryClient.invalidateQueries({ queryKey: ['whatsapp-messages', activeTenantId, clientId] });
-    }
+    },
+    onError: (err: Error) => {
+      toast.error(`Erro ao enviar: ${err.message}`);
+    },
   });
 
   useEffect(() => {

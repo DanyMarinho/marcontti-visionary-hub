@@ -11,39 +11,21 @@ export const userService = {
   },
 
   async create(user: Omit<User, 'id' | 'created_at' | 'updated_at' | 'is_active'>): Promise<User> {
-    // Invite the user via Auth (creates auth.users row + sends email).
-    // The handle_new_user trigger inserts into public.users, but we
-    // still upsert here to ensure tenant_id/store_id/role are applied.
-    const { data: inv, error: invErr } = await supabase.functions.invoke('invite-user', {
+    // Single server-side call: invites in auth + upserts public.users atomically
+    // (the edge function rolls back the auth user if the public row fails).
+    const { data, error } = await supabase.functions.invoke('invite-user', {
       body: {
         email: user.email,
         full_name: user.full_name,
         tenant_id: user.tenant_id,
-        store_id: user.store_id,
+        store_id: user.store_id ?? null,
         role: user.role,
       },
     });
-    if (invErr) throw invErr;
-
-    const userId = (inv as any)?.user?.id ?? (inv as any)?.id;
-    if (userId) {
-      const { data, error } = await supabase
-        .from('users')
-        .upsert({
-          id: userId,
-          tenant_id: user.tenant_id,
-          store_id: user.store_id ?? null,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role,
-          is_active: true,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-      return data as unknown as User;
-    }
-    return inv as unknown as User;
+    if (error) throw error;
+    const row = (data as any)?.user ?? data;
+    if (!row?.id) throw new Error('invite-user: invalid response');
+    return row as User;
   },
 
   async inviteVendor(email: string, fullName: string, tenantId: string, storeId: string) {
@@ -72,10 +54,18 @@ export const userService = {
   },
 
   async deactivateVendor(userId: string): Promise<void> {
-    const { error } = await supabase
-      .from('users')
-      .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq('id', userId);
+    // Soft delete + global session revocation in auth.users
+    const { error } = await supabase.functions.invoke('delete-user', {
+      body: { user_id: userId, hard: false },
+    });
+    if (error) throw error;
+  },
+
+  async deleteVendor(userId: string): Promise<void> {
+    // Hard delete (auth.users + public.users) with session revocation
+    const { error } = await supabase.functions.invoke('delete-user', {
+      body: { user_id: userId, hard: true },
+    });
     if (error) throw error;
   },
 };

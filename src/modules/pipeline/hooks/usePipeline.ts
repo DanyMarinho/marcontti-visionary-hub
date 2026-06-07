@@ -25,8 +25,8 @@ export function usePipeline(filters = {}) {
   });
 
   const moveCardMutation = useMutation({
-    mutationFn: ({ cardId, fromStage, toStage, finalValue, closingDate }: { cardId: string, fromStage: string, toStage: string, finalValue?: number, closingDate?: string }) => 
-      pipelineCardService.moveCard(cardId, activeTenantId!, user!.id, fromStage, toStage),
+    mutationFn: ({ cardId, fromStage, toStage, finalValue, closingDate }: { cardId: string, fromStage: string, toStage: string, finalValue?: number, closingDate?: string }) =>
+      pipelineCardService.moveCard(cardId, activeTenantId!, user!.id, fromStage, toStage, finalValue, closingDate),
     onMutate: async ({ cardId, toStage }) => {
       await queryClient.cancelQueries({ queryKey: ['pipeline-cards', activeTenantId] });
       const previousCards = queryClient.getQueryData(['pipeline-cards', activeTenantId, scopedFilters, user?.id]);

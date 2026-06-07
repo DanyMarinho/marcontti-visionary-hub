@@ -159,7 +159,7 @@ export function LojaDashboard() {
         <KpiCard
           title="Vendas do Mês"
           value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(kpis?.vendas || 0)}
-          description="+12.5% vs mês anterior"
+          description="Acumulado do período"
           icon={TrendingUp}
           isLoading={isLoading}
         />
@@ -193,7 +193,7 @@ export function LojaDashboard() {
         <KpiCard
           title="Cards Ativos"
           value={kpis?.cardsAtivos || 0}
-          description="+5 novos este mês"
+          description="Oportunidades em andamento"
           icon={GitMerge}
           isLoading={isLoading}
         />

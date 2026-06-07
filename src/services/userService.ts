@@ -22,10 +22,23 @@ export const userService = {
         role: user.role,
       },
     });
-    if (error) throw error;
-    const row = (data as any)?.user ?? data;
-    if (!row?.id) throw new Error('invite-user: invalid response');
-    return row as User;
+    if (error) throw new Error(error.message || 'Erro ao convidar usuário');
+
+    // invite-user retorna { success: true, user_id: "uuid" }
+    const userId = (data as any)?.user_id;
+    if (!userId) throw new Error('invite-user: resposta inválida — user_id ausente');
+
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error('Usuário criado mas perfil não encontrado: ' + (profileError?.message || ''));
+    }
+
+    return profile as unknown as User;
   },
 
   async inviteVendor(email: string, fullName: string, tenantId: string, storeId: string) {

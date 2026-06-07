@@ -62,9 +62,14 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
         };
       }
 
+      // Loja — LojaDashboard tem suas próprias queries diretas, não usa este hook
+      if (user?.role === 'loja') {
+        return { kpis: [], salesHistory: [], tenantRanking: [], conversionHistory: [] };
+      }
+
       // Vendedor data
       if (user?.role === 'vendedor') {
-        const { data: goals } = await supabase.from('goals').select('target_value').eq('tenant_id', activeTenantId).eq('seller_id', user.id).limit(1).single();
+        const { data: goals } = await supabase.from('goals').select('target_value').eq('tenant_id', activeTenantId).eq('seller_id', user.id).maybeSingle();
         const meta = goals?.target_value ? Number(goals.target_value) : 25000;
         const atingimento = Math.round((vendas / meta) * 100);
 
@@ -140,7 +145,26 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
         };
       }
 
-      return null;
+      // Admin com tenant específico selecionado — mostrar dados desse tenant
+      const totalCards = (cards || []).length;
+      const closedCards = (cards || []).filter(
+        (c: any) => c.stage_key === 'fechamento' || c.stage_key === 'pos_venda'
+      ).length;
+      const conversaoTenant = totalCards > 0
+        ? `${Math.round((closedCards / totalCards) * 100)}%`
+        : '0%';
+
+      return {
+        kpis: [
+          { title: 'Vendas do Tenant', value: `R$ ${vendas.toLocaleString('pt-BR')}`, trend: { value: 0, isPositive: true }, icon: 'DollarSign' },
+          { title: 'Cards no Pipeline', value: cardsAtivos, trend: { value: 0, isPositive: true }, icon: 'GitMerge' },
+          { title: 'Conversão', value: conversaoTenant, trend: { value: 0, isPositive: true }, icon: 'TrendingUp' },
+          { title: 'Total Cards', value: totalCards, trend: { value: 0, isPositive: true }, icon: 'Building2' },
+        ],
+        salesHistory: [],
+        tenantRanking: [],
+        conversionHistory: [],
+      };
     },
     staleTime: 5 * 60 * 1000,
     enabled: !!activeTenantId && !!user?.id

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { supabase } from "@/integrations/supabase/client";
 import { WhatsAppInstance, WhatsAppMessage, WhatsAppConversation } from "../types";
 
@@ -11,18 +10,18 @@ export const whatsappService = {
       .maybeSingle();
     
     if (error) throw error;
-    return data as WhatsAppInstance | null;
+    return data as unknown as WhatsAppInstance | null;
   },
 
   async upsertInstance(instance: Omit<WhatsAppInstance, 'id' | 'created_at' | 'updated_at' | 'status'>) {
     const { data, error } = await supabase
       .from('whatsapp_instances')
-      .upsert([instance], { onConflict: 'tenant_id' })
+      .upsert([instance as any], { onConflict: 'tenant_id' })
       .select()
       .single();
     
     if (error) throw error;
-    return data as WhatsAppInstance;
+    return data as unknown as WhatsAppInstance;
   },
 
   async updateStatus(id: string, status: WhatsAppInstance['status'], phoneNumber?: string) {
@@ -47,7 +46,7 @@ export const whatsappService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data as WhatsAppMessage[];
+    return data as unknown as WhatsAppMessage[];
   },
 
   async getConversations(tenantId: string, status?: string, scope?: { sellerId?: string; storeId?: string }): Promise<WhatsAppConversation[]> {
@@ -66,14 +65,14 @@ export const whatsappService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    let rows: any[] = (data || []).map(conv => ({
+    let rows: any[] = ((data as any[]) || []).map((conv: any) => ({
       ...conv,
       content: conv.content || ''
     }));
     if (scope?.storeId) {
-      rows = rows.filter(r => r.assigned_user?.store_id === scope.storeId || !r.assigned_to);
+      rows = rows.filter((r: any) => r.assigned_user?.store_id === scope.storeId || !r.assigned_to);
     }
-    return rows as WhatsAppConversation[];
+    return rows as unknown as WhatsAppConversation[];
   },
 
   async updateConversation(id: string, updates: any) {
@@ -85,7 +84,7 @@ export const whatsappService = {
       .single();
     
     if (error) throw error;
-    return data as WhatsAppConversation;
+    return data as unknown as WhatsAppConversation;
   },
 
   async getConversationByClient(tenantId: string, clientId: string) {
@@ -97,6 +96,6 @@ export const whatsappService = {
       .maybeSingle();
     
     if (error) throw error;
-    return data as WhatsAppConversation | null;
+    return data as unknown as WhatsAppConversation | null;
   }
 };

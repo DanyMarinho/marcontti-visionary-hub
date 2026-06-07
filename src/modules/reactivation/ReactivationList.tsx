@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +21,18 @@ import { differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ReactivationModal } from './ReactivationModal';
 
+interface ProcessedCard {
+  id: string;
+  updated_at: string;
+  stage_key: string;
+  estimated_value: number;
+  client?: { full_name?: string; phone?: string } | null;
+  seller?: { full_name?: string } | null;
+  idleDays: number;
+  group: 'critical' | 'attention' | 'monitor' | 'normal';
+  [key: string]: any;
+}
+
 export function ReactivationList() {
   const { activeTenantId } = useTenant();
   const [search, setSearch] = useState('');
@@ -40,12 +51,12 @@ export function ReactivationList() {
         .neq('stage_key', 'fechamento');
       
       if (error) throw error;
-      return data;
+      return (data || []) as any[];
     },
     enabled: !!activeTenantId
   });
 
-  const processedCards = cards.map(card => {
+  const processedCards: ProcessedCard[] = (cards as any[]).map((card: any) => {
     const lastUpdate = new Date(card.updated_at);
     const idleDays = differenceInDays(new Date(), lastUpdate);
     let group: 'critical' | 'attention' | 'monitor' | 'normal' = 'normal';

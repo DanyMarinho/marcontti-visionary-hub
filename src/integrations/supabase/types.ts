@@ -540,6 +540,74 @@ export type Database = {
           },
         ]
       }
+      medical_briefings: {
+        Row: {
+          address: string | null
+          city_state: string | null
+          created_at: string
+          crm: string | null
+          differentiators: string | null
+          doctor_name: string
+          experience_years: number | null
+          id: string
+          location: string | null
+          online_available: boolean | null
+          schedule: string | null
+          specialties: string[] | null
+          sub_specialties: string[] | null
+          support_team: Json | null
+          tenant_id: string
+          updated_at: string
+          weekly_hours: string | null
+        }
+        Insert: {
+          address?: string | null
+          city_state?: string | null
+          created_at?: string
+          crm?: string | null
+          differentiators?: string | null
+          doctor_name: string
+          experience_years?: number | null
+          id?: string
+          location?: string | null
+          online_available?: boolean | null
+          schedule?: string | null
+          specialties?: string[] | null
+          sub_specialties?: string[] | null
+          support_team?: Json | null
+          tenant_id: string
+          updated_at?: string
+          weekly_hours?: string | null
+        }
+        Update: {
+          address?: string | null
+          city_state?: string | null
+          created_at?: string
+          crm?: string | null
+          differentiators?: string | null
+          doctor_name?: string
+          experience_years?: number | null
+          id?: string
+          location?: string | null
+          online_available?: boolean | null
+          schedule?: string | null
+          specialties?: string[] | null
+          sub_specialties?: string[] | null
+          support_team?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          weekly_hours?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_briefings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string | null

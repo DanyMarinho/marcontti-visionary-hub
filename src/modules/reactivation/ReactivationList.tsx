@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ReactivationModal } from './ReactivationModal';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProcessedCard {
   id: string;
@@ -35,21 +36,29 @@ interface ProcessedCard {
 
 export function ReactivationList() {
   const { activeTenantId } = useTenant();
+  const { user } = useAuthStore();
   const [search, setSearch] = useState('');
   const [filterGroup, setFilterGroup] = useState<'all' | 'critical' | 'attention' | 'monitor'>('all');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const { data: cards = [], isLoading } = useQuery({
-    queryKey: ['reactivation-cards', activeTenantId],
+    queryKey: ['reactivation-cards', activeTenantId, user?.id, user?.role],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('pipeline_cards')
         .select('*, client:clients(*), seller:users(*)')
         .eq('tenant_id', activeTenantId!)
         .eq('is_archived', false)
         .neq('stage_key', 'pos_venda')
         .neq('stage_key', 'fechamento');
-      
+
+      if (user?.role === 'vendedor') {
+        query = query.eq('seller_id', user.id);
+      } else if (user?.role === 'loja' && user.store_id) {
+        query = query.eq('store_id', user.store_id);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return (data || []) as any[];
     },

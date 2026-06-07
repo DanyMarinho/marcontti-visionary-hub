@@ -64,7 +64,7 @@ export function AgenteIAConfig() {
       queryClient.invalidateQueries({ queryKey: ['agent-ia-config', activeTenantId] });
       toast.success('Configurações do Agente IA salvas com sucesso');
     },
-    onError: () => toast.error('Erro ao salvar configurações')
+    onError: (err: any) => toast.error(`Erro ao salvar: ${err?.message || 'configurações não foram salvas'}`)
   });
 
   const [localConfig, setLocalConfig] = useState<any>(null);

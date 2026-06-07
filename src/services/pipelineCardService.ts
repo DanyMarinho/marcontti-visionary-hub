@@ -55,7 +55,12 @@ export const pipelineService = {
   ) {
     const isClosing = toStage === 'fechamento' || toStage === 'pos_venda';
 
-    const updatePayload: Record<string, any> = {
+    const updatePayload: {
+      stage_key: string;
+      updated_at: string;
+      closed_at?: string;
+      final_value?: number;
+    } = {
       stage_key: toStage,
       updated_at: new Date().toISOString(),
     };

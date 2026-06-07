@@ -151,8 +151,14 @@ export default function AdminDashboard() {
                     <TableCell className="text-right"><div className="h-4 w-12 bg-muted animate-pulse rounded ml-auto" /></TableCell>
                   </TableRow>
                 ))
+              ) : (!data?.tenantRanking || data.tenantRanking.length === 0) ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                    Nenhuma venda registrada ainda.
+                  </TableCell>
+                </TableRow>
               ) : (
-                data?.tenantRanking?.map((item: any, i: number) => (
+                data.tenantRanking.map((item: any, i: number) => (
                   <TableRow key={i}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>R$ {item.sales.toLocaleString('pt-BR')}</TableCell>

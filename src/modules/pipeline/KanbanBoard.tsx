@@ -63,7 +63,8 @@ export default function KanbanBoard() {
       const card = active.data.current;
       
       if (card && card.stage_key !== toStage) {
-        if (toStage === 'fechamento') {
+        const requiresConfirmation = toStage === 'fechamento' || toStage === 'pos_venda';
+        if (requiresConfirmation) {
           setPendingMove({ cardId, fromStage: card.stage_key, toStage });
         } else {
           moveCard.mutate({ 
@@ -153,8 +154,12 @@ export default function KanbanBoard() {
       <StageConfirmationDialog
         open={!!pendingMove}
         onOpenChange={(open) => !open && setPendingMove(null)}
-        title="Confirmar Fechamento"
-        description="Parabéns pela venda! Informe o valor final para encerrar este card."
+        title={pendingMove?.toStage === 'pos_venda' ? 'Confirmar Pós-venda' : 'Confirmar Fechamento'}
+        description={
+          pendingMove?.toStage === 'pos_venda'
+            ? 'Registre o valor final desta venda para mover para Pós-venda.'
+            : 'Parabéns pela venda! Informe o valor final para encerrar este card.'
+        }
         onConfirm={(data) => {
           if (pendingMove) {
             moveCard.mutate({ 

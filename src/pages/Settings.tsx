@@ -34,20 +34,74 @@ import {
 } from "@/components/ui/select";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useTenant } from '@/hooks/useTenant';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function Settings() {
   const { selectedTenantId, tenants } = useAuthStore();
   const currentTenant = tenants.find(t => t.id === selectedTenantId);
   const isGlobal = selectedTenantId === 'all';
   const [isSaving, setIsSaving] = React.useState(false);
+  const { activeTenantId } = useTenant();
+  const queryClient = useQueryClient();
 
-  const handleSave = () => {
+  const [companyName, setCompanyName] = React.useState(currentTenant?.name || '');
+  const [contactEmail, setContactEmail] = React.useState(currentTenant?.contact_email || '');
+
+  React.useEffect(() => {
+    if (currentTenant) {
+      setCompanyName(currentTenant.name);
+      setContactEmail(currentTenant.contact_email);
+    }
+  }, [currentTenant]);
+
+  const handleSaveDados = async () => {
+    if (!activeTenantId || activeTenantId === 'all') {
+      toast.error('Selecione uma empresa primeiro');
+      return;
+    }
     setIsSaving(true);
-    setTimeout(() => {
+    try {
+      const { error } = await supabase
+        .from('tenants')
+        .update({
+          name: companyName,
+          contact_email: contactEmail,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', activeTenantId);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['tenant', activeTenantId] });
+      toast.success('Dados da empresa salvos com sucesso');
+    } catch (err: any) {
+      toast.error('Erro ao salvar: ' + err.message);
+    } finally {
       setIsSaving(false);
-      toast.success('Configurações salvas com sucesso');
-    }, 1000);
+    }
   };
+
+  const handleSavePending = () => {
+    toast.info('Esta configuração será implementada em breve. Fale com o suporte.');
+  };
+
+  const { data: auditLogs = [] } = useQuery({
+    queryKey: ['audit-logs', activeTenantId],
+    queryFn: async () => {
+      if (!activeTenantId || activeTenantId === 'all') return [];
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*, user:users(full_name)')
+        .eq('tenant_id', activeTenantId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+    enabled: !!activeTenantId && activeTenantId !== 'all',
+  });
+
+  const handleSave = handleSaveDados;
 
   if (isGlobal) {
     return (
@@ -100,7 +154,7 @@ export default function Settings() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-zinc-400">Nome Fantasia</Label>
-                    <Input defaultValue={currentTenant?.name} className="bg-zinc-900 border-zinc-800" />
+                    <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="bg-zinc-900 border-zinc-800" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-zinc-400">Nicho</Label>
@@ -122,7 +176,7 @@ export default function Settings() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-zinc-400">E-mail Comercial</Label>
-                    <Input defaultValue={currentTenant?.contact_email} className="bg-zinc-900 border-zinc-800" />
+                    <Input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="bg-zinc-900 border-zinc-800" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-zinc-400">Fuso Horário</Label>
@@ -148,7 +202,7 @@ export default function Settings() {
                   </div>
                 </div>
                 <div className="flex justify-end pt-4 border-t border-zinc-800">
-                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
+                  <Button onClick={handleSaveDados} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
                     {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                     Salvar Dados
                   </Button>
@@ -197,7 +251,7 @@ export default function Settings() {
                   </div>
                 ))}
                 <div className="flex justify-end pt-4">
-                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
+                  <Button onClick={handleSavePending} className="bg-orange-500 hover:bg-orange-600 gap-2" disabled={isSaving}>
                     {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                     Salvar Pipeline
                   </Button>
@@ -235,7 +289,7 @@ export default function Settings() {
                    </div>
                  ))}
                  <div className="flex justify-end pt-4">
-                   <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 min-w-[120px]">Salvar Notificações</Button>
+                   <Button onClick={handleSavePending} className="bg-orange-500 hover:bg-orange-600 min-w-[120px]">Salvar Notificações</Button>
                  </div>
                </CardContent>
              </Card>
@@ -271,26 +325,30 @@ export default function Settings() {
                           <th className="px-4 py-3 text-left font-black uppercase text-[#888888] tracking-widest">Novo Valor</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-zinc-900">
-                        {[
-                          { date: '28/05/2026 14:22', user: 'Admin MEC', field: 'Valor do card #842', value: 'R$ 15.000' },
-                          { date: '28/05/2026 13:05', user: 'Gerente Loja', field: 'Status Cliente #12', value: 'Ativo' },
-                          { date: '28/05/2026 11:40', user: 'Admin MEC', field: 'Meta Mensal', value: 'R$ 80.000' },
-                          { date: '27/05/2026 16:15', user: 'Admin MEC', field: 'Nicho Empresa', value: 'Mecânica' },
-                          { date: '27/05/2026 09:30', user: 'Vendedor', field: 'Novo Card #901', value: 'Criado' }
-                        ].map((log, i) => (
-                          <tr key={i} className="hover:bg-white/5 transition-colors">
-                            <td className="px-4 py-3 text-zinc-500 font-mono">{log.date}</td>
-                            <td className="px-4 py-3 font-bold text-white">{log.user}</td>
-                            <td className="px-4 py-3 text-zinc-300">{log.field}</td>
-                            <td className="px-4 py-3">
-                              <Badge variant="outline" className="bg-orange-500/5 text-orange-500 border-orange-500/20 text-[10px]">
-                                {log.value}
-                              </Badge>
+                       <tbody className="divide-y divide-zinc-900">
+                        {auditLogs.length === 0 ? (
+                          <tr>
+                            <td colSpan={4} className="px-4 py-8 text-center text-zinc-500 text-xs">
+                              Nenhum log de auditoria encontrado.
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
+                        ) : (
+                          auditLogs.map((log: any) => (
+                            <tr key={log.id} className="hover:bg-white/5 transition-colors">
+                              <td className="px-4 py-3 text-zinc-500 font-mono">
+                                {new Date(log.created_at).toLocaleString('pt-BR')}
+                              </td>
+                              <td className="px-4 py-3 font-bold text-white">{log.user?.full_name || '—'}</td>
+                              <td className="px-4 py-3 text-zinc-300">{log.field_name || log.action}</td>
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" className="bg-orange-500/5 text-orange-500 border-orange-500/20 text-[10px]">
+                                  {log.new_value || '—'}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                       </tbody>
                     </table>
                   </div>
                   <p className="mt-4 text-[10px] text-zinc-500 text-center uppercase font-bold tracking-widest">Mostrando as últimas 100 alterações críticas</p>
@@ -354,7 +412,7 @@ export default function Settings() {
                 </div>
 
                 <div className="flex justify-end pt-2">
-                  <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600 gap-2 min-w-[120px]">
+                  <Button onClick={handleSavePending} className="bg-orange-500 hover:bg-orange-600 gap-2 min-w-[120px]">
                     <Save size={16} /> Salvar Integrações
                   </Button>
                 </div>

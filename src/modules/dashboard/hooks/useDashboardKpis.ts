@@ -85,6 +85,44 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
           .order('expected_close_date', { ascending: true })
           .limit(5);
 
+        // Ranking de vendedores do mesmo tenant (vendas fechadas)
+        const { data: rankingData } = await supabase
+          .from('pipeline_cards')
+          .select('seller_id, final_value, estimated_value, stage_key')
+          .eq('tenant_id', activeTenantId)
+          .eq('is_archived', false)
+          .in('stage_key', ['fechamento', 'pos_venda']);
+
+        const sellerIds = Array.from(
+          new Set((rankingData || []).map((r: any) => r.seller_id).filter(Boolean))
+        );
+        const nameMap: Record<string, string> = {};
+        if (sellerIds.length > 0) {
+          const { data: sellers } = await supabase
+            .from('users')
+            .select('id, full_name')
+            .in('id', sellerIds);
+          (sellers || []).forEach((s: any) => { nameMap[s.id] = s.full_name; });
+        }
+
+        const rankingMap: Record<string, { name: string; sales: number }> = {};
+        (rankingData || []).forEach((card: any) => {
+          const sid = card.seller_id;
+          if (!sid) return;
+          const value = Number(card.final_value || card.estimated_value || 0);
+          if (!rankingMap[sid]) rankingMap[sid] = { name: nameMap[sid] || 'Desconhecido', sales: 0 };
+          rankingMap[sid].sales += value;
+        });
+
+        const ranking = Object.entries(rankingMap)
+          .sort(([, a], [, b]) => b.sales - a.sales)
+          .slice(0, 5)
+          .map(([sid, entry], index) => ({
+            position: index + 1,
+            name: sid === user.id ? 'Você' : entry.name,
+            sales: entry.sales,
+          }));
+
         return {
           kpis: [
             { title: 'Minhas Vendas', value: `R$ ${vendas.toLocaleString('pt-BR')}`, trend: { value: 20, isPositive: true }, icon: 'DollarSign' },
@@ -98,7 +136,7 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
             activity: act.title,
             date: act.expected_close_date || 'Em breve'
           })),
-          ranking: [] // simplificado para o escopo
+          ranking,
         };
       }
 

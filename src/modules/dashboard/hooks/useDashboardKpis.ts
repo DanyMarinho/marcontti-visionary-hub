@@ -85,7 +85,7 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
             { title: 'Cards Ativos', value: cardsAtivos, trend: { value: 2, isPositive: true }, icon: 'GitMerge' },
             { title: 'Conversão Pessoal', value: '28%', trend: { value: 5, isPositive: true }, icon: 'TrendingUp' }
           ],
-          nextActivities: (nextActs || []).map(act => ({
+          nextActivities: (nextActs || []).map((act: any) => ({
             id: act.id,
             customer: act.clients?.full_name || 'Desconhecido',
             activity: act.title,

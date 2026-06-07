@@ -65,9 +65,8 @@ export function VendedorForm({ open, onOpenChange, onSuccess, user }: VendedorFo
         await userService.update(user.id, formData);
         toast.success('Usuário atualizado com sucesso');
       } else {
+        // create() already invites via edge function (atomic) — no second invite call
         await userService.create(formData as any);
-        // Invite logic
-        await userService.inviteVendor(formData.email!, formData.full_name!, formData.tenant_id!, formData.store_id || '');
         toast.success('Convite enviado com sucesso');
       }
       onSuccess();

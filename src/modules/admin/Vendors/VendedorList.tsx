@@ -63,7 +63,11 @@ export function VendedorList() {
         if (!confirm) return;
         toast.info('Reatribuindo cards ativos ao responsável da loja...');
       }
-      await userService.update(user.id, { is_active: newStatus });
+      if (newStatus) {
+        await userService.update(user.id, { is_active: true });
+      } else {
+        await userService.deactivateVendor(user.id);
+      }
       toast.success(`Usuário ${newStatus ? 'ativado' : 'desativado'} com sucesso`);
       fetchData();
     } catch (error) {

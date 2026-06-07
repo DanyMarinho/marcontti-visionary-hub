@@ -44,17 +44,36 @@ export const pipelineService = {
     return data;
   },
 
-  async moveCard(cardId: string, tenantId: string, userId: string, fromStage: string, toStage: string) {
+  async moveCard(
+    cardId: string,
+    tenantId: string,
+    userId: string,
+    fromStage: string,
+    toStage: string,
+    finalValue?: number,
+    closingDate?: string
+  ) {
+    const isClosing = toStage === 'fechamento' || toStage === 'pos_venda';
+
+    const updatePayload: Record<string, any> = {
+      stage_key: toStage,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (isClosing) {
+      updatePayload.closed_at = closingDate || new Date().toISOString();
+      if (finalValue !== undefined && finalValue !== null && finalValue > 0) {
+        updatePayload.final_value = finalValue;
+      }
+    }
+
     const { data, error } = await supabase
       .from('pipeline_cards')
-      .update({ 
-        stage_key: toStage,
-        closed_at: toStage === 'fechamento' || toStage === 'pos_venda' ? new Date().toISOString() : null
-      })
+      .update(updatePayload)
       .eq('id', cardId)
       .select()
       .single();
-    
+
     if (error) throw error;
 
     await this.logHistory({
@@ -64,7 +83,7 @@ export const pipelineService = {
       event_type: 'stage_change',
       from_stage: fromStage,
       to_stage: toStage,
-      description: `Movido de ${fromStage} para ${toStage}`
+      description: `Movido de ${fromStage} para ${toStage}${isClosing && finalValue ? ` — R$ ${Number(finalValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}`,
     });
 
     return data;

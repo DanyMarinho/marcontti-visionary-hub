@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery } from '@tanstack/react-query';
 import { useTenant } from '@/hooks/useTenant';
 import { useAuthStore } from '@/store/authStore';
@@ -38,14 +37,28 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
 
       // Admin global data
       if (user?.role === 'admin' && isGlobal) {
+        const { count: tenantsCount } = await supabase
+          .from('tenants')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_active', true);
+
+        const totalCards = (cards || []).length;
+        const closedCards = (cards || []).filter(
+          (c: any) => c.stage_key === 'fechamento' || c.stage_key === 'pos_venda'
+        ).length;
+        const conversaoReal =
+          totalCards > 0 ? `${Math.round((closedCards / totalCards) * 100)}%` : '0%';
+
         return {
           kpis: [
-            { title: 'Empresas Ativas', value: 12, trend: { value: 8, isPositive: true }, icon: 'Building2' },
+            { title: 'Empresas Ativas', value: tenantsCount ?? 0, trend: { value: 0, isPositive: true }, icon: 'Building2' },
             { title: 'Vendas do Período', value: `R$ ${vendas.toLocaleString('pt-BR')}`, trend: { value: 12.5, isPositive: true }, icon: 'DollarSign' },
             { title: 'Cards no Pipeline', value: cardsAtivos, trend: { value: 4, isPositive: true }, icon: 'GitMerge' },
-            { title: 'Conversão Global', value: '24.2%', trend: { value: 2.1, isPositive: true }, icon: 'TrendingUp' }
+            { title: 'Conversão Global', value: conversaoReal, trend: { value: 2.1, isPositive: true }, icon: 'TrendingUp' },
           ],
-          salesHistory: [], tenantRanking: [], conversionHistory: []
+          salesHistory: [],
+          tenantRanking: [],
+          conversionHistory: [],
         };
       }
 
@@ -72,7 +85,7 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
             { title: 'Cards Ativos', value: cardsAtivos, trend: { value: 2, isPositive: true }, icon: 'GitMerge' },
             { title: 'Conversão Pessoal', value: '28%', trend: { value: 5, isPositive: true }, icon: 'TrendingUp' }
           ],
-          nextActivities: (nextActs || []).map(act => ({
+          nextActivities: (nextActs || []).map((act: any) => ({
             id: act.id,
             customer: act.clients?.full_name || 'Desconhecido',
             activity: act.title,

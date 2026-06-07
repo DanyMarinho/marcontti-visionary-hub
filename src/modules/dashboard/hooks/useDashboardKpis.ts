@@ -68,6 +68,13 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
         const meta = goals?.target_value ? Number(goals.target_value) : 25000;
         const atingimento = Math.round((vendas / meta) * 100);
 
+        const totalVendedor = (cards || []).length;
+        const fechadosVendedor = (cards || []).filter(
+          (c: any) => c.stage_key === 'fechamento' || c.stage_key === 'pos_venda'
+        ).length;
+        const conversaoPessoal =
+          totalVendedor > 0 ? `${Math.round((fechadosVendedor / totalVendedor) * 100)}%` : '0%';
+
         // Fetch Next activities
         const { data: nextActs } = await supabase
           .from('pipeline_cards')
@@ -83,7 +90,7 @@ export function useDashboardKpis(period: 'today' | 'week' | 'month' | 'last_mont
             { title: 'Minhas Vendas', value: `R$ ${vendas.toLocaleString('pt-BR')}`, trend: { value: 20, isPositive: true }, icon: 'DollarSign' },
             { title: 'Minha Meta', value: `R$ ${meta.toLocaleString('pt-BR')}`, description: `${atingimento}% atingido`, icon: 'Target' },
             { title: 'Cards Ativos', value: cardsAtivos, trend: { value: 2, isPositive: true }, icon: 'GitMerge' },
-            { title: 'Conversão Pessoal', value: '28%', trend: { value: 5, isPositive: true }, icon: 'TrendingUp' }
+            { title: 'Conversão Pessoal', value: conversaoPessoal, trend: { value: 5, isPositive: true }, icon: 'TrendingUp' }
           ],
           nextActivities: (nextActs || []).map((act: any) => ({
             id: act.id,

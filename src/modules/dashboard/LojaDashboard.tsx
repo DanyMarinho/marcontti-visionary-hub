@@ -94,6 +94,28 @@ export function LojaDashboard() {
         }
       });
 
+      // Buscar histórico real de vendas dos últimos 6 meses
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      const { data: closedCards } = await supabase
+        .from('pipeline_cards')
+        .select('final_value, estimated_value, closed_at, stage_key')
+        .eq('tenant_id', activeTenantId)
+        .in('stage_key', ['fechamento', 'pos_venda'])
+        .not('closed_at', 'is', null)
+        .gte('closed_at', sixMonthsAgo.toISOString());
+
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const grouped: Record<string, number> = {};
+
+      (closedCards || []).forEach(card => {
+        const month = monthNames[new Date(card.closed_at!).getMonth()];
+        grouped[month] = (grouped[month] || 0) + Number(card.final_value || card.estimated_value || 0);
+      });
+
+      const salesHistory = Object.entries(grouped).map(([month, value]) => ({ month, value }));
+
       // Goal (atingimento)
       const { data: goals } = await supabase
         .from('goals')
@@ -110,14 +132,7 @@ export function LojaDashboard() {
         atingimento,
         clientesAtivos: cards.length,
         cardsAtivos,
-        salesHistory: [
-          { month: 'Jan', value: vendas * 0.5 },
-          { month: 'Fev', value: vendas * 0.6 },
-          { month: 'Mar', value: vendas * 0.8 },
-          { month: 'Abr', value: vendas * 0.9 },
-          { month: 'Mai', value: vendas * 0.95 },
-          { month: 'Jun', value: vendas },
-        ],
+        salesHistory,
         funnelData: [
           { stage: 'Prospecção', count: cards.filter(c => c.stage_key === 'prospeccao').length },
           { stage: 'Qualificação', count: cards.filter(c => c.stage_key === 'qualificacao').length },
